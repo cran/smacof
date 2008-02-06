@@ -1,6 +1,8 @@
 `print.smacofR` <-
 function(x,...)
 {
+  cat("\nCall: ")
+  print(x$call)
   cat("\n")
   cat("Model:",x$model,"\n")
   cat("Number of subjects:",x$nind,"\n")

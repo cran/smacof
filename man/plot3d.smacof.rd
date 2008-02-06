@@ -57,13 +57,13 @@ For \code{smacofIndDiff()} the configuration plot represents the group stimulus 
 ## 3D plot for spherical SMACOF
 data(trading)
 res <- smacofSphere.dual(trading, ndim = 3)
-plot3d(res, plot.type = "confplot", sphere = TRUE, sphere.rgl = FALSE, bgpng = NULL)
+##plot3d(res, plot.type = "confplot", sphere = TRUE, sphere.rgl = FALSE, bgpng = NULL)
 plot3dstatic(res)
 
 ## Group stimulus space for rectangular SMACOF
 data(breakfast)
 res <- smacofRect(breakfast, ndim = 3)
-plot3d(res, joint = TRUE)
+##plot3d(res, joint = TRUE)
 
 }
 

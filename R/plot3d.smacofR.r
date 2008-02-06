@@ -26,8 +26,8 @@ function(x, plot.dim = c(1,2,3), joint = FALSE, xlab, ylab, zlab,
       if (missing(zlab)) zlab1 <- paste("Column Configurations D", pd3,sep = "") else zlab1 <- zlab
       if (missing(col)) col1 <- "BLUE"     
       
-      rgl.open()
-      rgl.bg(sphere = sphere.rgl, texture = texture1, back = "filled", color = "white")
+      open3d()
+      bg3d(sphere = sphere.rgl, texture = texture1, back = "filled", color = "white")
       text3d(x$conf.col[,pd1], , x$conf.col[,pd3], texts = rownames(x$conf.col), col = col1, 
              alpha = 1, textenvmap = TRUE, lit = TRUE, ...)
       axes3d(c('x','y','z'), labels = TRUE, color = "black", alpha = 1)
@@ -39,8 +39,8 @@ function(x, plot.dim = c(1,2,3), joint = FALSE, xlab, ylab, zlab,
       if (missing(zlab)) zlab1 <- paste("Row Configurations D", pd3,sep = "") else zlab1 <- zlab
       if (missing(col)) col1 <- "RED"     
       
-      rgl.open()
-      rgl.bg(sphere = sphere.rgl, texture = texture1, back = "filled", color = "white")
+      open3d()
+      bg3d(sphere = sphere.rgl, texture = texture1, back = "filled", color = "white")
       text3d(x$conf.row[,pd1], x$conf.row[,pd2], x$conf.row[,pd3], texts = rownames(x$conf.row), col = col1, 
       alpha = 1, textenvmap = TRUE, lit = TRUE, ...)
       axes3d(c('x','y','z'), labels = TRUE, color = "black", alpha = 1)
@@ -58,8 +58,8 @@ function(x, plot.dim = c(1,2,3), joint = FALSE, xlab, ylab, zlab,
       ylim1 <- range(fullconf[,2])
       zlim1 <- range(fullconf[,3])
       
-      rgl.open()
-      rgl.bg(sphere = sphere.rgl, texture = texture1, back = "filled", color = "white")
+      open3d()
+      bg3d(sphere = sphere.rgl, texture = texture1, back = "filled", color = "white")
       text3d(x$conf.col[,pd1], x$conf.col[,pd2], x$conf.col[,pd3], texts = rownames(x$conf.col), col = "BLUE", 
       alpha = 1, textenvmap = TRUE, lit = TRUE, ...)
       text3d(x$conf.row[,pd1], x$conf.row[,pd2], x$conf.row[,pd3], texts = rownames(x$conf.row), col = "RED", 

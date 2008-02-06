@@ -9,12 +9,12 @@
 }
 \usage{
 \method{plot}{smacof}(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, 
-main, xlab, ylab, ...)
+main, xlab, ylab, xlim, ylim, ...)
 
 \method{plot}{smacofR}(x, plot.type = "confplot", joint = FALSE, plot.dim = c(1,2), 
-main, xlab, ylab, ...)
+main, xlab, ylab, xlim, ylim, ...)
 
-\method{plot}{smacofID}(x, plot.type = "confplot", plot.dim = c(1,2), main, xlab, ylab, ...)
+\method{plot}{smacofID}(x, plot.type = "confplot", plot.dim = c(1,2), main, xlab, ylab, xlim, ylim, ...)
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -26,6 +26,8 @@ main, xlab, ylab, ...)
   \item{main}{Plot title.}
   \item{xlab}{Label of x-axis.}
   \item{ylab}{Label of y-axis.}
+  \item{xlim}{Scale x-axis.}
+  \item{ylim}{Scale y-axis.}
   \item{sphere}{In case of spherical smacof, whether sphere should be plotted or not.}
   \item{joint}{If \code{TRUE}, the configurations are plotted jointly in rectangular smacof.}
   \item{\dots}{Further plot arguments passed: see \code{\link[graphics]{plot}}} in package \code{scatterplot3d} for detailed information.

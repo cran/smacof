@@ -88,7 +88,7 @@ if (!metric) ssma <- NULL
 
  
 result <- list(obsdiss1 = dhat1, obsdiss2 = dhat2, confdiss = e, conf = y, stress.m = ssma, stress.nm = snon,
-               ndim = p, model = "Spherical SMACOF (dual)", niter = itel, nobj = n)
+               ndim = p, model = "Spherical SMACOF (dual)", niter = itel, nobj = n, metric = metric, call = match.call())
 class(result) <- c("smacofSP", "smacof")
 result
 }

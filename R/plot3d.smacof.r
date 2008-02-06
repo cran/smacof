@@ -30,8 +30,8 @@ function(x, plot.dim = c(1,2,3), sphere = TRUE, xlab, ylab, zlab,
  if (missing(main)) main1 <- "Configuration Plot"  else main1 <- main
  if (missing(col)) col1 <- "blue" else col1 <- col
 
- rgl.open()
- rgl.bg(sphere = sphere.rgl, texture = texture1, back = "filled", color = "white")
+ open3d()
+ bg3d(sphere = sphere.rgl, texture = texture1, back = "filled", color = "white")
 
  
  if ((any(class(x) == "smacofSP")) && (sphere)) {
@@ -40,10 +40,10 @@ function(x, plot.dim = c(1,2,3), sphere = TRUE, xlab, ylab, zlab,
      a.y1 <- abs(y1)
      a.z1 <- abs(z1)
      radius.sphere <- sqrt(((a.x1[2]+a.x1[1])^2) + ((a.y1[2]+a.y1[1])^2) + ((a.z1[2]+a.z1[1])^2)) 
-     rgl.spheres(x1[1], y1[1], z1[1], radius = radius.sphere, col = "white", alpha = 0.8, back = "cull", front = "line")
+     spheres3d(x1[1], y1[1], z1[1], radius = radius.sphere, col = "white", alpha = 0.8, back = "cull", front = "line")
    } else {
      radius.sphere <- sqrt(x1^2 + y1^2 + z1^2)                           #Pythagoras 3D
-     rgl.spheres(0,0,0, radius = radius.sphere, col = "white", alpha = 0.8, back = "cull", front = "line")
+     spheres3d(0,0,0, radius = radius.sphere, col = "white", alpha = 0.8, back = "cull", front = "line")
    }
  }
  text3d(x1, y1, z1, texts = rownames(x$conf), col = col1, alpha = 1, ...)
