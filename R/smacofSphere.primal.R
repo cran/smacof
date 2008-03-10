@@ -10,6 +10,7 @@ smacofSphere.primal <- function(delta, ndim = 2, weightmat = NULL, init = NULL,
  if ((is.matrix(diss)) || (is.data.frame(diss))) diss <- strucprep(diss)  #if data are provided as dissimilarity matrix
  p <- ndim
  n <- attr(diss,"Size")
+ nn <- n*(n-1)/2
  m <- length(diss)
  if (is.null(attr(diss, "Labels"))) attr(diss, "Labels") <- paste(1:n)
   
@@ -18,7 +19,7 @@ smacofSphere.primal <- function(delta, ndim = 2, weightmat = NULL, init = NULL,
     wgths <- initWeights(diss)
  }  else  wgths <- weightmat
 
- dhat <- normDiss(diss,wgths)            #normalize dissimilarities
+ dhat <- normDissN(diss,wgths,1)            #normalize dissimilarities
  if (is.null(init)) x <- torgerson(sqrt(diss), p=p) else x <- init   # x as matrix with starting values
 
 
@@ -50,7 +51,7 @@ smacofSphere.primal <- function(delta, ndim = 2, weightmat = NULL, init = NULL,
 			if (ties=="secondary") daux <- monregS(diss,e,wgths)
 			if (ties=="tertiary") daux <- monregT(diss,e,wgths)
 			daux <- vecAsDist(daux)
-      dhat <- normDiss(daux,wgths)
+      dhat <- normDissN(daux,wgths,1)
 			}
 	}
   snon <- sum(wgths*(dhat-e)^2)        #nonmetric stress
@@ -70,11 +71,16 @@ rownames(y) <- labels(diss)
 attr(dhat, "Labels") <- labels(diss)
 attr(e, "Labels") <- labels(diss)
 
+snon <- snon/nn                   #stress normalization
+ssma <- ssma/nn
+
 if (metric) snon <- NULL          #no non-metric stress
 if (!metric) ssma <- NULL
 
+confdiss <- normDissN(e, wgths, 1)        #final normalization to n(n-1)/2
 
-result <- list(obsdiss = dhat, confdiss = e, conf = y, stress.m = ssma, stress.nm = snon,
+
+result <- list(obsdiss = dhat, confdiss = confdiss, conf = y, stress.m = ssma, stress.nm = snon,
                ndim = p, model = "Spherical SMACOF (primal)", niter = itel, nobj = n, metric = metric, call = match.call())
 class(result) <- c("smacofSP", "smacof")
 result

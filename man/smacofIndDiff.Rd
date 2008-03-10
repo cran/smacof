@@ -38,7 +38,6 @@ More unrestricted models are \code{"diagonal"} which restricts only the configur
   \item{cweights}{Configuration weights}
   \item{stress.m}{stress value for metric MDS}
   \item{stress.nm}{stress value for non-metric MDS (if computed)}
-  \item{stress.uc}{Unconstrained stress value}
   \item{stress.co}{Constrained stress value}
   \item{ndim}{Number of dimensions}
   \item{model}{Type of smacof model}

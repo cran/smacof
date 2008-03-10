@@ -22,6 +22,7 @@ function(delta, ndim = 2, weightmat = NULL, init = NULL,
   
   p <- ndim                                     
   n <- attr(diss,"Size")
+  nn <- n*(n-1)/2
   m <- length(diss)
   
   if (is.null(attr(diss, "Labels"))) attr(diss, "Labels") <- paste(1:n)
@@ -30,11 +31,12 @@ function(delta, ndim = 2, weightmat = NULL, init = NULL,
     wgths <- initWeights(diss)
   }  else  wgths <- weightmat
   
-  dhat <- normDiss(diss,wgths)            #normalize dissimilarities
-
+  #dhat <- normDiss(diss,wgths)            #normalize dissimilarities
+  dhat <- normDissN(diss, wgths, 1)        #normalize to n(n-1)/2
+                                 
   if (is.null(init)) x <- torgerson(sqrt(diss), p=p) else x <- init   # x as matrix with starting values   
   #if (!is.matrix(init)) x <- torgerson(sqrt(delta),p=p) else x <- init    
-  #if (!is.matrix(w)) w <- matrix(1,n,n)-diag(n)   ???what's w???
+  #if (!is.matrix(w)) w <- matrix(1,n,n)-diag(n)   
   
   w <- vmat(wgths)                        #matrix V of weights and unit vectors
   v <- myGenInv(w)                        #Moore-Penrose inverse
@@ -59,7 +61,7 @@ function(delta, ndim = 2, weightmat = NULL, init = NULL,
 		  if (ties=="primary") daux <- monregP(diss,e,wgths)        #PAVA stuff
 		  if (ties=="secondary") daux <- monregS(diss,e,wgths)
 		  if (ties=="tertiary") daux <- monregT(diss,e,wgths)
-		  dhat <- normDiss(daux,wgths)
+		  dhat <- normDissN(daux,wgths,1)
    }
   }
 
@@ -77,6 +79,9 @@ function(delta, ndim = 2, weightmat = NULL, init = NULL,
  }
  #------------------ end majorization --------------- 
  
+ snon <- snon/nn                   #stress normalization
+ ssma <- ssma/nn
+ 
  if (metric) snon <- NULL          #no non-metric stress
  if (!metric) ssma <- NULL
 
@@ -86,8 +91,10 @@ function(delta, ndim = 2, weightmat = NULL, init = NULL,
  attr(dhat, "Labels") <- labels(diss)
  attr(e, "Labels") <- labels(diss)
 
+ confdiss <- normDissN(e, wgths, 1)        #final normalization to n(n-1)/2
+
 #return configurations, configuration distances, normalized observed distances 
-result <- list(obsdiss = dhat, confdiss = e, conf = y, stress.m = ssma, stress.nm = snon,
+result <- list(obsdiss = dhat, confdiss = confdiss, conf = y, stress.m = ssma, stress.nm = snon,
                ndim = p, model = "Symmetric SMACOF", niter = itel, nobj = n, metric = metric, call = match.call()) 
 class(result) <- c("smacofB","smacof")
 result 

@@ -38,6 +38,7 @@ metric = TRUE, ties = "primary", verbose = FALSE, modulus = 1, itmax = 100, eps 
   \item{stress.m}{stress value for metric MDS}
   \item{stress.nm}{stress value for non-metric MDS (if computed)}
   \item{ndim}{Number of dimensions}
+  \item{dummyvec}{Dummy vector of restriction matrix}
   \item{model}{Type of smacof model}
   \item{niter}{Number of iterations}
   \item{nobj}{Number of objects}

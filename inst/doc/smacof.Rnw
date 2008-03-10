@@ -1,0 +1,749 @@
+%\VignetteIndexEntry{smacof} 
+
+\documentclass[article]{jss1}
+\usepackage{amsmath, amsfonts, thumbpdf}
+\usepackage{float,amssymb}
+\usepackage{hyperref}
+
+\newcommand{\defi}{\mathop{=}\limits^{\Delta}}  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% declarations for jss.cls %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% almost as usual
+\author{Jan de Leeuw\\University of California, Los Angeles \And 
+        Patrick Mair \\Wirtschaftsuniversit\"at Wien}
+\title{Multidimensional Scaling Using Majorization: SMACOF in \proglang{R}}
+
+\Plainauthor{Jan de Leeuw, Patrick Mair} %% comma-separated
+\Plaintitle{Multidimensional Scaling Using Majorization: SMACOF in R} %% without formatting
+\Shorttitle{SMACOF in \proglang{R}} %% a short title (if necessary)
+
+%% an abstract and keywords
+\Abstract{In this paper we present the methodology of multidimensional scaling problems (MDS) solved by means of the majorization algorithm. The objective function to be minimized is known as stress and functions which majorize stress are elaborated. This strategy to solve MDS problems is called SMACOF and it is implemented in an \pkg{R} package of the same name which is presented in this article. We extend the basic SMACOF theory in terms of configuration constraints, three-way data, unfolding models, and projection of the resulting configurations onto spheres and other quadratic surfaces. Various examples are presented to show the possibilities of the SMACOF approach offered by the corresponding package.
+}
+
+\Keywords{smacof, multidimensional scaling, majorization, \proglang{R}}
+\Plainkeywords{smacof, multidimensional scaling, majorization, R} 
+
+%% publication information
+%% NOTE: This needs to filled out ONLY IF THE PAPER WAS ACCEPTED.
+%% If it was not (yet) accepted, leave them commented.
+%% \Volume{13}
+%% \Issue{9}
+%% \Month{September}
+%% \Year{2004}
+%% \Submitdate{2004-09-29}
+%% \Acceptdate{2004-09-29}
+
+%% The address of (at least) one author should be given
+%% in the following format:
+\Address{
+  Jan de Leeuw\\
+  Department of Statistics\\
+  University of California, Los Angeles\\
+  E-mail: \email{deleeuw@stat.ucla.edu}\\
+  URL: \url{http://www.stat.ucla.edu/~deleeuw/}
+}
+%% It is also possible to add a telephone and fax number
+%% before the e-mail in the following format:
+%% Telephone: +43/1/31336-5053
+%% Fax: +43/1/31336-734
+
+%% for those who use Sweave please include the following line (with % symbols):
+%% need no \usepackage{Sweave.sty}
+
+%% end of declarations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+\section{Introduction}
+From a general point of view, \emph{multidimensional scaling} (MDS) is a set of methods for discovering ``hidden'' structures in multidimensional data. Based on a proximity matrix derived from variables measured on objects as input entity, these distances are mapped on a lower dimensional (typically two or three dimensions) spatial representation. A classical example concerns airline distances between US cities in miles as symmetric input matrix. Applying MDS, it results in a two-dimensional graphical representation reflecting the US map \citep[see][]{Kruskal+Wish:1978}. Depending on the nature of the original data various proximity/dissimilarity measures can be taken into account. For an overview see \citet[][Chapter 1]{Cox+Cox:2001} and an implementation of numerous proximity measures in \proglang{R} is given by \citet{Meyer+Buchta:2007}. Typical application areas for MDS are, among others, social and behavioral sciences, marketing, biometrics, and ecology. 
+
+\citet[][Chapter 14]{Mardia+Kent+Bibby:1979} provide a MDS chapter within the general framework of multivariate analysis. An early historical outline of MDS is given in \citet{Shepard:1980}. For introductory MDS reading we refer to \citet{Kruskal+Wish:1978} and more advanced topics can be found in \citet{borg-groenen-2} and \citet{Cox+Cox:2001}. 
+
+The traditional way of performing MDS is referred to as \emph{classical scaling} \citep{torgerson} which is based on the assumption that the dissimilarities are precisely Euclidean distances without any additional transformation. With further developments over the years, MDS techniques are commonly embedded into the following taxonomies \citep[see e.g.][]{Cox+Cox:2001}:
+\begin{itemize}
+% \item metric vs. non-metric MDS: In metric MDS the dissimilarities are transformed by means of a continuous monotonic function whereas in non-metric MDS the metric nature of the transformation is abandoned.
+ \item 1-way vs. multi-way MDS: In $K$-way MDS each pair of objects has $K$ dissimilarity measures from different ``replications'' (e.g., repeated measures, multiple raters etc.).
+ \item 1-mode vs. multi-mode MDS: Similar to the former distinction but the $K$ dissimilarities are qualitatively different (e.g., experimental conditions, subjects, stimuli etc.)
+\end{itemize}
+
+For each MDS version we provide metric and non-metric variants. Non-metric MDS will be described in a separate section since, within each majorization iteration, it includes an additional optimization step (see Section \ref{sec:nmsmacof}). However, for both approaches, the particular objective function (or loss function) we use in this paper is a sum of squares, commonly called \emph{stress}. We use majorization to minimize stress and this MDS solving strategy is known as SMACOF (Scaling by MAjorizing a COmplicated Function). 
+
+Furthermore we will provide several extensions of the basic SMACOF approach in terms of constraints on the configuration, individual differences (i.e., three-way data structures), rectangular matrices, and quadratic surfaces. From early on in the history of MDS its inventors, notably~\citet{torgerson} and~\citet{shep1,shep2}, discovered that points in MDS solutions often fell on, or close to, quadratic manifolds such as circles, ellipses, or parabolas. Fitting quadratics with SMACOF will be one of the focal points of this paper (see Section \ref{sec:smacofQ}). Some of the first examples analyzed with the new techniques were the color similarity data of~\citet{ekman} and the color naming data of~\citet{filrap}. Another early application involved triadic comparisons of musical intervals~\citep{levelt_geer_plomp}, where the points appeared to fall on a parabola. A critical discussion can be found in \citet[][p. 386-388]{shepprez}. Around the same time, the triadic comparisons of Dutch political parties~\citep{degruijter} were carried out, which showed a curved left-right dimension, with parties ordered along an ellipse. 
+
+The smacof package has many options, and makes it possible to represent a given data matrix in many different ways. In some contexts, such as molecular conformation or geographic map making, we have prior knowledge what the dimensionality is, or what the appropriate constraints are. But the model selection issue is obviously an important problem in ``exploratory'' MDS. If there is no such prior knowledge, we have to rely on pseudo-inferential techniques such as \citet{Ramsay:1982} or \citet{mdsjack}. 
+
+\section{Basic majorization theory}
+\label{sec:maj}
+Before describing details about MDS and SMACOF we give a brief overview on the general concept of \emph{majorization} which optimizes a particular objective function; in our application referred to as \emph{stress}. More details about the particular stress functions and their surrogates for various SMACOF extensions will be elaborated below.
+
+In a strict sense, majorization is not an algorithm but rather a prescription for constructing optimization algorithms. The principle of majorization is to construct a surrogate function which majorizes a particular objective function.  For MDS, majorization was introduced by \citet{gren} and further elaborated in \citet{ling} and \citet{dlh80}. One way to think about this approach for optimizing objective functions is as a generalization of the EM-algorithm \citep{delaru}. In fact, \citet{lange04} uses the term \emph{MM-algorithm} which stands for either \emph{majorize/minimize} or \emph{minorize/maximize}. \citet{deLeeuw:1994} puts it (together with EM, ALS and others) into the framework of block-relaxation methods. 
+
+From a formal point of view majorization requires the following definitions. Let us assume we have a function $f(x)$ to be minimized. Finding an analytical solution for complicated $f(x)$ can be rather cumbersome. Thus, the majorization principle suggests to find a simpler, more manageable surrogate function $g(x,y)$ which majorizes $f(x)$, i.e. for all $x$
+\begin{equation}
+\label{eq:maj}
+g(x,y) \geq f(x)
+\end{equation} 
+where $y$ is some fixed value called the \emph{supporting point}. The surrogate function should touch the surface at $y$, i.e., $f(y)=g(y,y)$, which, at the minimizer $x^\star$ of $g(x,y)$ over $x$, leads to the inequality chain 
+\begin{equation}
+\label{eq:sand}
+f(x^\star) \leq g(x^\star,y) \leq g(y,y) = f(y)
+\end{equation}
+called the \emph{sandwich inequality}. 
+
+Majorization is an iterative procedure which consists of the following steps: 
+\begin{enumerate}
+\item Choose initial starting value $y := y_0$.
+\item Find update $x^{(t)}$ such that $g(x^{(t)},y) \leq g(y,y)$.
+\item Stop if $f(y)-f(x^{(t)}) < \epsilon$, else $y := x^{(t)}$ and proceed with step 2. 
+\end{enumerate}
+This procedure can be extended to multidimensional spaces and as long as the sandwich inequality in \ref{eq:sand} holds, it can be used to minimize the corresponding objective function. In MDS the objective function called \emph{stress} is a multivariate function of the distances between objects. We will use majorization for \emph{stress} minimization for various SMACOF variants as described in the following sections. Detailed elaborations of majorization in MDS can be found in \citet{groendiss,borg-groenen-2}.
+
+\section{Basic SMACOF methodology}
+\subsection{Simple SMACOF for symmetric dissimilarity matrices}
+\label{sec:ssmacof}
+MDS input data are typically a \(n\times n\) matrix \(\Delta\) of \emph{dissimilarities} based on observed data. \(\Delta\) is symmetric, non-negative, and hollow (i.e. has zero diagonal). The problem we solve is to locate $i,j=1,\ldots,n$ points in
+low-dimensional Euclidean space in such a way that the distances between the points 
+approximate the given dissimilarities $\delta_{ij}$. Thus we want to find an \(n\times p\) matrix \(X\)
+such that \(d_{ij}(X)\approx\delta_{ij}\), where
+\begin{equation}
+\label{eq:dist}
+d_{ij}(X)=\sqrt{\sum_{s=1}^p(x_{is}-x_{js})^2}.
+\end{equation}
+The index $s=1,\ldots,p$ denotes the number of dimensions in the Euclidean space. The elements of $X$ are called \emph{configurations} of the objects. Thus, each object is scaled in a $p$-dimensional space such that the distances between the points in the space match as well as possible the observed dissimilarities. By representing the results graphically, the configurations represent the coordinates in the configuration plot. 
+
+Now we make the optimization problem more precise by defining \emph{stress} \(\sigma(X)\) by
+\begin{equation}
+\label{eq:stress}
+\sigma(X)=\sum_{i<j} w_{ij}(\delta_{ij}-d_{ij}(X))^2.
+\end{equation}
+Here, \(W\) is a known \(n\times n\) matrix of \emph{weights} $w_{ij}$, also assumed to be
+symmetric, non-negative, and hollow. We assume, without loss of generality, that
+\begin{equation}
+\label{eq:weights}
+\sum_{i<j} w_{ij}\delta_{ij}^2=n(n-1)/2
+\end{equation}
+and that \(W\) is irreducible \citep{gren}, so that the minimization problem does not separate 
+into a number of independent smaller problems. $W$ can for instance be used for imposing missing value structures: $w_{ij}=1$ if $\delta_{ij}$ is known and $w_{ij}=0$ if $\delta_{ij}$ is missing. However, other kinds of weighting structures are allowed along with the restriction $w_{ij}\geq0$.
+
+Following \citet{gren}, stress, as given in (\ref{eq:stress}), can be decomposed as
+\begin{align*}
+\label{eq:stdecomp}
+\sigma(X) & = \sum_{i<j} w_{ij}\delta_{ij}^2 + \sum_{i<j} w_{ij} d_{ij}^2(X) - 2\sum_{i<j} w_{ij} \delta_{ij} d_{ij}(X) = \\
+& = \eta^2_{\delta} + \eta^2(X) - 2\rho(X). 
+\end{align*}
+From restriction (\ref{eq:weights}) it follows that the first component $\eta^2_{\delta} = n(n-1)/2$. The second component $\eta^2(X)$ is a weighted sum of the squared distances $d^2_{ij}(X)$, and thus a convex quadratic.  The third one, i.e. $-2\rho(X)$, is the negative of a  weighted sum of the $d_{ij}(X)$, and is consequently concave.  
+
+The third component is the crucial term for majorization. Let us define the matrix $A_{ij}=(e_i-e_j)(e_i-e_j)'$ whose elements equal 1 at $a_{ii}=a_{jj}=1$, -1 at $a_{ij}=a_{ji}$, and 0 elsewhere. Furthermore, we define 
+\begin{equation}
+\label{eq:Vmat}
+V = \sum_{i<j} w_{ij} A_{ij}
+\end{equation} 
+as the weighted sum of row and column centered matrices $A_{ij}$. Hence, we can rewrite
+\begin{equation}
+\eta^2(X) = \mathbf{tr}\ X'VX.
+\end{equation}
+
+For a similar representation of $\rho(X)$ we define the matrix 
+\begin{equation}
+\label{eq:Bmat}
+B(X)=\sum_{i<j} w_{ij} s_{ij}(X)A_{ij}
+\end{equation}
+where
+\[
+s_{ij}(X)=\begin{cases}\delta_{ij}/d_{ij}(X)&\text{ if }d_{ij}(X)>0,\\
+0&\text{ if }d_{ij}(X)=0.
+\end{cases}
+\]
+Using $B(X)$ we can rewrite $\rho(X)$ as
+\begin{equation}
+\label{rho}
+\rho(X) = \mathbf{tr}\ X'B(X)X
+\end{equation}
+and, consequently, the stress decomposition becomes
+\begin{equation}
+\label{eq:strdec}
+\sigma(X) = 1 + \mathbf{tr}\ X'VX - 2\mathbf{tr}\   X'B(X)X.
+\end{equation}
+At this point it is straightforward to find the majorizing function of $\sigma(X)$. Let us denote the supporting point by $Y$ which, in the case of MDS, is a $n \times p$ matrix of configurations. Similar to (\ref{eq:Bmat}) we define
+\begin{equation}
+\label{eq:Bymat}
+B(Y) = \sum_{i<j} w_{ij} s_{ij}(Y)A_{ij}
+\end{equation}
+with
+\[
+s_{ij}(Y)=\begin{cases}\delta_{ij}/d_{ij}(Y)&\text{ if }d_{ij}(Y)>0,\\
+0&\text{ if }d_{ij}(Y)=0.
+\end{cases}
+\]
+The Cauchy-Schwartz inequality implies that for all pairs of configurations X and Y, we have $\rho(X) \geq \mathbf{tr}\ X'B(Y)Y$. Thus we minorize the convex function $\rho(X)$ with a linear function. This gives us a majorization of \emph{stress}
+\begin{align}
+\label{eq:stdectr}
+\sigma(X) &= 1 + \mathbf{tr}\ X'VX - 2\mathbf{tr} X'B(X)X \nonumber \\
+& \leq 1 + \mathbf{tr}\ X'VX - 2\mathbf{tr}\ X'B(Y)Y = \tau(X,Y).
+\end{align}
+Obviously, $\tau(X,Y)$ is a (simple) quadratic function in $X$ which majorizes stress. Finding its minimum analytically involves
+\begin{equation}
+\frac{\partial \tau(X,Y)}{\partial X} = 2VX - 2B(Y)Y = \mathbf{0}.
+\end{equation}
+To solve this equation system we use the Moore-Penrose inverse $V^+ = (V + n^{-1}\boldsymbol{11}')^{-1}-n^{-1}\boldsymbol{11}'$ which leads to 
+\begin{equation}
+\overline{X} = V^+ B(Y)Y.
+\end{equation}
+This is known as the Guttman transform \citep{gu} of a configuration. Note that if $w_{ij}=1$ for all $i\not= j$ we have $V=2n(I-n^{-1}\boldsymbol{11}')$ and the Guttman transform simply becomes $\overline{X} = n^{-1}B(Y)Y$. 
+
+Since majorization is an iterative procedure, in step $t=0$ we set $Y:=X^{(0)}$ where $X^{(0)}$ is a start configuration. Within each iteration $t$ we compute $\overline{X}^{(t)}$ which, for simple SMACOF, gives us the update $X^{(t)}$. Now the stress $\sigma(X^{(t)})$ can be calculated and we stop iterating if $\sigma(X^{(t)}) - \sigma(X^{(t-1)}) < \epsilon$ or a certain iteration limit is reached. Majorization guarantees a series of non-increasing stress values with a linear convergence rate \citep{delcon}. As shown in \citet{Groenen+Heiser:1996} local minima are more likely to occur in low-dimensional solutions (especially unidimensional scaling). For high-dimensional solutions local minima are rather unlikely whereas  fulldimensional scaling has no local minimum problem. 
+
+%------------------------ END SIMPLE SMACOF AND MAJORIZATION --------------------------
+
+
+
+\subsection{SMACOF with restrictions on the configurations}
+\label{sec:restr}
+\citet{dlh80} introduced a SMACOF version with restrictions on the configuration matrix $X$ which \citet[][Chapter 10]{borg-groenen-2} call \emph{confirmatory MDS with external constraints}. The basic idea behind this approach is that the researcher has some substantive underlying theory regarding a decomposition of the dissimilarities. We start with the simplest restriction in terms of a linear combination, show the majorization solution and then present some additional possibilities for constraints. The linear restriction in its basic form is
+\begin{equation}
+X = ZC
+\end{equation}
+where $Z$ is a known predictor matrix of dimension $n \times q$ ($q \geq p$). The predictors can be numeric in terms of external covariates or one can specify an ANOVA-like design matrix. $C$ is a $q \times p$ matrix of regression weights to be estimated. 
+
+The optimization problem is basically the same as in the former section: We minimize stress as given in (\ref{eq:stress}) with respect to $C$. The expressions for $V$ and $B$ as well as $\tau(X,Y)$ can be derived analogous to simple SMACOF and, correspondingly, the Guttman transform is $\overline{X} = V^+B(Y)Y$. It follows that Equation \ref{eq:stdectr} can be rewritten as \citep[see][Theorem 1]{dlh80}
+\begin{align}
+\label{eq:stdectr2}
+\tau(X,Y) &= 1 + \mathbf{tr} X'VX - 2\mathbf{tr}X'V\overline{X} \nonumber \\
+&= 1 + \mathbf{tr} (X-\overline{X})'V(X-\overline{X})-\mathbf{tr}\overline{X}'V\overline{X}
+\end{align}
+where the second term denotes the \emph{lack of confirmation fit} and becomes zero if no restrictions are imposed. Thus, in each iteration $t$ of the majorization algorithm we first compute the Guttman transform \(\overline{X}^{(t)}\) of our current best configuration, and then solve the \emph{configuration projection problem} of the form
+\begin{equation}
+\label{eq:cpp}
+\min_{X\in\mathcal{S}}\mathbf{tr}\ \left(X-\overline{X}^{(t)}\right)'V\left(X-\overline{X}^{(t)}\right).
+\end{equation}
+In other words, we project  \(\overline{X}^{(t)}\) on the manifold of constrained configurations. With linear restrictions this projection gives us the update 
+\begin{equation}
+\label{eq:linup}
+X^{(t)}=ZC^{(t)}=Z(Z'VZ)^{-1}Z'V\overline{X}^{(t)}.
+\end{equation}
+with $\sigma \left(X^{(t+1)}\right)<\sigma \left(X^{(t)}\right)$. 
+
+Basically, the \pkg{smacof} package allows the user to implement arbitrary configuration restrictions by specifying a corresponding update function for $X$ as given in (\ref{eq:linup}). Nevertheless, we provide additional restriction possibilities which are commonly used. Besides the classical linear restriction described above, for the special case of number of predictors equal number of dimensions, i.e. $q=p$, the square matrix $C$ can be restricted to be diagonal: $C=\mathbf{diag}(c_{11}, c_{22},\ldots,c_{ss},\ldots,c_{qq})$. For each column of $Z$ we suppose $\mathbf{z}_s'V \mathbf{z}_s=1$. For majorization, let $\overline{\mathbf{x}}_s^{(t)}$ be the $s$-th column of the Guttman transformed matrix $\overline{X}^{(t)}$ in iteration $t$, the corresponding $C$ diagonal update is given by
+\begin{equation}
+c_{ss}^{(t)}=\mathbf{z}_s'V\overline{\mathbf{x}}_s^{(t)}.
+\end{equation}
+Combining unrestricted, linearly restricted and the diagonally restricted models leads to a framework of a partially restricted $X$. \citet{dlh80} use the block notation 
+\begin{equation}
+X=\begin{bmatrix} X_1 & ZC_1 & C_2 \end{bmatrix}
+\end{equation}
+in which $X_1$ is the unrestricted part and of dimension $n \times q_1$. $ZC_1$ is the linearly restricted part of dimension $n \times q_2$ and $C_2$ is a diagonal matrix of order $n$ which can be either present or absent. The corresponding models are commonly coded as triples $(q_1,q_2,q_3)$ denoting the number of dimensions contributed by each component: $q_1$ is the number of unrestricted dimensions, $q_2$ the number of linearly restricted dimensions, and $q_3$ is either zero or one, depending on presence or absence of the diagonal matrix $C_2$. An important special case and the one which is implemented also in \pkg{smacof} is $(q,0,1)$ which is a $q$-dimensional MDS model with uniquenesses \citep{bwmds}. 
+
+Further specifications of this partially restricted framework can be found in \citet{dlh80} and additional elaborations in \citet[][Chapter 10]{borg-groenen-2}.  
+
+
+\subsection{SMACOF for individual differences}
+The last version of our basic SMACOF routines is SMACOF for individual differences (also known as three-way SMACOF). It is a somewhat natural extension of the classical MDS setting from Section \ref{sec:ssmacof} in terms of $k = 1, \ldots,K$ separate $n \times n$ symmetric dissimilarty matrices $\Delta_k$. A typical situation is, e.g., that we have $K$ judges and each of them produces a dissimilarity matrix or that we have $K$ replications on some MDS data. The very classical approach for MDS computation on such structures is INDSCAL \citep[INdividual Differences SCaling;][]{carcha}. An elaborated overview of additional algorithms is given in \citet[][Chapter 22]{borg-groenen-2}.
+
+We will focus on the majorization solution and collect the $\Delta_k$ matrices in a block-diagonal structure
+\begin{equation*} 
+\label{eq:Dblock}
+\Delta^\ast = \begin{bmatrix} \Delta_{1} & & & \\ & \Delta_{2} & & \\ & & \ddots & \\ & & & \Delta_{K} \end{bmatrix}.
+\end{equation*}
+The corresponding observed distances are denoted by $\delta_{ij,k}$. Similarly, we merge the resulting configurations $X_k$ into the configuration supermatrix
+\begin{equation*} 
+\label{eq:Xblock}
+X^\ast = \begin{bmatrix} X_1 \\ X_2 \\ \vdots \\ X_{K} \end{bmatrix}.
+\end{equation*}
+Correspondingly, $V^\ast$ is block diagonal and one block consists of the submatrix $V_k$ based on the configuration weights $W_k$ and is computed according to Equation \ref{eq:Vmat}. Based on these weight matrices $W_k$ with elements $w_{ij,k}$, the total stress to be minimized, consisting of the single $\sigma(X_k)$'s, can be written as
+\begin{equation}
+\label{eq:IDstress}
+\sigma(X^\ast)=\sum_{k=1}^K \sum_{i<j} w_{ij,k}(\delta_{ij,k}-d_{ij}(X_k))^2.
+\end{equation}
+
+In individual difference models there is an additional issue regarding the distance computations. We compute a configuration matrix $X_k$ for each individual, but we constrain the $X_k$ by only allowing differential weighting of each dimension by each individual.
+If we think of a linear decomposition of $X_k$, as described in the former section, we have 
+\begin{equation}
+\label{eq:linres}
+X_k = ZC_k
+\end{equation}
+with the $C_k$ diagonal matrices of order $p$. The weighted Euclidean distance can be expressed as
+\begin{equation}
+d_{ij}(ZC_k) = \sqrt{\sum_{s=1}^p (c_{ss,k}z_{is} - c_{ss,k}z_{js})^2}=\sqrt{\sum_{s=1}^p c_{ss,k}^2(z_{is} - z_{js})^2}. 
+\end{equation}
+$Z$ is the $n\times p$ matrix of coordinates of the so called \emph{group stimulus space} or \emph{common space}. If $C_k=I$ for all $k$ we get the so called \emph{identity model}. 
+
+Regarding majorization, we have to minimize stress in (\ref{eq:IDstress}) with respect to $Z$ and $C_k$. The optimization procedure is basically the same as in the former section. Within each iteration $t$ we compute the Guttman transform $\overline{X}^{\ast (t)}$. Analogous to Equation \ref{eq:cpp} we have to solve the configuration projection problem 
+\begin{equation}
+\label{eq:cpp2}
+\min_{X\in\mathcal{S}}\mathbf{tr}\ \left(X-\overline{X}^{\ast(t)}\right)'V^{\ast}\left(X-\overline{X}^{\ast(t)}\right).
+\end{equation}
+over $X$ to obtain the update $X^{(t)}$. 
+
+In brief, we present three extensions of the classical INDSCAL approach above. \citet{carcha} extend differential weighting by means of the \emph{generalized Euclidean distance}, allowing the $C_k$ in
+(\ref{eq:linres}) to be general, and not necessarily diagonal. This means
+\begin{equation}
+\label{eq:gdist}
+d_{ij}(X_k)=\sqrt{\sum_{s=1}^p \sum_{s'=1}^p(x_{is}-x_{js})h_{ss',k}(x_{is'}-x_{js'})},
+\end{equation}
+with $H_k=C_k^{}C_k'$. This is known as the IDIOSCAL (Individual DIfferences in Orientation SCALing) model. For identification purposes $H_k$ can be decomposed in various ways. The spectral decomposition (\emph{Carroll-Chang decomposition}) leads to
+\begin{equation}
+H_k = U_k\Lambda U_k'
+\end{equation}
+where $U_kU_k'=I$ and $\Lambda_k = \textrm{diag}(\lambda_{ij})$. The \emph{Tucker-Harshman decomposition} implies 
+\begin{equation}
+H_k = D_k R_k D_k
+\end{equation} 
+where $D_k$ is a diagonal matrix of standard deviations and $R_i$ a correlation matrix. This is often combined with the normalization 
+\begin{equation}
+\frac{1}{K} \sum_{k=1}^K H_k = I
+\end{equation} 
+proposed by \citet{Schoenemann:1972}. The models currently implemented in \pkg{smacof} are IDIOSCAL, INDSCAL with $C_k$ restricted to be diagonal, and the identity model with $C_k = I$. Additional models can be found in \citet[][Chapter 10]{Cox+Cox:2001}.   
+
+%--------------- end 3-way smacof -----------------
+
+
+\subsection{SMACOF for rectangular dissimilarity matrices}
+\label{sec:rect}
+The prototypical case for rectangular MDS input matrices is that we have $n_1$ individuals or judges which rate $n_2$ objects or stimuli. Therefore, MDS becomes a model for preferential choice which is commonly referred to as an \emph{unfolding model}. The basic idea is that the ratings and the judges are represented on the same scale and for each judge, the corresponding line can be folded together at the judge's point and his original rankings are observed \citep[][p.165]{Cox+Cox:2001}. This principle of scaling is sometimes denoted as \emph{Coombs scaling} \citep{Coombs:1950}. Detailed explanations on various unfolding techniques can be found in \citet[][Chapters 14-16]{borg-groenen-2}. We will limit our explanations to the SMACOF version of metric unfolding. 
+
+Let us assume an observed dissimilarity (preference) matrix $\Delta$ of dimension $n_1 \times n_2$ with elements $\delta_{ij}$. For rectangular SMACOF the resulting configuration matrix $X$ is partitioned into two matrices: $X_1$ of dimension $n_1 \times p$ as the individual's or judge's configuration, and $X_2$ of dimension $n_2 \times p$ as the object's configuration matrix. Consequently, stress can be represented as 
+\begin{equation}
+\label{eq:rectstress}
+\sigma(X_1,X_2)=\sum_{i=1}^{n_1}\sum_{j=1}^{n_2} w_{ij}(\delta_{ij}-d_{ij}(X_1,X_2))^2
+\end{equation}
+with
+\begin{equation}
+d_{ij}(X_1,X_2)=\sqrt{\sum_{s=1}^p(x_{1is}-x_{2js})^2}.
+\end{equation}
+Let $X$ be the $(n_1 + n_2) \times p$ joint matrix of configurations. It follows that we can accomplish the same simple SMACOF representation as in (\ref{eq:strdec}). The weights $w_{ij}$ are collected into the $n_1 \times n_2$ matrix $W_{12}$ of weights having the same properties as in the former section. The reason we use $W_{12}$ is that, due to the decomposition of $X$, $W$ has the following block structure:
+\begin{equation*} 
+\label{eq:Wblmat}
+W = \begin{bmatrix} W_{11} & W_{12} \\ W_{12}' & W_{22} \\ \end{bmatrix} = \begin{bmatrix} 0 & W_{12} \\ W_{12}' & 0 \\ \end{bmatrix}
+\end{equation*}
+The input data structure $X$ does not allow for within-sets proximities. Therefore, $W_{11}$ and $W_{22}$ have 0 entries. 
+
+$V$ is computed following Equation \ref{eq:Vmat} and $B(X)$ following Equation \ref{eq:Bmat}. Based on the decomposition of $X$, $V$ can be partitioned into
+\begin{equation*} 
+\label{eq:Vblmat}
+V = \begin{bmatrix} V_{11} & V_{12} \\ V_{12}' & V_{22} \\ \end{bmatrix},
+\end{equation*}
+and $B(X)$ into
+\begin{equation*} 
+B(X) = \begin{bmatrix} B_{11}(X) & B_{12}(X) \\ B_{12}(X)' & B_{22}(X) \\ \end{bmatrix}.
+\end{equation*}
+$B_{11}(X)$ is a $n_1 \times n_1$ diagonal matrix with minus the row sums of $B_{12}(X)$ in the diagonal. Correspondingly, $B_{22}$ is $n_2 \times n_2$ with minus the column sums of $B_{12}(X)$ on the diagonal. 
+
+To apply majorization we need to define the supporting matrix $Y$ which for rectangular SMACOF consists of the two blocks $Y_1$ and $Y_2$. In analogy to $B(X)$ the block structure
+\begin{equation*} 
+B(Y) = \begin{bmatrix} B_{11}(Y) & B_{12}(Y) \\ B_{12}(Y)' & B_{22}(Y) \\ \end{bmatrix}
+\end{equation*}
+results. The sandwich inequality is the same as in (\ref{eq:stdectr}). To optimize the majorizing function we compute the Moore-Penrose inverse $V^+$ and the updating formula (Guttman transform) within each iteration $t$ is again $\overline{X}^{(t)} = V^+B(Y)Y$.
+It should be mentioned that because of the special structure of $W$ the computation of the Moore-Penrose inverse simplifies, especially in the case where the (off-diagonal) weights are all equal
+
+%Jan's solution
+% \[
+% \begin{bmatrix}R_{B(X,Y)}&-B(X,Y)\\-B'(X,Y)&C_{B(X,Y)}\end{bmatrix}\begin{bmatrix}X\\Y\end{bmatrix}=\begin{bmatrix}R_W&-W\\-W'&C_W\end{bmatrix}\begin{bmatrix}\overline{X}\\\overline{Y}\end{bmatrix}
+% \]
+% \begin{align*}
+% X^\star&=R_{B(X,Y)}X-B(X,Y)Y,\\
+% Y^\star&=C_{B(X,Y)}Y-B'(X,Y)X.
+% \end{align*}
+% \[
+% (C_W-W'R_W^{-1}W)\overline{Y}=Y^\star+W'R_W^{-1}X^\star.
+% \]
+% \[
+% \overline{X}=R_W^{-1}X^\star+R_W^{-1}W\overline{Y}.
+% \]
+
+
+%----------- Nonmetric smacof -------------
+
+\section{Nonmetric SMACOF variants}
+\label{sec:nmsmacof}
+Looking at various loss functions as for instance given in (\ref{eq:stress}), (\ref{eq:IDstress}), and (\ref{eq:rectstress}), we see that we do not have any transformation on the dissimilarities $\delta_{ij}$. If the dissimilarities are on an ordinal scale, we can think of transformations that preserve this rank order. If such a transformation $f$ obeys only the monotonicity constraint $\delta_{ij} < \delta_{i'j'} \Rightarrow f(\delta_{ij}) < f(\delta_{i'j'})$, it is referred to as \emph{nonmetric}. 
+
+The resulting $\hat d_{ij} = f(\delta_{ij})$ are commonly denoted as \emph{disparities} which have to be chosen in an optimal way. Straightforwardly, the stress function (for the symmetric case) becomes 
+\begin{equation}
+\label{eq:nmstress}
+\sigma(X,\widehat D)=\sum_{i<j} w_{ij}(\hat d_{ij}-d_{ij}(X))^2
+\end{equation} 
+which we have to minimize with respect to the configurations $X$ and, simultaneously, with respect to the disparity matrix $\widehat D$. Regarding majorization, there is one additional step after each Guttman transform in iteration $t$: The computation of optimal $\hat{d_{ij}}^{(t)}$ (with subsequent normalization) such that the monotonicity constraint is fulfilled. If the order of $d_{ij}(X^{(t)})$ is the same as the order of $\hat{d_{ij}}^{(t)}$, the optimal update is clearly $\hat{d_{ij}}^{(t)} = d_{ij}(X^{(t)})$. If the orders differ, the optimal update is found by \emph{monotone regression} which we will discuss in brief below. 
+
+Before that, we have to consider the case of ties in the observed ordinal dissimilarity matrix $\Delta$, i.e., the case of $\delta_{ij} = \delta_{i'j'}$. Having this case, we distinguish between three approaches: the \emph{primary approach} does not necessarily require that $\hat d_{ij} = \hat d_{i'j'}$, whereas the (more restrictive) \emph{secondary approach} does. An even less restrictive version is the tertiary approach from \citet{krusties}, in which we merely requite that the means of the tie-blocks are in the correct order. More details can be found in \citet{Cox+Cox:2001}.
+
+When solving the monotone (or isotonic) regression problem in step $t$, one particular tie approach has to be taken into account. In MDS literature this problem is referred to as \emph{primary monotone least squares regression} and \pkg{smacof} solves it by means of the \emph{pooled-adjacent-violators algorithm} \citep[PAVA,][]{Ayer+Brunk+Ewing+Reid+Silverman:1955, bbbb}. This package performs monotone regression using weighted means (i.e., weighted with elements $w_{ij}$). 
+
+
+%------------------------------------ END PLAIN SMACOF ----------------------------------------------
+
+
+\section{Extended SMACOF: Quadratic surfaces}
+\label{sec:smacofQ}
+The fact that quadratic surfaces frequently show up empirically leads to some interesting technical and methodological problems. In some cases it may be appropriate to require that the points computed by MDS are indeed located exactly on some parametric surface. If we are measuring distances between cities on earth, for example, an exact spherical or elliptical representation of the cities makes perfect sense~\citep{coxcoxs}. Furthermore, it may be appropriate for these nonlinear configurations to measure distance as the shortest geodesic on the non-linear manifold. Again, using the earth as an example, the Euclidean distance, which goes through the earth, may not be as relevant as the geodesic distance measured over the surface of the earth. In addition, since a sphere in three dimensions is really two-dimensional, we could look for ways to portray non-linear structures in higher dimensions locally faithfully in fewer dimensions. This is basically the classical problem of cartography, in which we compute a suitable projection of the surface of the earth on the plane.
+
+Much more recently, the problem of finding the best MDS representation with points on a sphere came up in computer vision. Ron Kimmel and his group at the Technion in Haifa have published a number of papers in which approximate geodetic distances along arbitrary surfaces are used in MDS with great-circle distances along a sphere. The two-dimensional spherical coordinates are then used to flatten the sphere. A representative paper is~\citet{elad}. Nonlinear methods for dimensionality reduction are described in \citet{Roweis+Saul:2000} and \citet{Tenenbaum+deSilva+Langford:2000}. 
+
+\subsection{Basic formulations for MDS-Q}
+As mentioned above, in this section we are interested in the case in which the points in the configuration are constrained to lie on a quadratic surface in $\mathbb{R}^p$. In $\mathbb{R}^2$, important special cases are a circle, ellipse, hyperbola, and parabola; in $\mathbb{R}^3$, corresponding special cases are a sphere and an ellipsoid.
+
+We call the technique of placing the points on the MDS with quadratic constraints MDS-Q. \citet{borg-groenen-2} call this type of MDS \emph{weakly constrained MDS} since the external quadratic restrictions are not necessarily forced. In the most general form of MDS-Q the vector of configurations $\mathbf{x}_i$, each of length $p$, must satisfy
+\begin{equation}
+\mathbf{x}_i'\Lambda \mathbf{x}_i^{}+2\mathbf{x}_i'\boldsymbol{\beta}+\gamma=0,
+\end{equation}
+for some $p\times p$ matrix $\Lambda$, some $p$-element vector $\boldsymbol{\beta}$, and some constant $\gamma$. Because of the invariance of the distance function under translations we can put the center of the surface in the origin. And because distance is invariant under rotation, we can also require, without loss of generality, that \(\Lambda\) is diagonal. This covers conics (ellipse, hyperbola, parabola) in \(\mathbb{R}^2\), and the various kinds of ellipsoids, hyperboloids, paraboloids, and cylinders in \(\mathbb{R}^3\). In the case of ellipsoids and hyperboloids we can choose \(\beta=0\) and \(\gamma=-1\), such that the constraints become $\mathbf{x}_i'\Lambda \mathbf{x}_i^{}=1$. For ellipsoids, the matrix \(\Lambda\) is positive semi-definite which means that we can also write
+\begin{equation}
+\label{E:r1}
+\mathbf{x}_i=\Lambda^{1/2}\mathbf{z}_i,\text{ where }\|\mathbf{z}_i\|=1\text{ for all }i.
+\end{equation}
+And, of course, spheres are ellipses in which the matrix \(\Lambda\) is scalar, i.e. $\Lambda=\lambda I$. 
+
+
+\subsection{Geodesic distances on quadratic surfaces}
+\label{sec:geodesic}
+Analogously to simple MDS in Section \ref{sec:ssmacof}, we want to find configurations $X$ such that $d_{ij}(X)\approx\delta_{ij}$. Having a quadratic surface we can use the Euclidean distance $d_{ij}(X)$. Alternatively, we can also think of using \emph{geodesic distances} which leads to geodesic MDS-Q. In this case, again, the points are required to lie on a quadratic surface, but now we define distance to be the length of the shortest geodesic along the surface.
+
+In the simple case of a sphere with radius $\lambda$ these are commonly referred to as \emph{great-circle distances}. The metric embedding problem for spherical space is discussed extensively by~\citet[Chapter VII]{blumenthal}.
+Define
+\begin{equation}
+\label{E:gcd1}
+\breve{d}_{ij}(X)=\lambda\ \text{arccos}\left(\frac{\mathbf{x}_i'\mathbf{x}_j^{}}{\lambda^2}\right)
+\end{equation}
+with \(\breve{d}_{ij}(X)\) as the great-circle distance between the points measured along the sphere. 
+Spherical distance is monotonic with Euclidean distance. The two distance scales are quite different at the higher end, because Euclidean distance between two points on the sphere is bounded above by \(2\lambda\), while spherical distance is bounded by \(2\lambda\pi\). If points are close together the two distances are, of course, approximately equal.
+
+Unfortunately, matters become more complicated if we go from the sphere to the ellipsoid. In $\mathbb{R}^2$ computing the length of an elliptical arc means evaluating an incomplete elliptic integral of the second kind. Suppose the ellipse is $\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$. The length of arc from point $(0,1)$ to point $(a\sin\theta,b\cos\theta)$, with
+$0\leq\theta\leq\frac12\pi$, is 
+\begin{equation}
+\breve{d}(\theta)=\int_0^\theta\sqrt{a^2\sin^2 t+b^2\cos^2 t}dt.
+\end{equation}
+Arc length distances between arbitrary points on the ellipse can be computed by adding and subtracting integral terms of this form. Distance along the ellipse is still monotonic with Euclidean distance, but the relationship is no longer simple.
+
+For a parabola \(y=\frac{x^2}{a}\) the situation is somewhat simpler because we can measure along the horizontal axis. We find
+\begin{align*}
+\breve{d}(x_0,x_1)&=\frac{1}{2a}\int_{2x_0}^{2x_1}\sqrt{a^2+u^2}du=\\
+&=\left.\frac{u}{4a}\sqrt{a^2+u^2}+\frac14 a\log(u+\sqrt{a^2+u^2})\right|_{2x_0}^{2x_1},
+\end{align*}
+and thus the integral can be evaluated in closed form.
+
+Computing geodesics on the ellipsoid in $\mathbb{R}^3$ is even more complicated than the ellipse. Since the work of Jacobi and Weierstrass we know what the geodesics on ellipsoids look like, and we know how to compute them, but the analytic expressions are complicated
+and difficult to work with in an MDS context~\citep{knoerrer,tabanov, perelomov}. In geodesy there are many programs easily available to do the computations, but for now we have found no easy way to fit geodesics on ellipsoids with MDS. The same thing is true for higher dimensions, and for hyperboloids and paraboloids.
+
+Summarizing, it looks like MDS-Q may be feasible for any dimension and for any quadratic surface. Geodesic MDS-Q, however, seems limited for now to spheres in any dimension, with the possible exception of ellipses and parabolas in \(\mathbb{R}^2\). 
+ 
+
+\subsection{Primal methods for MDS-Q}
+There are several strategies for fitting MDS-Q. The package \pkg{smacof} allows for the following approaches: \emph{Primal methods}, in which the constraints are incorporated in parametric form directly into the loss function, and \emph{dual methods}, where constraints are imposed at convergence by using penalty or Lagrangian terms. In this section we will focus on the primal method.
+
+We start with primal gradient projection and how this can be solved using majorization. The constraints~\eqref{E:r1} lead to the problem of minimizing $\mathbf{tr}\ (\lambda Z-Y)'V(\lambda Z-Y)$ over all scalars $\lambda$ and over all $Z$ with $\mathbf{diag}\ ZZ'=I$. The optimum $\lambda$ for given $Z$ is
+\begin{equation}
+ \hat\lambda=\frac{\mathbf{tr}\ Y'VZ}{\mathbf{tr}\ Z'VZ},
+\end{equation}
+and the problem we need to solve is equivalent to the maximization of
+\begin{equation}
+\rho(Z)= \frac{[\mathbf{tr}\ Y'VZ]^2}{\mathbf{tr}\ Z'VZ}.
+\end{equation}
+
+In order to maximize the function $\rho(Z)$ we use the fractional programming technique of~\citet{dinkelbach}. Suppose $\tilde Z$ is our current best configuration. Define
+\begin{equation}
+ \eta(Z,\tilde Z)=[\mathbf{tr}\ Y'VZ]^2-\rho(\tilde Z)\mathbf{tr}\ Z'VZ.
+\end{equation}
+If we find \(Z^+\) such that \(\eta(Z^+,\tilde Z)>\eta(\tilde Z,\tilde Z)=0\), then \(\rho(Z^+)>\rho(\tilde Z)\). Thus for global convergence it is sufficient to increase \(\eta(Z,\tilde Z)\).
+ 
+We increase \(\eta(Z,\tilde Z)\) by \emph{block relaxation}~\citep{deLeeuw:1994}, i.e. we cycle through all $\mathbf{z}_i$, optimizing over each of the $\mathbf{z}_i$ in turn, while keeping the others fixed at their current best values. Various different strategies are possible. We can perform a number of cycles updating \(Z\), while keeping \(\rho(\tilde Z)\) fixed at its current value. Or we could compute a new \(\rho(\tilde Z)\) after computing the update of each single row $\mathbf{z}_i$ of \(Z\). It is unclear which strategy is best, and some numerical experimentation will be useful. Expanding we find 
+\begin{equation}
+\eta(Z,\tilde Z)=\mathbf{z}_i'\mathbf{u}_i^{}\mathbf{u}_i'\mathbf{z}_i^{}+2\mathbf{z}_i'\mathbf{h}_i^{}+\text{ terms not depending on }\mathbf{z}_i, 
+\end{equation}
+where \(U=VY\) and
+\begin{equation}
+\mathbf{h}_i=\mathbf{u}_i\left(\sum_{j\not= i}^n\mathbf{u}_j'\mathbf{z}_j^{}\right)-\rho(\tilde Z)\sum_{j\not= i}^nv_{ij}\mathbf{z}_j.
+\end{equation}
+Differentiate and introduce a Lagrange multiplier \(\theta\) for the side condition $\mathbf{z}_i'\mathbf{z}_i^{}=1$. The stationary equations are 
+\begin{equation}
+ (u_i'z_i^{})u_i+h_i=\theta z_i.
+\end{equation}
+Premultiplying both sides by $\mathbf{z}_i'$ shows that if there are multiple solutions, we want the one with the largest value of \(\theta\). 
+ 
+The stationary equations have the solution $\mathbf{z}_i=-(\mathbf{u}_i^{}\mathbf{u}_i'-\theta I)^{-1}\mathbf{h}_i$. Thus if we define
+\begin{equation}
+ \mathcal{F}(\theta)=h_i'(u_i^{}u_i'-\theta I)^{-2}h_i
+\end{equation}
+we can find \(\theta\) by solving the equation \(\mathcal{F}(\theta)=1\). Such equations, often called \emph{secular equations}, have been studied systematically in great detail in numerical mathematics, possibly starting with~\citet{forsythegolub,spjotvoll}. There are excellent reviews of secular equation theory in~\citet{taoan} and of solvers in~\citet[Chapter 7]{cogoto}. 
+ 
+Since we are dealing with a simple special case, we can actually solve the secular equation quite simply. Define $\tau_i=\mathbf{u}_i'\mathbf{u}_i^{}$, the projector $P_i=\mathbf{u}_i^{}\mathbf{u}_i'/\tau_i$ and its orthogonal complement $Q_i=I-P_i$. The equation becomes
+\begin{equation}
+ \mathcal{F}(\theta)=\frac{p_i}{(\tau_i-\theta)^2}+\frac{q_i}{\theta^2}=1,
+\end{equation}
+where $p_i=\mathbf{h}_i'P_i^{}\mathbf{h}_i^{}$ and $q_i=\mathbf{h}_i'Q_i^{}\mathbf{h}_i^{}$. We can find the solutions by solving the quartic equation
+\begin{equation}\label{E:pol}
+\theta^2p_i+(\tau_i-\theta)^2q_i-\theta^2(\tau_i-\theta)^2
+=-\theta^4+2\tau_i\theta^3+(p_i+q_i-\tau_i^2)\theta^2-2\tau_iq_i\theta+\tau_i^2q_i=0
+\end{equation}
+for its largest real root.
+ 
+\begin{figure}[t]
+\begin{center}
+\includegraphics[width=90mm, height=90mm]{plotje.pdf}
+\caption{\label{fig:root}Root location}
+\end{center}
+\end{figure}
+ 
+This makes it possible to describe the behavior of the function \(\mathcal{F}\) and to show where the relevant roots are located. The plot in Figure \ref{fig:root} is typical. It has $\tau_i=1$. The function is always positive, it has a horizontal asymptote at zero and two vertical asymptotes, one at zero and the other at $\tau_i$. Between 0 and $\tau_i$ it has its unique stationary value, a local minimum, at
+\begin{equation}
+ \hat\theta=\frac{\sqrt[3]{q_i}}{\sqrt[3]{q_i}+\sqrt[3]{p_i}}\tau_i,
+\end{equation}
+equal to
+\begin{equation}
+ \mathcal{F}(\hat\theta)=\frac{(\sqrt[3]{p_i}+\sqrt[3]{q_i})^3}{\tau_i^2}.
+\end{equation}
+Thus the equation $\mathcal{F}(\theta)=1$ has one negative root and one root larger than \(\tau_i\). There may or may not be two additional roots, depending on whether the value of the function at the local minimum is smaller than or larger than one. Correspondingly, the quartic~\eqref{E:pol} has either two real roots (and two complex conjugates) or four real roots (of which two could be equal).
+ 
+\subsection{Dual methods: CMDA}
+\label{sec:cmda}
+The dual method which is used in \pkg{smacof} is known as CMDA (Constrained/Confirmatory Monotone Distance Analysis). It was proposed by~\citet{borglin1,borglin2} and further discussed in \citet[Section 10.4]{borg-groenen-2}. The idea is to impose the restrictions directly on the distances and not on the configurations. This makes the method more specific to MDS. 
+ 
+For Euclidean MDS, with points constrained on a circle or a sphere, \citet{borglin1} introduce an extra point \(x_0\) into the MDS problem, and define the family of penalized loss functions
+\begin{equation}\label{E:bg}
+\sigma_\kappa(X)=\min_{\Delta\in\mathcal{D}_L}\sigma_L(X,\Delta)+\kappa\min_{\Delta\in\mathcal{D}_C}\sigma_C(X,\Delta)
+\end{equation}
+The whole set $\mathcal{D} = \mathcal{D}_L \cup \mathcal{D}_C$ consists of all non-negative and hollow symmetric matrices that satisfy the constraints. $\Delta \in \mathcal{D}_L$ is the observed dissimilarity matrix and $\Delta \in \mathcal{D}_L$ expresses the side constraints. In the case of the sphere, the side constraints are that \(x_0\) has equal distance to all other points, while the rest of the dissimilarities in $ \mathcal{D}_L$ are missing (i.e. have zero $w_{ij}$). Correspondingly, we have two stress functions $\sigma_L(X,\Delta)$ and $\sigma_C(X,\Delta)$. The non-negative quantity \(\kappa\) is a penalty parameter. If \(\kappa\rightarrow\infty\) the second term is forced to zero, and we minimize the first term under the conditions that the second term is zero, i.e. that the \(x_i\) are on a sphere with center at \(x_0\) and with radius \(\lambda\).
+  
+The CMDA approach has the advantage that it can be implemented quite simply by using the standard Euclidean MDS majorization method. It has the usual disadvantage that we have to select a penalty parameter, or a sequence of penalty parameters, in some way or another. Moreover the Hessian of \emph{stress} will become increasingly ill-conditioned for large penalties, and convergence can consequently be quite slow. 
+
+The majorization algorithm for the penalty function~\eqref{E:bg} uses the iterations
+\begin{equation}
+ X^{(k+1)}=(V+\kappa I)^{-1}(V\overline{X}^{(k)}+\kappa\tilde X^{(k)}),
+\end{equation}
+where $\tilde x_i^{(k)}=\lambda x_i^{(k)}/\|x_i^{(k)}\|$. For large \(\kappa\) this means
+\begin{equation}
+ X^{(k+1)}\approx\tilde X^{(k)}+\frac{1}{\kappa}V(\overline{X}^{(k)}-\tilde X^{(k)}),
+\end{equation}
+which indicates that convergence will tend to be slow.
+ 
+The stress functions for additional quadratic surfaces are the following. We know that an ellipse can be defined as the locus of all points that have equal sum of distances from two focal points. Focal points can be chosen on the horizontal axis, at equal distances from the origin. This means that we can fit an ellipse with CMDA by introducing two additional 
+points \(x_0\) and \(-x_0\) on the horizontal axis into our MDS problem, and minimize
+\begin{equation}\label{E:bg2}
+\sigma_\kappa(X,\lambda)=\sigma(X)+\kappa\sum_{i=1}^n(d(x_i,x_0)+d(x_i,-x_0)-\lambda)^2.
+\end{equation}
+ 
+The hyperbola is  the locus of all points that have equal difference of distances from two focal points. Thus, analogous to the case of the ellipse, we minimize
+\begin{equation}\label{E:bg3}
+\sigma_\kappa(X,\lambda)=\sigma(X)+\kappa\sum_{i=1}^n(|d(x_i,x_0)-d(x_i,-x_0)|-\lambda)^2.
+\end{equation}
+ 
+The parabola is the locus of all points that have
+equal distance to a line (the \emph{directrix}) and a point (the \emph{focal point}). The directrix can be chosen to be the horizontal axis. More generally, for any conic section, the distance to the focal point must be a constant multiple of the distance to the directrix. This multiple, the \emph{eccentricity}, is equal to one for the parabola, large than one for the hyperbola, and less than one for the ellipse. 
+ 
+Suppose \(x_0\) is the focal point, and \(\overline{x}_i\) is the projection of \(x_i\) on the horizontal axis. Then we must minimize
+\begin{equation}\label{E:bg4}
+\sigma_\kappa(X,\lambda)=\sigma(X)+\kappa\sum_{i=1}^n(d(x_i,x_0)-\lambda d(x_i,\overline{x}_i))^2.
+\end{equation}
+ 
+ 
+%-------------------------- package description -------------------------------------- 
+\section{The R package smacof}
+\label{sec:package}
+So far there does not exist a comprehensive \proglang{R} package for MDS. There are functions in \pkg{MASS} to perform classical MDS, Sammon mapping, and non-metric MDS. For the latter variant there are also some functionalities in \pkg{vegan} \citep{vegan:2007}, \pkg{labdsv} \citep{labdsv:2006}, \pkg{ecodist} \citep{ecodist:2007}, and \pkg{xgobi} \citep{xgobi:2005}. Individual differences MDS is implemented in the \pkg{SensoMineR} \citep{sensominer:2007} package. 
+
+In the current version of \pkg{smacof} ellipsoids, parabolas, hyperbolas as well as geodesic distances are not implemented. The main functions are \code{smacofSym()} for basic (symmetric) SMACOF, \code{smacofIndDiff()} for three-way data, \code{smacofConstraint()} for SMACOF with external constraints, and, finally, \code{smacofSphere.primal()} and \code{smacofSphere.dual()} for sphere projections. Print, summary, and residual S3 methods are provided. The two-dimensional plot options are the configuration plot, Shepard diagram, residual plot, and stress decomposition diagram. The configuration plot is provided for three-dimensional solutions as well (static and dynamic).  
+
+\subsection{SMACOF for Ekman's color data}
+\citet{ekman} presents similarities for 14 colors (wavelengths from 434 to 674 nm). The similarities are based on a rating by 31 subjects where each pair of colors was rated on a 5-point scale (0 = no similarity up to 4 = identical). After averaging, the similarities were divided by 4 such that they are within the unit interval. 
+
+We perform a two-dimensional basic SMACOF solution using \code{smacofSym()} which uses the classical scaling solution \citep{torgerson} as default starting configuration. Note that all SMACOF functions allow for user-specified starting configurations as well.
+
+We start with the transformation of similarities into dissimilarities by subtracting them from 1. Then we perform a two-dimensional basic SMACOF and a quadratic SMACOF, projecting the configurations on a sphere. Both computations are performed in a non-metric manner. 
+
+<<>>=
+library("smacof")
+data(ekman)
+ekman.d <- sim2diss(ekman, method = 1)
+res.basic <- smacofSym(ekman.d, metric = FALSE)
+res.sphere <- smacofSphere.primal(ekman.d, metric = FALSE)
+@
+
+<<eval = FALSE>>=
+plot(res.basic, main = "Configurations Basic SMACOF")
+plot(res.sphere, main = "Configurations Sphere SMACOF")
+@
+
+
+\begin{figure}
+\begin{center}
+\includegraphics[height=70mm, width=70mm]{ekmanbasic.pdf}
+\includegraphics[height=70mm, width=70mm]{ekmansphere.pdf} 
+\includegraphics[height=14mm, width=95mm]{spectrum.png}
+\caption{\label{fig:ekman} Configuration plots and color wavelengths.}
+\end{center}
+\end{figure}
+
+The resulting configuration plots are given in Figure \ref{fig:ekman}. For the nonmetric basic SMACOF solution we see that the wavelength configurations are approximately circularly arranged. Starting with the lowest wavelength we see that the pairs 434-445 and 465-472 correspond to bluish, 490 to turqoise, the set of 504-555 to greenish, 584-610 to yellow-orange, and finally 628-674 to reddish. Since the color palette is commonly represented as a circle, it is somewhat natural to compute a two-dimensional (nonmetric) spherical SMACOF solution which can be found on the right-hand side of Figure \ref{fig:ekman}. Obviously, the configurations lie perfectly on a circle with a radius $\lambda=.0714$. 
+
+Now we try to evaluate the basic solution by comparing the smacof configuration to that obtained from other data. We can use the CIE Luv space \citep[see e.g.][]{Fairchild:2005} which is extensively used for applications such as computer graphics which deal with colored lights. It is based on human average color matching data and wavelength discrimination data and, thus, it is quite different than the Ekman judgments based on large color differences. Let us first obtain the Luv coordinates in \proglang{R}. First, we read-in the CIE XYZ 31 tristimulus values for an equal energy spectrum at the wavelengths used in the Ekman dataset from an online site. The last line in the code below adjusts these to equiluminance (a constant luminance plane).
+
+\begin{figure}[t]
+\begin{center}
+\includegraphics[height = 90mm, width = 90mm]{ekmanLuv.pdf}
+\caption{\label{fig:ekmanluv}Ekman configurations vs. Luv distances.}
+\end{center}
+\end{figure} 
+
+<<>>=
+wl <- c(434, 445, 465, 472, 490, 504, 537, 555, 584, 600, 610, 628, 651, 674)
+CIE31 <- read.table("http://cvision.ucsd.edu/database/data/cmfs/ciexyz31_1.txt", header = FALSE, sep = ",", colClasses = rep("numeric", 4), nrows = 471)
+names(CIE31) <- c("WL", "xbar", "ybar", "zbar")
+ekmanWL <- subset(CIE31, WL %in% wl)
+ekmanWL[, -1] <- ekmanWL[, -1]/ekmanWL[, "ybar"]
+@
+
+In the next step for any given wavelength we extract the distance to the next higher one from the final MDS configuration. We do the same thing for the Luv data:
+
+<<>>=
+ekman.mds.wld <- res.basic$confdiss[cumsum(c(1, 13:2))]
+require(grDevices)
+ekmanLuv <- convertColor(ekmanWL[, -1], "XYZ", "Luv")
+Luv.dist <- dist(ekmanLuv)
+Luv.wld <- Luv.dist[cumsum(c(1, 13:2))]
+@
+
+On the x-axis we plot the wavelengths and on the y-axis the distances to the subsequent one. 
+
+<<>>=
+plot(wl[-14], ekman.mds.wld, type = "b", ylim = c(0.05, 0.9), xlab = "wavelength", ylab = "distance", main = "Ekman MDS vs. Luv")
+lines(wl[-14], Luv.wld/400, col = "red", type = "b")
+legend(600, 0.9, c("Ekman", "Luv"), lty = 1, col = c("black", "red"))
+@
+
+Note that the division of the Luv distances by 400 is arbitrary. The result is given in Figure \ref{fig:ekmanluv}. It shows striking similarities between in the distances across different wavelengths. 
+ 
+\subsection{Breakfast rating for rectangular SMACOF}
+As a metric unfolding example we use the breakfast dataset from \citet{grerao} which is also analyzed in \citet[][Chapter 14]{borg-groenen-2}. 42 individuals were asked to order 15 breakfast items due to their preference. These items are: 
+\code{toast} = toast pop-up, \code{butoast} = buttered toast, \code{engmuff} = English muffin and margarine, \code{jdonut} = jelly donut, \code{cintoast} = cinnamon toast, \code{bluemuff} = blueberry muffin and margarine, \code{hrolls} = hard rolls and butter, \code{toastmarm} = toast and marmalade, \code{butoastj} = buttered toast and jelly, \code{toastmarg} = toast and margarine, \code{cinbun} = cinnamon bun, \code{danpastry} = Danish pastry, \code{gdonut} = glazed donut, \code{cofcake} = coffee cake, and \code{cornmuff} = corn muffin and butter. For this $42 \times 15$ matrix we compute a rectangular SMACOF solution. 
+
+<<>>=
+data(breakfast)
+res.rect <- smacofRect(breakfast, itmax = 1000)
+plot(res.rect, joint = TRUE, xlim = c(-10, 10))
+plot(res.rect, plot.type = "Shepard")
+@
+
+\begin{figure}
+\begin{center}
+\includegraphics[height=70mm, width=70mm]{jconfbfast.pdf}
+\includegraphics[height=70mm, width=70mm]{shepbfast.pdf} 
+\caption{\label{fig:breakfast}Joint configuration plot/Shepard diagram for breakfast data.}
+\end{center}
+\end{figure}
+
+The configuration plot on the left hand side in Figure \ref{fig:breakfast} generated by the method \code{plot.smacofR()} represents the coordinates of the breakfast types and the rater jointly. First, let us focus on the breakfast configurations. At the top and top-right we see a large toast cluster or, since hard rolls are there too, we could characterize it also as bread cluster. At the bottom we can identify a muffin cluster including the cinnamon toast. Moving more to the right the cinnamon bun and the coffee cake are grouped together. Finally, at the top-right corner the jelly and glazed donut form a donut cluster with the danish pastry close to them. 
+
+Examining the raters we see, from a general perspective, that the individuals lie pretty much in the center of the configuration plots. This is reasonable since each rater was supposed to rate each breakfast type on an ordinal level. An interesting group of individuals (raters 32, 36, 37, 39) appears in the toast cluster. Looking closer at their ratings in the data file, their preferences in general are very similar, and, of course, the toasts are among their first preferences.
+
+The Shepard diagram on the right-hand side in Figure \ref{fig:breakfast} represents the observed distances on the absciassae and the resulting configuration distances based on the final SMACOF solution on the ordinate. An isotonic regression is fitted through the corresponding pairs of observations. The Shepard diagram is useful for the goodness-of-fit examination of the results. 
+
+\subsection{Three-way SMACOF based on bread ratings}
+The data set we provide for three-way SMACOF is described in \citet{Bro:1998}. The raw data consist of ratings of 10 breads on 11 different attributes carried out by 8 raters. Note that the bread samples are pairwise replications: Each of the 5 different breads, which have a different salt content, was presented twice for rating. The attributes are bread odor, yeast odor, off-flavor, color, moisture, dough, salt taste, sweet taste, yeast taste, other taste, and total. First we fit an unconstrained solution followed by a model with identity restriction. 
+
+<<>>=
+data(bread)
+res.uc <- smacofIndDiff(bread)
+res.uc
+@
+
+<<>>=
+res.id <- smacofIndDiff(bread, constraint = "identity")
+res.id
+@
+
+<<>>=
+plot(res.uc, main = "Group Configurations Unconstrained", xlim = c(-1.2,1), ylim = c(-1.2,1))
+plot(res.id, main = "Group Configurations Identity", xlim = c(-1.2,1), ylim = c(-1.2,1))
+plot(res.uc, plot.type = "resplot", main = "Residuals Unconstrained", xlim = c(2,14), ylim = c(-3,3))
+plot(res.id, plot.type = "resplot", main = "Residuals Indentity", xlim = c(2,14), ylim = c(-3,3))
+@
+
+\begin{figure}[hbt]
+\begin{center}
+\includegraphics[height=70mm, width=70mm]{inddiffconfuc.pdf}
+\includegraphics[height=70mm, width=70mm]{inddiffconfid.pdf}
+\includegraphics[height=70mm, width=70mm]{inddiffresuc.pdf}
+\includegraphics[height=70mm, width=70mm]{inddiffresid.pdf}
+\caption{\label{fig:bread}Group configuration and residual plots for bread data.}
+\end{center}
+\end{figure}
+
+The identity restriction leads to the same configurations across the raters. The stress value for the identity solution is considerably higher than for the unconstrained solution. The unconstrained solution reflects nicely the bread replication pairs. Their configurations at the top of Figure \ref{fig:bread} are very close to each other. The residual plots on the bottom show a descending trend for both solutions: small distances are systematically overestimated, large distances are underestimated. Of course, the residuals for the unconstrained solution are in general smaller than those for the identity constrained. 
+
+
+\subsection{Constrained SMACOF on kinship data}
+As an example for SMACOF with external constraints we use a data set collected by \citet{Rosenberg+Kim:1975}. Based on their similarity, students sorted the following 15 kinship terms into groups: aunt, brother, cousin, daughter, father, granddaughter, grandfather, grandmother, grandson, mother, nephew, niece, sister, son, and uncle. Thus, the data set has some obvious "pairs" such as sister-brother, daughter-son, mother-father etc. 
+
+Based on this grouping they created a dissimilarity matrix according to the following rule: 1 if the objects were sorted in different groups, 0 for the same group. Based on these values we can compute the percentages of how often terms were not grouped together over all students \citep[see][p. 83]{borg-groenen-2}. 
+
+As external scales we have gender (male, female, missing), generation (two back, one back, same generation, one ahead, two ahead), and degree (first, second, etc.) of the kinship term. Using these external scales we fit a two-dimensional SMACOF solution with linear constraints and an ordinary smacof solution without covariates. 
+
+<<>>=
+data(kinshipdelta)
+data(kinshipscales)
+res.sym <- smacofSym(kinshipdelta)
+res.lin <- smacofConstraint(kinshipdelta, constraint = "linear", external = kinshipscales)
+@
+
+<<>>=
+plot(res.sym, main = "Configuration Plot SMACOF", xlim = c(-2,1.5), ylim = c(-2,1.5))
+plot(res.lin, main = "Configuration Plot SMACOF Constraint",xlim = c(-2,1.5), ylim = c(-2,1.5))
+plot(res.sym, plot.type = "stressplot", main = "Stress Decomposition SMACOF", xlim = c(0, 16), ylim = c(3, 12))
+plot(res.lin, plot.type = "stressplot", main = "Stress Decomposition SMACOF Constraint", xlim = c(0, 16), ylim = c(3, 12))
+@
+
+
+In Figure \ref{fig:kinship} we see clearly the effect of the external scale on the SMACOF solution. The left hand side, i.e. the ordinary SMACOF solution, shows the typical circular alignment of the objects. Especially in negative x-direction the natural pairs such as sister-brother, daughter-son, and mother-father are quite distant from each other. The stress decomposition charts show the proportions of each object to total stress.
+
+The plot for the constrained solution shows a far more consistent picture. All these natural pairs have almost the same x-coordinates. The distance in y-direction reflects a gender effect (females are always above males). Cousin is somewhat apart from the other star-like configurations. This makes sense since cousin, which is genderless (covariate gender is missing), consequently does not have any natural pair. 
+
+\begin{figure}[hbt]
+\begin{center}
+\includegraphics[height=70mm, width=70mm]{kinshipsym.pdf}
+\includegraphics[height=70mm, width=70mm]{kinshipconstr.pdf}
+\includegraphics[height=70mm, width=70mm]{kinshipstressu.pdf}
+\includegraphics[height=70mm, width=70mm]{kinshipstressr.pdf}
+\caption{\label{fig:kinship}Configuration plots without/with external scales.}
+\end{center}
+\end{figure}
+
+
+\subsection{3D spherical SMACOF}
+\citet{Cox+Cox:2001} took data from the New Geographical Digest in 1986 on which countries traded with other countries. For 20 countries the main trading partners are dichotomously scored (1 = trade performed, 0 = trade not performed). Based on this dichotomous matrix the dissimilarities are computed using the Jaccard coefficient. The most intuitive MDS approach is to project the resulting distances to a sphere which gives us a ``trading globe''. In this example we use the dual algorithm for spherical projection.  
+
+<<eval = FALSE>>=
+data(trading)
+res.sphere <- smacofSphere.dual(trading, ndim = 3)
+plot3d(res.sphere, plot.sphere = FALSE)
+@
+
+
+\begin{figure}[hbt]
+\begin{center}
+\includegraphics[height = 130mm, width=195mm]{globe.png}
+\caption{\label{fig:globe} 3D sphere projection of trading data.}
+\end{center}
+\end{figure}
+
+Note that if we apply the dual algorithm, the first row in the configuration object \code{res.sphere\$conf} corresponds to the center of the sphere. However, on the left circumference of the globe we have a cluster of Commonwealth Nations (New Zealand, Australia, Canada, India). China is somewhat separated which reflects its situation in 1986. For this time, the cluster of the communist governed countries USSR, Czechoslovakia, and Eastern Germany is also reasonable. Around the ``south pole'' we have Japan, USA, West Germany, and UK. 
+
+\section{Discussion}
+In this final section we will discuss some relations to other models as well as some future extensions of the package. The \pkg{homals} package \citep{deLeeuw+Mair:2007} allows for the computation of various Gifi models \citep{Gifi:1990}. \citet{meulpsy} incorporates the MDS approach into Gifi's optimal scaling model family. \citet{tyd_sstress} developed ALSCAL (Alternating Least Squares SCALing) for stress minimization can be regarded as an alternative to majorization. Note that Gifi mainly uses ALS (alternating least squares) to minimize the corresponding loss functions. Especially, by looking at the restricted models in  Section \ref{sec:restr} the similarity between SMACOF and the Gifi approach becomes obvious \citep[see also][p. 233]{borg-groenen-2}. A general discussion can be found also in \citet[][Chapter 11]{Cox+Cox:2001}.
+
+MDS is also related to correspondence analysis (CA) which, within the context of this special issue, is provided by the package \pkg{anacor}. CA is basically a two-mode technique, displaying row and column objects. From this point of view CA is related to the unfolding MDS, or, in our framework, to rectangular SMACOF from Section \ref{sec:rect}. 
+
+Similar to CA, so far the \pkg{smacof} package can only handle positive dissimilarities. In subsequent versions we will allow also for negative dissimilarities. Furthermore, projections onto ellipsoids, hyperbolas and parabolas will be possible. The formal groundwork was given in Section \ref{sec:cmda}. This also includes the implementation of geodesic distances from Section \ref{sec:geodesic}. Furthermore, we can think of implementing additional plot types as given in \citet{Chen+Chen:2000}.  
+
+Another issue is the speed of convergence of the majorization approach. Especially for large
+nonmetric problems the computational time can become quite extensive. \citet{Rosman:2008} and
+\citet{deLeeuw:2008, deLeeuw:2008b} give details on how to accelerate the majorization algorithm for MDS. The
+R code included in the reports by De Leeuw is developed for unrestricted metric scaling, but it
+can be applied to restricted and non-metric scaling as well. Boosting the algorithms with
+various of these accelerators would represent another improvement of the package. 
+
+\bibliography{smacof}
+\end{document}
+
+
+ 

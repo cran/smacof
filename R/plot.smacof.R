@@ -78,9 +78,8 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     if (missing(ylab)) ylab <- "Residuals" else ylab <- ylab
     resmat <- residuals(x)
 
-    fullres <- c(as.vector(x$confdiss), as.vector(resmat[lower.tri(resmat)])) 
-    if (missing(xlim)) xlim <- range(fullres)
-    if (missing(ylim)) ylim <- range(fullres)
+    if (missing(xlim)) xlim <- range(as.vector(x$confdiss))
+    if (missing(ylim)) ylim <- range(as.vector(resmat[lower.tri(resmat)]))
     
     plot(as.vector(x$confdiss), as.vector(resmat[lower.tri(resmat)]), main = main, type = "p",
          xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)

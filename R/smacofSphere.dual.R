@@ -10,6 +10,7 @@ smacofSphere.dual <- function(delta, penalty = 100, ndim = 2, weightmat = NULL,
  if ((is.matrix(diss)) || (is.data.frame(diss))) diss <- strucprep(diss)  #if data are provided as dissimilarity matrix
  p <- ndim
  n <- attr(diss,"Size")
+ nn <- n*(n-1)/2
  m <- length(diss)
 
  if (is.null(attr(diss, "Labels"))) attr(diss, "Labels") <- paste(1:n)
@@ -18,7 +19,7 @@ smacofSphere.dual <- function(delta, penalty = 100, ndim = 2, weightmat = NULL,
     wgths <- initWeights(diss)
  }  else  wgths <- weightmat
 
- dhat <- normDiss(diss,wgths)            #normalize dissimilarities
+ dhat <- normDissN(diss,wgths,1)            #normalize dissimilarities
  if (is.null(init)) x <- torgerson(sqrt(diss), p=p) else x <- init   # x as matrix with starting values
 
  mn <- c(1,rep(0,n))
@@ -55,7 +56,7 @@ smacofSphere.dual <- function(delta, penalty = 100, ndim = 2, weightmat = NULL,
 		if (ties=="primary") daux<-monregP(diss,e,wgths1)
 		if (ties=="secondary") daux<-monregS(diss,e,wgths1)
 		if (ties=="tertiary") daux<-monregT(diss,e,wgths1)
-		daux<-vecAsDist(daux); dhat1<-normDiss(daux,wgths1)
+		daux<-vecAsDist(daux); dhat1<-normDissN(daux,wgths1,1)
 		}
      
 	dhat2 <- mean(e[1:n])*wgths2
@@ -83,12 +84,20 @@ rownames(y) <- labels(diss)
 attr(dhat1, "Labels") <- labels(diss)
 attr(e, "Labels") <- labels(diss)
 
+
+snon <- snon/nn                   #stress normalization
+ssma <- ssma/nn
+ 
 if (metric) snon <- NULL          #no non-metric stress
 if (!metric) ssma <- NULL
 
+e.temp <- as.dist(as.matrix(e)[,-1][-1,])      #remove dummy vector
+dummyvec <- as.matrix(e)[,1][-1]
+confdiss <- normDissN(e.temp, wgths, 1)        #final normalization to n(n-1)/2
+
  
-result <- list(obsdiss1 = dhat1, obsdiss2 = dhat2, confdiss = e, conf = y, stress.m = ssma, stress.nm = snon,
-               ndim = p, model = "Spherical SMACOF (dual)", niter = itel, nobj = n, metric = metric, call = match.call())
+result <- list(obsdiss1 = dhat1, obsdiss2 = dhat2, confdiss = confdiss, conf = y, stress.m = ssma, stress.nm = snon,
+               ndim = p, dummyvec = dummyvec, model = "Spherical SMACOF (dual)", niter = itel, nobj = n, metric = metric, call = match.call())
 class(result) <- c("smacofSP", "smacof")
 result
 }

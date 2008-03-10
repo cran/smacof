@@ -19,6 +19,8 @@ smacofRect <- function(delta, ndim = 2, weightmat = NULL, init = NULL, verbose =
 
   itel <- 1
   delta <- ifelse(is.na(diss),0,diss)     #replace NA's by 0
+  #delta <- delta/sqrt(sum(w*delta^2))*sqrt(n*m)       #normalize dissimilarities
+  
   delta_plus <- ifelse(delta>=0,delta,0)  #delta decomposition (+)
   delta_min <- ifelse(delta<=0,-delta,0)  #delta decomposition (-) (if all >0 --> complete 0)
 
@@ -28,13 +30,18 @@ smacofRect <- function(delta, ndim = 2, weightmat = NULL, init = NULL, verbose =
   } else {
     e <- delta_plus^2
     e <- -0.5*(e-outer(rowSums(e)/m,colSums(e)/n,"+")+(sum(e)/(n*m)))
+    #e <- e/sqrt(sum(e^2))*sqrt(n*m) 
+    
     z <- svd(e,nu=p,nv=0)                 #SVD for e (pos. distances)
     x<-z$u                                #starting value for x
     y<-crossprod(e,x)                     #starting value for y
   }
 
   d <- distRect(x,y,reg)                  #n times m of reproduced diss
+  #d <- d/sqrt(sum(w*d^2))*sqrt(n*m)
   lold <- sum(w*(delta-d)^2)              #stress value
+  
+  #------------------- begin majorization -----------------------------
   repeat {
 	ww <- w*(1+(delta_min/d)) 
         wr <- rowSums(ww)
@@ -63,13 +70,15 @@ smacofRect <- function(delta, ndim = 2, weightmat = NULL, init = NULL, verbose =
 
         if (((lold-lnew) < eps) || (itel==itmax)) break() 
         
-	lold <- lnew                       #update stress
+	      lold <- lnew                       #update stress
         itel <- itel+1
   }
+  #-------------------- end majorization --------------------------
 
 colnames(y) <- colnames(x) <- paste("D",1:(dim(y)[2]),sep="")
 rownames(x) <- rownames(diss) <- rownames(d) <- rnames
-  
+
+ 
 #return configuration distances, row and column configurations, stress 
 result <- list(obsdiss = diss, confdiss = d, conf.row = x, conf.col = y, stress = lnew, 
                ndim = p, model = "Rectangular smacof", niter = itel, nind = n, nobj = m, metric = TRUE, call = match.call()) 

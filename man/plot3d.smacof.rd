@@ -14,13 +14,13 @@
 }
 \usage{
 \method{plot3d}{smacof}(x, plot.dim = c(1,2,3), sphere = TRUE, xlab, ylab, zlab, 
-col, main, bgpng = "particle.png", ax.grid = TRUE, sphere.rgl = TRUE,...)
+col, main, bgpng = NULL, ax.grid = TRUE, sphere.rgl = TRUE,...)
 
 \method{plot3d}{smacofR}(x, plot.dim = c(1,2,3), joint = FALSE, xlab, ylab, zlab, 
-col, main, bgpng = "particle.png", ax.grid = TRUE, sphere.rgl = TRUE,...)
+col, main, bgpng = NULL, ax.grid = TRUE, sphere.rgl = TRUE,...)
 
 \method{plot3d}{smacofID}(x, plot.dim = c(1,2,3), xlab, ylab, zlab, 
-col, main, bgpng = "particle.png", ax.grid = TRUE, sphere.rgl = TRUE,...)
+col, main, bgpng = NULL, ax.grid = TRUE, sphere.rgl = TRUE,...)
 
 \method{plot3dstatic}{smacof}(x, plot.dim = c(1,2,3), main, xlab, ylab, zlab, col, ...)
 
@@ -57,13 +57,13 @@ For \code{smacofIndDiff()} the configuration plot represents the group stimulus 
 ## 3D plot for spherical SMACOF
 data(trading)
 res <- smacofSphere.dual(trading, ndim = 3)
-##plot3d(res, plot.type = "confplot", sphere = TRUE, sphere.rgl = FALSE, bgpng = NULL)
+plot3d(res, plot.type = "confplot", sphere = TRUE, sphere.rgl = FALSE)
 plot3dstatic(res)
 
 ## Group stimulus space for rectangular SMACOF
 data(breakfast)
 res <- smacofRect(breakfast, ndim = 3)
-##plot3d(res, joint = TRUE)
+plot3d(res, joint = TRUE)
 
 }
 

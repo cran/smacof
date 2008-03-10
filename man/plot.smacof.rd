@@ -58,9 +58,8 @@ The configuration plot represents the group stimulus space (i.e., joint configur
 
 ## 2D plots for spherical SMACOF
 data(trading)
-res <- smacofSphere.dual(trading)
-plot(res, plot.type = "confplot", sphere = TRUE)
-plot(res, plot.type = "resplot")
+res <- smacofSym(trading)
+plot(res, plot.type = "confplot")
 plot(res, plot.type = "Shepard")
 plot(res, plot.type = "stressplot")
 

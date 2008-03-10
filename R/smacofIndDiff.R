@@ -23,6 +23,7 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
   if (!is.list(wgths)) wgths <- list(wgths)
   
   n <- attr(diss[[1]],"Size")
+  nn <- n*(n-1)/2
   m <- length(diss)
   itel <- 1
   
@@ -39,7 +40,7 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
   for (j in 1:m) {                              #initialize weights, V, norm d as lists
 	wr <- appendList(wr,vmat(wgths[[j]]))              
 	vr <- appendList(vr,myGenInv(wr[[j]]))
-	dh <- appendList(dh,normDissN(diss[[j]],wgths[[j]],m))
+	dh <- appendList(dh,normDissN(diss[[j]],wgths[[j]],1))
   }
   xr <-list()                                  #configurations as list
   sold <- sf1 <- sf2 <- 0                      #stress init
@@ -154,7 +155,7 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
 		if (ties=="primary") do <- monregP(ds,es,ws)
 		if (ties=="secondary") do <- monregS(ds,es,ws)
 		if (ties=="tertiary") do <- monregT(ds,es,ws)
-		dh <- appendList(dh,normDiss(do,ws))
+		dh <- appendList(dh,normDissN(do,ws,1))
 		snon <- snon+sum(ws*(dh[[j]]-es)^2)
 	  }
         }
@@ -171,8 +172,9 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
     sold <- snon
     itel <- itel+1
   }
-
   #------------ end majorization -----------------
+  
+  
   names(dh) <- names(er) <- names(yr) <- names(delta)
   cnames <- paste("D", 1:p, sep = "")
   for (i in 1:length(yr)) {
@@ -186,14 +188,24 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
   rownames(aconf) <- labels(diss[[1]])
   names(bconf) <- names(dh)
   
+  snon <- snon/nn                   #stress normalization
+  ssma <- sold/nn
+  sunc <- sunc/nn
+  scon <- scon/nn
+  
+  
   if (metric) snon <- NULL          #no non-metric stress
   if (!metric) sold <- NULL
   if (is.null(constraint)) scon <- NULL
   
+  confdiss <- rep(list(NULL), m)
+  for (j in 1:m) {                              #initialize weights, V, norm d as lists
+	 confdiss[[j]] <- normDissN(er[[j]], wgths[[j]], 1)
+  }
+  
   #return configurations, configuration distances, normalized observed distances 
-  result <- list(obsdiss = dh, confdiss = er, conf = yr, gspace = aconf, cweights = bconf,
-                 stress.m = sold, stress.nm = snon, stress.uc = sunc, stress.co = scon,
-                 ndim = p, model = "Three-way SMACOF", niter = itel, nobj = n, metric = metric, call = match.call()) 
+  result <- list(obsdiss = dh, confdiss = confdiss, conf = yr, gspace = aconf, cweights = bconf,
+                 stress.m = ssma, stress.nm = snon, stress.uc = sunc, ndim = p, model = "Three-way SMACOF", niter = itel, nobj = n, metric = metric, call = match.call()) 
   class(result) <- "smacofID"
   result 
 }

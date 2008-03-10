@@ -53,12 +53,10 @@ plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), main, xl
     confdiss <- sumList(x$confdiss)
     resmat <- as.matrix(obsdiss - confdiss)
 
-    fullres <- c(as.vector(x$confdiss), as.vector(resmat[lower.tri(resmat)])) 
-    if (missing(xlim)) xlim <- range(fullres)
-    if (missing(ylim)) ylim <- range(fullres)
+    if (missing(xlim)) xlim <- range(as.vector(confdiss))
+    if (missing(ylim)) ylim <- range(as.vector(resmat[lower.tri(resmat)]))
 
-    plot(as.vector(confdiss), as.vector(resmat[lower.tri(resmat)]), main = main,
-         xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)
+    plot(as.vector(confdiss), as.vector(resmat[lower.tri(resmat)]), main = main, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)
     abline(h = 0, col = "lightgray", lty = 2)  
   }
 
