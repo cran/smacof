@@ -1,6 +1,6 @@
 `plot3d.smacofR` <-
 function(x, plot.dim = c(1,2,3), joint = FALSE, xlab, ylab, zlab, 
-         col, main, bgpng = NULL, ax.grid = TRUE, sphere.rgl = TRUE,...)
+         col, main, bgpng = NULL, ax.grid = TRUE, sphere.rgl = FALSE,...)
 {
 #S3 plot method for objects of class "smacof"
 #plot.dim ... vector of length 3 with dimensions to be plotted against

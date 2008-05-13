@@ -13,14 +13,14 @@
 \description{These methods produce static and dynamic 3D configuration plots for SMACOF models.
 }
 \usage{
-\method{plot3d}{smacof}(x, plot.dim = c(1,2,3), sphere = TRUE, xlab, ylab, zlab, 
-col, main, bgpng = NULL, ax.grid = TRUE, sphere.rgl = TRUE,...)
+\method{plot3d}{smacof}(x, plot.dim = c(1,2,3), sphere = FALSE, xlab, ylab, zlab, 
+col, main, bgpng = NULL, ax.grid = TRUE, sphere.rgl = FALSE,...)
 
 \method{plot3d}{smacofR}(x, plot.dim = c(1,2,3), joint = FALSE, xlab, ylab, zlab, 
-col, main, bgpng = NULL, ax.grid = TRUE, sphere.rgl = TRUE,...)
+col, main, bgpng = NULL, ax.grid = TRUE, sphere.rgl = FALSE,...)
 
 \method{plot3d}{smacofID}(x, plot.dim = c(1,2,3), xlab, ylab, zlab, 
-col, main, bgpng = NULL, ax.grid = TRUE, sphere.rgl = TRUE,...)
+col, main, bgpng = NULL, ax.grid = TRUE, sphere.rgl = FALSE,...)
 
 \method{plot3dstatic}{smacof}(x, plot.dim = c(1,2,3), main, xlab, ylab, zlab, col, ...)
 

@@ -1,6 +1,6 @@
 `plot3d.smacof` <-
-function(x, plot.dim = c(1,2,3), sphere = TRUE, xlab, ylab, zlab, 
-         col, main, bgpng = NULL, ax.grid = TRUE, sphere.rgl = TRUE,...)
+function(x, plot.dim = c(1,2,3), sphere = FALSE, xlab, ylab, zlab, 
+         col, main, bgpng = NULL, ax.grid = TRUE, sphere.rgl = FALSE,...)
 {
 #S3 plot method for objects of class "smacof"
 #plot.dim ... vector of length 3 with dimensions to be plotted against
@@ -32,6 +32,7 @@ function(x, plot.dim = c(1,2,3), sphere = TRUE, xlab, ylab, zlab,
 
  open3d()
  bg3d(sphere = sphere.rgl, texture = texture1, back = "filled", color = "white")
+ #bg3d(sphere = sphere.rgl, texture = texture1, color = "white")
 
  
  if ((any(class(x) == "smacofSP")) && (sphere)) {

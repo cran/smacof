@@ -17,9 +17,11 @@ plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), main, xl
     if (missing(xlab)) xlab <- paste("Configurations D", x1,sep = "") else xlab <- xlab
     if (missing(ylab)) ylab <- paste("Configurations D", y1,sep = "") else ylab <- ylab
 
-    fullconf <- c(x$gspace[,x1],x$gspace[,y1])
-    if (missing(xlim)) xlim <- range(fullconf)
-    if (missing(ylim)) ylim <- range(fullconf)
+    #fullconf <- c(x$gspace[,x1],x$gspace[,y1])
+    #if (missing(xlim)) xlim <- range(fullconf)
+    #if (missing(ylim)) ylim <- range(fullconf)
+    if (missing(xlim)) xlim <- range(x$gspace[,x1])
+    if (missing(ylim)) ylim <- range(x$gspace[,y1])
 
     plot(x$gspace[,x1], x$gspace[,y1], main = main, type = "n", xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)
     text(x$gspace[,x1], x$gspace[,y1], labels = rownames(x$gspace), cex = 0.8)
@@ -33,9 +35,11 @@ plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), main, xl
     obsdiss <- sumList(x$obsdiss)
     confdiss <- sumList(x$confdiss)
 
-    ocdiss <- c(as.vector(obsdiss), as.vector(confdiss))
-    if (missing(xlim)) xlim <- range(ocdiss)
-    if (missing(ylim)) ylim <- range(ocdiss)
+    #ocdiss <- c(as.vector(x$obsdiss), as.vector(x$confdiss))
+    #if (missing(xlim)) xlim <- range(ocdiss)
+    #if (missing(ylim)) ylim <- range(ocdiss)
+    if (missing(xlim)) xlim <- range(as.vector(x$obsdiss))
+    if (missing(ylim)) ylim <- range(as.vector(x$confdiss))
     
     isofit <- isoreg(as.vector(obsdiss), as.vector(confdiss))  #isotonic regression
     plot(as.vector(obsdiss), as.vector(confdiss), main = main, type = "p", pch = 1,
