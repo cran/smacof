@@ -1,0 +1,34 @@
+import("stats", "graphics", "rgl", "scatterplot3d")
+export(smacofSym)
+export(smacofRect)
+export(smacofIndDiff)
+export(smacofConstraint)
+export(smacofSphere.primal)
+export(smacofSphere.dual)
+export(sim2diss)
+export(plot3dstatic)
+
+S3method(print, smacofB)
+S3method(summary, smacofB)
+S3method(print, smacofR)
+S3method(summary, smacofR)
+S3method(print, smacofID)
+S3method(summary, smacofID)
+S3method(print, smacofSP)
+S3method(summary, smacofSP)
+S3method(residuals, smacof)
+S3method(plot3d, smacof)
+S3method(plot3d, smacofR)
+S3method(plot3d, smacofID)
+S3method(plot, smacof)
+S3method(plot, smacofR)
+S3method(plot, smacofID)
+S3method(plot3dstatic, smacof)
+S3method(plot3dstatic, smacofR)
+S3method(plot3dstatic, smacofID)
+
+
+
+
+
+
