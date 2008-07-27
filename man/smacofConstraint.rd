@@ -44,7 +44,8 @@ The argument \code{external} allows for the specification of a covariate data fr
   \item{niter}{Number of iterations}
   \item{nobj}{Number of objects}
 }
-\references{de Leeuw, J. \& Mair, P. (2008). Multidimensional scaling using majorization: The R package smacof.
+\references{de Leeuw, J. \& Mair, P. (2009). Multidimensional scaling using majorization: 
+The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{http://www.jstatsoft.org/v31/i03/} 
 
 de Leeuw, J., \& Heiser, W. (1980). Multidimensional scaling with restrictions on the configurations. In P. R. Krishnaiah (eds.), Multivariate Analysis V, pp. 501-522. North-Holland. 
 }

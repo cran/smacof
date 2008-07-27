@@ -20,14 +20,14 @@
 %% original source files, as listed above, are part of the
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
-\def\fileversion{1.5}
+\def\fileversion{1.8}
 \def\filename{jss}
-\def\filedate{2005/12/09}
+\def\filedate{2008/04/07}
 %%
 %% Package `jss' to use with LaTeX2e for JSS publications
 %%   http://www.jstatsoft.org/
 %% Copyright (C) 2004 Achim Zeileis
-%% Please report errors to Achim.Zeileis@wu-wien.ac.at
+%% Please report errors to Achim.Zeileis@R-project.org
 %%
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{jss}[\filedate\space\fileversion\space jss class by Achim Zeileis]
@@ -38,6 +38,7 @@
 \newif\if@softwarereview
 \newif\if@review
 \newif\if@shortnames
+\newif\if@nojss
 
 \@articletrue
 \@codesnippetfalse
@@ -45,6 +46,7 @@
 \@softwarereviewfalse
 \@reviewfalse
 \@shortnamesfalse
+\@nojssfalse
 
 \DeclareOption{article}{\@articletrue%
   \@codesnippetfalse \@bookreviewfalse \@softwarereviewfalse}
@@ -55,12 +57,14 @@
 \DeclareOption{softwarereview}{\@articlefalse%
   \@codesnippetfalse \@bookreviewfalse \@softwarereviewtrue}
 \DeclareOption{shortnames}{\@shortnamestrue}
+\DeclareOption{nojss}{\@nojsstrue}
 
 \ProcessOptions
 \LoadClass[11pt,a4paper,twoside]{article}
 %% required packages
-\RequirePackage{graphicx,a4wide,color,hyperref,ae,fancyvrb}
+\RequirePackage{graphicx,a4wide,color,ae,fancyvrb}
 \RequirePackage[T1]{fontenc}
+\IfFileExists{upquote.sty}{\RequirePackage{upquote}}{}
 %% bibliography
 \if@shortnames
   \usepackage[authoryear,round]{natbib}
@@ -72,16 +76,6 @@
 %% paragraphs
 \setlength{\parskip}{0.7ex plus0.1ex minus0.1ex}
 \setlength{\parindent}{0em}
-%% commands
-\let\code=\texttt
-\let\proglang=\textsf
-\newcommand{\pkg}[1]{{\normalfont\fontseries{b}\selectfont #1}}
-\newcommand{\email}[1]{\href{mailto:#1}{\normalfont\texttt{#1}}}
-\newcommand{\doi}[1]{\href{http://dx.doi.org/#1}{\normalfont\texttt{doi:#1}}}
-\newcommand{\E}{\mathsf{E}}
-\newcommand{\VAR}{\mathsf{VAR}}
-\newcommand{\COV}{\mathsf{COV}}
-\newcommand{\Prob}{\mathsf{P}}
 %% for all publications
 \newcommand{\Address}[1]{\def\@Address{#1}}
 \newcommand{\Plaintitle}[1]{\def\@Plaintitle{#1}}
@@ -212,19 +206,63 @@
 \DefineVerbatimEnvironment{CodeOutput}{Verbatim}{}
 \newenvironment{CodeChunk}{}{}
 \setkeys{Gin}{width=0.8\textwidth}
+%% footer
+\newlength{\footerskip}
+\setlength{\footerskip}{2.5\baselineskip plus 2ex minus 0.5ex}
+
+\newcommand{\makefooter}{%
+  \vspace{\footerskip}
+
+  \if@nojss
+    \begin{samepage}
+    \textbf{\large \@Footername: \nopagebreak}\\[.3\baselineskip] \nopagebreak
+    \@Address \nopagebreak
+    \end{samepage}
+  \else
+    \begin{samepage}
+    \textbf{\large \@Footername: \nopagebreak}\\[.3\baselineskip] \nopagebreak
+    \@Address \nopagebreak
+    \vfill
+    \hrule \nopagebreak
+    \vspace{.1\baselineskip}
+    {\fontfamily{pzc} \fontsize{13}{15} \selectfont Journal of Statistical Software}
+    \hfill
+    \url{http://www.jstatsoft.org/}\\ \nopagebreak
+    published by the American Statistical Association
+    \hfill
+    \url{http://www.amstat.org/}\\[.3\baselineskip] \nopagebreak
+    {Volume~\@Volume, \@Seriesname~\@Issue}
+    \hfill
+    \@Firstdate\\ \nopagebreak
+    {\@Month{} \@Year}
+    \hfill
+    \@Seconddate  \nopagebreak
+    \vspace{.3\baselineskip}
+    \hrule
+    \end{samepage}
+  \fi
+}
+\AtEndDocument{\makefooter}
+%% required packages
+\RequirePackage{hyperref}
 %% new \maketitle
 \def\@myoddhead{
   {\color{white} JSS}\\[-1.42cm]
   \hspace{-2em} \includegraphics[height=23mm,keepaspectratio]{jsslogo} \hfill
   \parbox[b][23mm]{118mm}{\hrule height 3pt
-           \center{
-           {\fontfamily{pzc} \fontsize{28}{32} \selectfont Journal of Statistical Software}
+   \center{
+   {\fontfamily{pzc} \fontsize{28}{32} \selectfont Journal of Statistical Software}
    \vfill
-           {\it \small \@Month{} \@Year, Volume~\@Volume, \@Seriesname~\@Issue.%
-    \hfill \href{http://www.jstatsoft.org/}{http://www.jstatsoft.org/}}}\\[0.1cm]
+   {\it \small \@Month{} \@Year, Volume~\@Volume, \@Seriesname~\@Issue.%
+            \hfill \href{http://www.jstatsoft.org/}{http://www.jstatsoft.org/}}}\\[0.1cm]
      \hrule height 3pt}}
 \if@review
-  \renewcommand{\maketitle}{\@oddhead{\@myoddhead}\\[3\baselineskip]
+  \renewcommand{\maketitle}{
+  \if@nojss
+    %% \@oddhead{\@myoddhead}\\[3\baselineskip]
+  \else
+    \@oddhead{\@myoddhead}\\[3\baselineskip]
+  \fi
     {\large
     \noindent
     Reviewer: \@Reviewer
@@ -241,11 +279,20 @@
     }
 
     \thispagestyle{empty}
-    \markboth{\centerline{\@Shorttitle}}{\centerline{\@Hypersubject}}
+    \if@nojss
+      \markboth{\centerline{\@Shorttitle}}{\centerline{\@Hyperauthor}}
+    \else
+      \markboth{\centerline{\@Shorttitle}}{\centerline{\@Hypersubject}}
+    \fi
     \pagestyle{myheadings}
   }
 \else
-  \def\maketitle{\@oddhead{\@myoddhead} \par
+  \def\maketitle{
+  \if@nojss
+    %% \@oddhead{\@myoddhead} \par
+  \else
+    \@oddhead{\@myoddhead} \par
+  \fi
    \begingroup
      \def\thefootnote{\fnsymbol{footnote}}
      \def\@makefnmark{\hbox to 0pt{$^{\@thefnmark}$\hss}}
@@ -255,19 +302,38 @@
    \endgroup
    \setcounter{footnote}{0}
    \thispagestyle{empty}
-   \markboth{\centerline{\@Shorttitle}}{\centerline{\@Hypersubject}}
+    \if@nojss
+      \markboth{\centerline{\@Shorttitle}}{\centerline{\@Hyperauthor}}
+    \else
+      \markboth{\centerline{\@Shorttitle}}{\centerline{\@Hypersubject}}
+    \fi
    \pagestyle{myheadings}
 
    \let\maketitle\relax \let\@maketitle\relax
    \gdef\@thanks{}\gdef\@author{}\gdef\@title{}\let\thanks\relax
   }
 
-  \def\@maketitle{\vbox{\hsize\textwidth \linewidth\hsize \vskip 1in
+  \def\@maketitle{\vbox{\hsize\textwidth \linewidth\hsize
+  \if@nojss
+    %% \vskip 1in
+  \else
+    \vskip 1in
+  \fi
    {\centering
    {\LARGE\bf \@title\par}
-     \def\And{\end{tabular}\hfil\linebreak[0]\hfil
-              \begin{tabular}[t]{c}\large\bf\rule{\z@}{24pt}\ignorespaces}%
-      \begin{tabular}[t]{c}\large\bf\rule{\z@}{24pt}\@author\end{tabular}%
+   \vskip 0.2in plus 1fil minus 0.1in
+   {
+       \def\and{\unskip\enspace{\rm and}\enspace}%
+       \def\And{\end{tabular}\hss \egroup \hskip 1in plus 2fil
+          \hbox to 0pt\bgroup\hss \begin{tabular}[t]{c}\large\bf\rule{\z@}{24pt}\ignorespaces}%
+       \def\AND{\end{tabular}\hss\egroup \hfil\hfil\egroup
+          \vskip 0.1in plus 1fil minus 0.05in
+          \hbox to \linewidth\bgroup\rule{\z@}{10pt} \hfil\hfil
+          \hbox to 0pt\bgroup\hss \begin{tabular}[t]{c}\large\bf\rule{\z@}{24pt}\ignorespaces}
+       \hbox to \linewidth\bgroup\rule{\z@}{10pt} \hfil\hfil
+       \hbox to 0pt\bgroup\hss \begin{tabular}[t]{c}\large\bf\rule{\z@}{24pt}\@author
+       \end{tabular}\hss\egroup
+   \hfil\hfil\egroup}
    \vskip 0.3in minus 0.1in
    \hrule
    \begin{abstract}
@@ -338,38 +404,9 @@
   \renewcommand{\subsection}{\secdef \jsssubsec \jsssubsecnn}
   \renewcommand{\subsubsection}{\secdef \jsssubsubsec \jsssubsubsecnn}
 \fi
-%% footer
-\newlength{\footerskip}
-\setlength{\footerskip}{2.5\baselineskip plus 2ex minus 0.5ex}
-
-\newcommand{\makefooter}{%
-  \vspace{\footerskip}
-
-  \begin{samepage}
-  \textbf{\large \@Footername: \nopagebreak}\\[.3\baselineskip] \nopagebreak
-  \@Address \nopagebreak
-  \vfill
-  \hrule \nopagebreak
-  \vspace{.1\baselineskip}
-  {\fontfamily{pzc} \fontsize{13}{15} \selectfont Journal of Statistical Software}
-  \hfill
-  \url{http://www.jstatsoft.org/}\\ \nopagebreak
-  published by the American Statistical Association
-  \hfill
-  \url{http://www.amstat.org/}\\[.3\baselineskip] \nopagebreak
-  {Volume~\@Volume, \@Seriesname~\@Issue}
-  \hfill
-  \@Firstdate\\ \nopagebreak
-  {\@Month{} \@Year}
-  \hfill
-  \@Seconddate  \nopagebreak
-  \vspace{.3\baselineskip}
-  \hrule
-  \end{samepage}
-}
 %% colors
-\definecolor{Red}{rgb}{0.7,0,0}
-\definecolor{Blue}{rgb}{0,0,0.8}
+\definecolor{Red}{rgb}{0.5,0,0}
+\definecolor{Blue}{rgb}{0,0,0.5}
 \if@review
   \hypersetup{%
     hyperindex = {true},
@@ -397,16 +434,39 @@
     pdfview = {XYZ null null null}
   }
 \fi
-\AtBeginDocument{
-  \hypersetup{%
-    pdfauthor = {\@Hyperauthor},
-    pdftitle = {\@Plaintitle},
-    pdfsubject = {\@Hypersubject},
-    pdfkeywords = {\@Plainkeywords}
+\if@nojss
+  \AtBeginDocument{
+    \hypersetup{%
+      pdfauthor = {\@Hyperauthor},
+      pdftitle = {\@Plaintitle},
+      pdfkeywords = {\@Plainkeywords}
+    }
   }
-}
+\else
+  \AtBeginDocument{
+    \hypersetup{%
+      pdfauthor = {\@Hyperauthor},
+      pdftitle = {\@Plaintitle},
+      pdfsubject = {\@Hypersubject},
+      pdfkeywords = {\@Plainkeywords}
+    }
+  }
+\fi
 \AtBeginDocument{\maketitle}
-\AtEndDocument{\makefooter}
+%% commands
+\makeatletter
+\newcommand\code{\bgroup\@makeother\_\@makeother\~\@makeother\$\@codex}
+\def\@codex#1{{\normalfont\ttfamily\hyphenchar\font=-1 #1}\egroup}
+\makeatother
+%%\let\code=\texttt
+\let\proglang=\textsf
+\newcommand{\pkg}[1]{{\fontseries{b}\selectfont #1}}
+\newcommand{\email}[1]{\href{mailto:#1}{\normalfont\texttt{#1}}}
+\newcommand{\doi}[1]{\href{http://dx.doi.org/#1}{\normalfont\texttt{doi:#1}}}
+\newcommand{\E}{\mathsf{E}}
+\newcommand{\VAR}{\mathsf{VAR}}
+\newcommand{\COV}{\mathsf{COV}}
+\newcommand{\Prob}{\mathsf{P}}
 \endinput
 %%
 %% End of file `jss.cls'.
