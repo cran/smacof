@@ -39,7 +39,7 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
   for (j in 1:m) {                              #initialize weights, V, norm d as lists
 	wr <- appendList(wr,vmat(wgths[[j]]))              
 	vr <- appendList(vr,myGenInv(wr[[j]]))
-	dh <- appendList(dh,normDiss(diss[[j]],wgths[[j]]))
+	dh <- appendList(dh,normDissN(diss[[j]],wgths[[j]],m))
   }
   xr <-list()                                  #configurations as list
   sold <- sf1 <- sf2 <- 0                      #stress init
@@ -57,7 +57,7 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
 	sf2 <- sf2 + sum(wgths[[j]]*dr[[j]]^2)
   }
   
-  lb <- sf1/sf2                                #normalization constant
+  lb <- sf1/sf2                           #normalization constant
   for (j in 1:m) {                             #normalize X, D, compute stress
    	aconf <- lb*aconf                          
   	xr[[j]] <- lb*xr[[j]]
@@ -88,13 +88,13 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
        #-- same configurations across ways, configuration weights I
        if (constr=="identity") {
 		    z <- matrix(0,n,p)
-        u <- matrix(0,n,n)
+                    u <- matrix(0,n,n)
 		    for (j in 1:m) {
 			   z<-z+wr[[j]]%*%yr[[j]]
 			   u<-u+wr[[j]]
 		    }
 		   aconf<-myGenInv(u)%*%z
-       yr<-repList(aconf,m)
+                    yr<-repList(aconf,m)
 	     }
 
        #-- configuration weights diagonal
