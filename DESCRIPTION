@@ -1,13 +1,12 @@
 Package: smacof
 Type: Package
 Title: smacof for Multidimensional Scaling.
-Version: 0.9-1
-Date: 2008-08-15
+Version: 0.9-2
+Date: 2008-12-17
 Author: Jan de Leeuw, Patrick Mair 
 Maintainer: Jan de Leeuw <deleeuw@stat.ucla.edu>
 Description: This package provides the following approaches of multidimensional scaling (MDS) based on stress minimization by means of majorization (smacof): Simple smacof on symmetric dissimilarity matrices, smacof for rectangular matrices (unfolding models), smacof with constraints on the configuration, three-way smacof for individual differences (including constraints for idioscal, indscal, and identity), and spherical smacof (primal and dual algorithm). Each of these approaches is implemented in a metric and nonmetric manner including primary, secondary, and tertiary approaches for tie handling. 
 Imports: graphics, stats
-Depends:  R (>= 2.7.0), polynom, rgl, scatterplot3d
+Depends:  R (>= 2.8.0), polynom, rgl, scatterplot3d
 License: GPL
-Revision: 56
-Packaged: Fri Dec 12 05:28:18 2008; theussl
+Packaged: Wed Dec 17 16:56:46 2008; admin
