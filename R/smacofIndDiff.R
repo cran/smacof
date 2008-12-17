@@ -45,7 +45,7 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
   sold <- sf1 <- sf2 <- 0                      #stress init
 
   if (is.null(init)) {  
-    aconf <- torgerson(sumList(diss),p)        #torgerson
+    aconf <- torgerson(sumList(diss),p)        #torgerson 
   } else xr <- init                              #list of starting values 
   #else aconf <- matrix(rnorm(n*p),n,p)     
   
@@ -58,8 +58,9 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
   }
   
   lb <- sf1/sf2                           #normalization constant
-  for (j in 1:m) {                             #normalize X, D, compute stress
-   	aconf <- lb*aconf                          
+  aconf <- lb*aconf   
+  for (j in 1:m) {                             #normalize X, D, compute stress      
+    #aconf <- lb*aconf                     
   	xr[[j]] <- lb*xr[[j]]
     dr[[j]] <- lb*dr[[j]]
 	  sold <- sold + sum(wgths[[j]]*(dh[[j]]-dr[[j]])^2)
@@ -88,13 +89,13 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
        #-- same configurations across ways, configuration weights I
        if (constr=="identity") {
 		    z <- matrix(0,n,p)
-                    u <- matrix(0,n,n)
+        u <- matrix(0,n,n)
 		    for (j in 1:m) {
 			   z<-z+wr[[j]]%*%yr[[j]]
 			   u<-u+wr[[j]]
 		    }
 		   aconf<-myGenInv(u)%*%z
-                    yr<-repList(aconf,m)
+       yr<-repList(aconf,m)
 	     }
 
        #-- configuration weights diagonal
@@ -136,7 +137,6 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
       }
 
     }
-    #FIXME: aconf for constr = NULL?
     
     #-------- end constraints -----------
     
