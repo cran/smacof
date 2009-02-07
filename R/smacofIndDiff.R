@@ -193,7 +193,7 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
   #return configurations, configuration distances, normalized observed distances 
   result <- list(obsdiss = dh, confdiss = er, conf = yr, gspace = aconf, cweights = bconf,
                  stress.m = sold, stress.nm = snon, stress.uc = sunc, stress.co = scon,
-                 ndim = p, model = "Three-way SMACOF", niter = itel, nobj = n) 
+                 ndim = p, model = "Three-way SMACOF", niter = itel, nobj = n, metric = metric, call = match.call()) 
   class(result) <- "smacofID"
   result 
 }

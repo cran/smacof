@@ -72,7 +72,7 @@ rownames(x) <- rownames(diss) <- rownames(d) <- rnames
   
 #return configuration distances, row and column configurations, stress 
 result <- list(obsdiss = diss, confdiss = d, conf.row = x, conf.col = y, stress = lnew, 
-               ndim = p, model = "Rectangular smacof", niter = itel, nind = n, nobj = m) 
+               ndim = p, model = "Rectangular smacof", niter = itel, nind = n, nobj = m, metric = TRUE, call = match.call()) 
 class(result) <- "smacofR"
 result 
 }

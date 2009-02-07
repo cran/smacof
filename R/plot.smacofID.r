@@ -1,6 +1,6 @@
 # plot method for all smacof objects
 
-plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), main, xlab, ylab, ...)
+plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), main, xlab, ylab, xlim, ylim, ...)
 
 # x ... object of class smacofID
 # plot.type ... types available: "confplot", "Shepard", "resplot"
@@ -16,21 +16,32 @@ plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), main, xl
     if (missing(main)) main <- paste("Group Configurations") else main <- main
     if (missing(xlab)) xlab <- paste("Configurations D", x1,sep = "") else xlab <- xlab
     if (missing(ylab)) ylab <- paste("Configurations D", y1,sep = "") else ylab <- ylab
-    plot(x$gspace[,x1], x$gspace[,y1], main = main, type = "n", xlab = xlab, ylab = ylab, ...)
+
+    fullconf <- c(x$gspace[,x1],x$gspace[,y1])
+    if (missing(xlim)) xlim <- range(fullconf)
+    if (missing(ylim)) ylim <- range(fullconf)
+
+    plot(x$gspace[,x1], x$gspace[,y1], main = main, type = "n", xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)
     text(x$gspace[,x1], x$gspace[,y1], labels = rownames(x$gspace), cex = 0.8)
   }
 
   #---------------- Shepard diagram ------------------
   if (plot.type == "Shepard") {
     if (missing(main)) main <- paste("Shepard Diagram") else main <- main
-    if (missing(xlab)) xlab <- "Sum Observed Distances" else xlab <- xlab
+    if (missing(xlab)) xlab <- "Sum Dissimilarities" else xlab <- xlab
     if (missing(ylab)) ylab <- "Sum Configuration Distances" else ylab <- ylab
     obsdiss <- sumList(x$obsdiss)
     confdiss <- sumList(x$confdiss)
+
+    ocdiss <- c(as.vector(obsdiss), as.vector(confdiss))
+    if (missing(xlim)) xlim <- range(ocdiss)
+    if (missing(ylim)) ylim <- range(ocdiss)
+    
     isofit <- isoreg(as.vector(obsdiss), as.vector(confdiss))  #isotonic regression
     plot(as.vector(obsdiss), as.vector(confdiss), main = main, type = "p", pch = 1,
-         xlab = xlab, ylab = ylab, col = "lightgray", ...)
-    points(sort(isofit$x), isofit$yf, type = "b", pch = 16)
+         xlab = xlab, ylab = ylab, col = "lightgray", xlim = xlim, ylim = ylim, ...)
+
+    if (!x$metric) points(sort(isofit$x), isofit$yf, type = "b", pch = 16) else abline(0,1, lty = 2)
   }
 
   #--------------- Residual plot --------------------
@@ -41,8 +52,13 @@ plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), main, xl
     obsdiss <- sumList(x$obsdiss)
     confdiss <- sumList(x$confdiss)
     resmat <- as.matrix(obsdiss - confdiss)
+
+    fullres <- c(as.vector(x$confdiss), as.vector(resmat[lower.tri(resmat)])) 
+    if (missing(xlim)) xlim <- range(fullres)
+    if (missing(ylim)) ylim <- range(fullres)
+
     plot(as.vector(confdiss), as.vector(resmat[lower.tri(resmat)]), main = main,
-         xlab = xlab, ylab = ylab, ...)
+         xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)
     abline(h = 0, col = "lightgray", lty = 2)  
   }
 
@@ -57,8 +73,12 @@ plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), main, xl
     decomp.stress <- stress.r/(sum(stress.r))*100
     sdecomp.stress <- sort(decomp.stress, decreasing = TRUE)
     xaxlab <- names(sdecomp.stress)
+
+    if (missing(xlim)) xlim1 <- c(1,length(decomp.stress)) else xlim1 <- xlim
+    if (missing(ylim)) ylim1 <- range(sdecomp.stress) else ylim1 <- ylim
+    
     plot(1:length(decomp.stress), sdecomp.stress, xaxt = "n", type = "p",
-         xlab = xlab, ylab = ylab, main = main, ...)
+         xlab = xlab, ylab = ylab, main = main, xlim = xlim1, ylim = ylim1,...)
     text(1:length(decomp.stress), sdecomp.stress, labels = xaxlab, pos = 3, cex = 0.8)
     for (i in 1:length(sdecomp.stress)) lines(c(i,i), c(sdecomp.stress[i],0), col = "lightgray", lty = 2)
                                   

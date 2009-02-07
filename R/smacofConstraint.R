@@ -158,7 +158,7 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, w
 
 #return configurations, configuration distances, normalized observed distances 
   result <- list(obsdiss = dhat, confdiss = e, conf = y, stress.m = ssma, stress.nm = snon,
-               ndim = p, model = "SMACOF constraint", niter = itel, nobj = n) 
+               ndim = p, model = "SMACOF constraint", niter = itel, nobj = n, metric = metric, call = match.call()) 
   class(result) <- c("smacofB","smacof")
   result 
 }

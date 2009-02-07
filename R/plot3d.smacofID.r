@@ -30,8 +30,8 @@ function(x, plot.dim = c(1,2,3), xlab, ylab, zlab,
   y1 <- x$gspace[,pd2]
   z1 <- x$gspace[,pd3]
 
-  rgl.open()
-  rgl.bg(sphere = sphere.rgl, texture = texture1, back = "filled", color = "white")
+  open3d()
+  bg3d(sphere = sphere.rgl, texture = texture1, back = "filled", color = "white")
     
   text3d(x1, y1, z1, texts = names(x1), col = col1, ...)
   axes3d(c('x','y','z'), labels = TRUE, color = "black")
