@@ -22,6 +22,7 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, w
   }
   p <- ndim                                     
   n <- attr(diss,"Size")
+  nn <- n*(n-1)/2
   m <- length(diss)
   
   if (is.null(attr(diss, "Labels"))) attr(diss, "Labels") <- paste(1:n)
@@ -61,7 +62,7 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, w
   }  else  wgths <- weightmat
   
  
-  dhat <- normDiss(diss,wgths)                  #normalize dissimilarities
+  dhat <- normDissN(diss,wgths,1)                  #normalize dissimilarities
   w <- vmat(wgths)                              #matrix V
   v <- myGenInv(w)                              #Moore-Penrose inverse
   itel <- 1
@@ -124,7 +125,7 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, w
 			if (ties=="primary") daux <- monregP(diss,e,wgths)
 			if (ties=="secondary") daux <- monregS(diss,e,wgths)
 			if (ties=="tertiary") daux <- monregT(diss,e,wgths)
-			dhat<-normDiss(daux,wgths)
+			dhat<-normDissN(daux,wgths,1)
 			}
 	}
 	snon <- sum(wgths*(dhat-e)^2)                  #nonmetric stress
@@ -141,9 +142,12 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, w
   }
   #------- end majorization -----------
  
+  snon <- snon/nn                   #stress normalization
+  ssma <- ssma/nn
+  
   if (metric) snon <- NULL          #no non-metric stress
   if (!metric) ssma <- NULL
-
+  
   if (any(is.na(y))) {              #reduce ndim for external == simplex
     csy <- colSums(y)
     ind <- which(is.na(csy))
@@ -155,9 +159,11 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, w
   dhat <- structure(dhat, Size = n, call = quote(as.dist.default(m=b)), class = "dist", Diag = FALSE, Upper = FALSE) 
   attr(dhat, "Labels") <- labels(diss)
   attr(e, "Labels") <- labels(diss)
+  
+   confdiss <- normDissN(e, wgths, 1)        #final normalization to n(n-1)/2
 
 #return configurations, configuration distances, normalized observed distances 
-  result <- list(obsdiss = dhat, confdiss = e, conf = y, stress.m = ssma, stress.nm = snon,
+  result <- list(obsdiss = dhat, confdiss = confdiss, conf = y, stress.m = ssma, stress.nm = snon,
                ndim = p, model = "SMACOF constraint", niter = itel, nobj = n, metric = metric, call = match.call()) 
   class(result) <- c("smacofB","smacof")
   result 

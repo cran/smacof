@@ -1,6 +1,6 @@
 `plot3d.smacofID` <-
 function(x, plot.dim = c(1,2,3), xlab, ylab, zlab, 
-         col, main, bgpng = "particle.png", ax.grid = TRUE, sphere.rgl = TRUE,...)
+         col, main, bgpng = NULL, ax.grid = TRUE, sphere.rgl = TRUE,...)
 {
 #S3 plot method for objects of class "smacof"
 #plot.dim ... vector of length 3 with dimensions to be plotted against
