@@ -18,9 +18,11 @@ plot.smacofR <- function(x, plot.type = "confplot", joint = FALSE, plot.dim = c(
       if (missing(xlab)) xlab1 <- paste("Column Configurations D", x1,sep = "") else xlab1 <- xlab
       if (missing(xlab)) ylab1 <- paste("Column Configurations D", y1,sep = "") else ylab1 <- ylab
 
-      fullconf <- rbind(x$conf.col[,c(x1,y1)],x$conf.row[,c(x1,y1)])
-      if (missing(xlim)) xlim <- range(fullconf)
-      if (missing(ylim)) ylim <- range(fullconf)
+      #fullconf <- rbind(x$conf.col[,c(x1,y1)],x$conf.row[,c(x1,y1)])
+      #if (missing(xlim)) xlim <- range(fullconf)
+      #if (missing(ylim)) ylim <- range(fullconf)
+      if (missing(xlim)) xlim <- range(x$conf.col[,c(x1,y1)])
+      if (missing(ylim)) ylim <- range(x$conf.row[,c(x1,y1)])
 
       plot(x$conf.col[,x1], x$conf.col[,y1], main = main1, xlab = xlab1, ylab = ylab1, type = "n", xlim = xlim, ylim = ylim,...)
       text(x$conf.col[,x1], x$conf.col[,y1], labels = rownames(x$conf.col), col = "BLUE")
@@ -54,9 +56,11 @@ plot.smacofR <- function(x, plot.type = "confplot", joint = FALSE, plot.dim = c(
     if (missing(xlab)) xlab <- "Dissimilarities" else xlab <- xlab
     if (missing(ylab)) ylab <- "Configuration Distances" else ylab <- ylab
 
-    ocdiss <- c(as.vector(x$obsdiss), as.vector(x$confdiss))
-    if (missing(xlim)) xlim <- range(ocdiss)
-    if (missing(ylim)) ylim <- range(ocdiss)
+    #ocdiss <- c(as.vector(x$obsdiss), as.vector(x$confdiss))
+    #if (missing(xlim)) xlim <- range(ocdiss)
+    #if (missing(ylim)) ylim <- range(ocdiss)
+    if (missing(xlim)) xlim <- range(as.vector(x$obsdiss))
+    if (missing(ylim)) ylim <- range(as.vector(x$confdiss))
 
     plot(as.vector(x$obsdiss), as.vector(x$confdiss), main = main, type = "p", pch = 1,
          xlab = xlab, ylab = ylab, col = "lightgray", xlim = xlim, ylim = ylim, ...)

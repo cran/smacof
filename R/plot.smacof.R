@@ -31,9 +31,11 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     if (missing(xlab)) xlab <- paste("Configurations D", x1,sep = "") else xlab <- xlab
     if (missing(ylab)) ylab <- paste("Configurations D", y1,sep = "") else ylab <- ylab
 
-    fullconf <- rbind(x$conf[,x1],x$conf[,y1])
-    if (missing(xlim)) xlim <- range(fullconf)
-    if (missing(ylim)) ylim <- range(fullconf)
+    #fullconf <- rbind(x$conf[,x1],x$conf[,y1])
+    #if (missing(xlim)) xlim <- range(fullconf)
+    #if (missing(ylim)) ylim <- range(fullconf)
+    if (missing(xlim)) xlim <- range(x$conf[,x1])
+    if (missing(ylim)) ylim <- range(x$conf[,y1])
     
     plot(x$conf[,x1], x$conf[,y1], main = main, type = "n", xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)
     if ((any(class(x) == "smacofSP")) && (sphere)) {
@@ -55,9 +57,11 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     if (missing(xlab)) xlab <- "Dissimilarities" else xlab <- xlab
     if (missing(ylab)) ylab <- "Configuration Distances" else ylab <- ylab
 
-    ocdiss <- c(as.vector(x$obsdiss), as.vector(x$confdiss))
-    if (missing(xlim)) xlim <- range(ocdiss)
-    if (missing(ylim)) ylim <- range(ocdiss)
+    #ocdiss <- c(as.vector(x$obsdiss), as.vector(x$confdiss))
+    #if (missing(xlim)) xlim <- range(ocdiss)
+    #if (missing(ylim)) ylim <- range(ocdiss)
+    if (missing(xlim)) xlim <- range(as.vector(x$obsdiss))
+    if (missing(ylim)) ylim <- range(as.vector(x$confdiss))
 
     plot(as.vector(x$obsdiss), as.vector(x$confdiss), main = main, type = "p", pch = 1,
          xlab = xlab, ylab = ylab, col = "lightgray", xlim = xlim, ylim = ylim, ...)

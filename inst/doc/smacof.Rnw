@@ -165,7 +165,7 @@ Using $B(X)$ we can rewrite $\rho(X)$ as
 and, consequently, the stress decomposition becomes
 \begin{equation}
 \label{eq:strdec}
-\sigma(X) = 1 + \mathbf{tr}\ X'VX - 2\mathbf{tr}\   X'B(X)X.
+\sigma(X) = n(n-1)/2 + \mathbf{tr}\ X'VX - 2\mathbf{tr}\   X'B(X)X.
 \end{equation}
 At this point it is straightforward to find the majorizing function of $\sigma(X)$. Let us denote the supporting point by $Y$ which, in the case of MDS, is a $n \times p$ matrix of configurations. Similar to (\ref{eq:Bmat}) we define
 \begin{equation}
@@ -181,8 +181,8 @@ s_{ij}(Y)=\begin{cases}\delta_{ij}/d_{ij}(Y)&\text{ if }d_{ij}(Y)>0,\\
 The Cauchy-Schwartz inequality implies that for all pairs of configurations X and Y, we have $\rho(X) \geq \mathbf{tr}\ X'B(Y)Y$. Thus we minorize the convex function $\rho(X)$ with a linear function. This gives us a majorization of \emph{stress}
 \begin{align}
 \label{eq:stdectr}
-\sigma(X) &= 1 + \mathbf{tr}\ X'VX - 2\mathbf{tr} X'B(X)X \nonumber \\
-& \leq 1 + \mathbf{tr}\ X'VX - 2\mathbf{tr}\ X'B(Y)Y = \tau(X,Y).
+\sigma(X) &= n(n-1)/2 + \mathbf{tr}\ X'VX - 2\mathbf{tr} X'B(X)X \nonumber \\
+& \leq n(n-1)/2 + \mathbf{tr}\ X'VX - 2\mathbf{tr}\ X'B(Y)Y = \tau(X,Y).
 \end{align}
 Obviously, $\tau(X,Y)$ is a (simple) quadratic function in $X$ which majorizes stress. Finding its minimum analytically involves
 \begin{equation}
@@ -211,8 +211,8 @@ where $Z$ is a known predictor matrix of dimension $n \times q$ ($q \geq p$). Th
 The optimization problem is basically the same as in the former section: We minimize stress as given in (\ref{eq:stress}) with respect to $C$. The expressions for $V$ and $B$ as well as $\tau(X,Y)$ can be derived analogous to simple SMACOF and, correspondingly, the Guttman transform is $\overline{X} = V^+B(Y)Y$. It follows that Equation \ref{eq:stdectr} can be rewritten as \citep[see][Theorem 1]{dlh80}
 \begin{align}
 \label{eq:stdectr2}
-\tau(X,Y) &= 1 + \mathbf{tr} X'VX - 2\mathbf{tr}X'V\overline{X} \nonumber \\
-&= 1 + \mathbf{tr} (X-\overline{X})'V(X-\overline{X})-\mathbf{tr}\overline{X}'V\overline{X}
+\tau(X,Y) &= n(n-1)/2 + \mathbf{tr} X'VX - 2\mathbf{tr}X'V\overline{X} \nonumber \\
+&= n(n-1)/2 + \mathbf{tr} (X-\overline{X})'V(X-\overline{X})-\mathbf{tr}\overline{X}'V\overline{X}
 \end{align}
 where the second term denotes the \emph{lack of confirmation fit} and becomes zero if no restrictions are imposed. Thus, in each iteration $t$ of the majorization algorithm we first compute the Guttman transform \(\overline{X}^{(t)}\) of our current best configuration, and then solve the \emph{configuration projection problem} of the form
 \begin{equation}
@@ -556,12 +556,14 @@ library("smacof")
 data(ekman)
 ekman.d <- sim2diss(ekman, method = 1)
 res.basic <- smacofSym(ekman.d, metric = FALSE)
+@
+<<eval = FALSE>>=
 res.sphere <- smacofSphere.primal(ekman.d, metric = FALSE)
 @
 
 <<eval = FALSE>>=
-plot(res.basic, main = "Configurations Basic SMACOF")
-plot(res.sphere, main = "Configurations Sphere SMACOF")
+plot(res.basic, main = "Configurations Basic SMACOF", asp = 1)
+plot(res.sphere, main = "Configurations Sphere SMACOF", asp = 1)
 @
 
 
@@ -611,7 +613,7 @@ lines(wl[-14], Luv.wld/400, col = "red", type = "b")
 legend(600, 0.9, c("Ekman", "Luv"), lty = 1, col = c("black", "red"))
 @
 
-Note that the division of the Luv distances by 400 is arbitrary. The result is given in Figure \ref{fig:ekmanluv}. It shows striking similarities between in the distances across different wavelengths. 
+Note that the division of the Luv distances by 400 is arbitrary. The result is given in Figure \ref{fig:ekmanluv}. It shows striking similarities in the distances across different wavelengths. 
  
 \subsection{Breakfast rating for rectangular SMACOF}
 As a metric unfolding example we use the breakfast dataset from \citet{grerao} which is also analyzed in \citet[][Chapter 14]{borg-groenen-2}. 42 individuals were asked to order 15 breakfast items due to their preference. These items are: 
@@ -620,8 +622,8 @@ As a metric unfolding example we use the breakfast dataset from \citet{grerao} w
 <<>>=
 data(breakfast)
 res.rect <- smacofRect(breakfast, itmax = 1000)
-plot(res.rect, joint = TRUE, xlim = c(-10, 10))
-plot(res.rect, plot.type = "Shepard")
+plot(res.rect, joint = TRUE, xlim = c(-10, 10), asp = 1)
+plot(res.rect, plot.type = "Shepard", asp = 1)
 @
 
 \begin{figure}
@@ -653,10 +655,10 @@ res.id
 @
 
 <<>>=
-plot(res.uc, main = "Group Configurations Unconstrained", xlim = c(-1.2,1), ylim = c(-1.2,1))
-plot(res.id, main = "Group Configurations Identity", xlim = c(-1.2,1), ylim = c(-1.2,1))
-plot(res.uc, plot.type = "resplot", main = "Residuals Unconstrained", xlim = c(2,14), ylim = c(-3,3))
-plot(res.id, plot.type = "resplot", main = "Residuals Indentity", xlim = c(2,14), ylim = c(-3,3))
+plot(res.uc, main = "Group Configurations Unconstrained", xlim = c(-1.2,1), ylim = c(-1.2,1), asp = 1)
+plot(res.id, main = "Group Configurations Identity", xlim = c(-1.2,1), ylim = c(-1.2,1), asp = 1)
+plot(res.uc, plot.type = "resplot", main = "Residuals Unconstrained", xlim = c(2,14), ylim = c(-3,3), asp = 1)
+plot(res.id, plot.type = "resplot", main = "Residuals Indentity", xlim = c(2,14), ylim = c(-3,3), asp = 1)
 @
 
 \begin{figure}[hbt]
@@ -687,10 +689,10 @@ res.lin <- smacofConstraint(kinshipdelta, constraint = "linear", external = kins
 @
 
 <<>>=
-plot(res.sym, main = "Configuration Plot SMACOF", xlim = c(-2,1.5), ylim = c(-2,1.5))
-plot(res.lin, main = "Configuration Plot SMACOF Constraint",xlim = c(-2,1.5), ylim = c(-2,1.5))
-plot(res.sym, plot.type = "stressplot", main = "Stress Decomposition SMACOF", xlim = c(0, 16), ylim = c(3, 12))
-plot(res.lin, plot.type = "stressplot", main = "Stress Decomposition SMACOF Constraint", xlim = c(0, 16), ylim = c(3, 12))
+plot(res.sym, main = "Configuration Plot SMACOF", xlim = c(-1, 1), ylim = c(-1, 1.5), asp = 1)
+plot(res.lin, main = "Configuration Plot SMACOF Constraint",xlim = c(-1, 1), ylim = c(-1, 1.5), asp = 1)
+plot(res.sym, plot.type = "stressplot", main = "Stress Decomposition SMACOF", xlim = c(0, 16), ylim = c(3, 12), asp = 1)
+plot(res.lin, plot.type = "stressplot", main = "Stress Decomposition SMACOF Constraint", xlim = c(0, 16), ylim = c(3, 12), asp = 1)
 @
 
 
