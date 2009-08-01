@@ -10,8 +10,8 @@
 \tabular{ll}{
 Package: \tab smacof\cr
 Type: \tab Package\cr
-Version: \tab 0.9-6\cr
-Date: \tab 2008-05-13\cr
+Version: \tab 1.0-0\cr
+Date: \tab 2008-07-31\cr
 License: \tab GPL\cr
 }
 The function for basic SMACOF on symmetric dissimilarity matrices is \code{smacofSym()}. For rectangular input matrices (unfolding model) \code{smacofRect()} is appropriate and by means of \code{smacofIndDiff()} individual difference models (three-way MDS) can be computed.
@@ -23,8 +23,8 @@ Jan de Leeuw, Patrick Mair
 Maintainer: Jan de Leeuw <deleeuw@stat.ucla.edu>
 
 }
-\references{
-de Leeuw, J. \& Mair, P. (2008). Multidimensional scaling using majorization: The R package smacof. Journal of Statistical Software, forthcoming.
+\references{de Leeuw, J. \& Mair, P. (2009). Multidimensional scaling using majorization: 
+The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{http://www.jstatsoft.org/v31/i03/} 
 }
 
 \keyword{ package }

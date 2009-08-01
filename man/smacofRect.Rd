@@ -35,7 +35,9 @@ smacofRect(delta, ndim = 2, weightmat = NULL, init = NULL, verbose = FALSE,
   \item{nind}{Number of individuals (rows)}
   \item{nobj}{Number of objects (columns)}
 }
-\references{de Leeuw, J. \& Mair, P. (2008). Multidimensional scaling using majorization: The R package smacof.}
+\references{de Leeuw, J. \& Mair, P. (2009). Multidimensional scaling using majorization: 
+The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{http://www.jstatsoft.org/v31/i03/} 
+}
 \author{Jan de Leeuw and Patrick Mair}
 
 \seealso{\code{\link{smacofConstraint}}, \code{\link{smacofSym}}, \code{\link{smacofIndDiff}}, \code{\link{smacofSphere.primal}}, \code{\link{smacofSphere.dual}}}

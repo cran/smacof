@@ -1,6 +1,6 @@
-%\VignetteIndexEntry{smacof} 
+%\VignetteIndexEntry{Multidimensional Scaling Using Majorization: SMACOF in R}
 
-\documentclass[article]{jss1}
+\documentclass[article, nojss]{jss}
 \usepackage{amsmath, amsfonts, thumbpdf}
 \usepackage{float,amssymb}
 \usepackage{hyperref}
@@ -12,7 +12,7 @@
 
 %% almost as usual
 \author{Jan de Leeuw\\University of California, Los Angeles \And 
-        Patrick Mair \\Wirtschaftsuniversit\"at Wien}
+        Patrick Mair \\WU Wirtschaftsuniversit\"at Wien}
 \title{Multidimensional Scaling Using Majorization: SMACOF in \proglang{R}}
 
 \Plainauthor{Jan de Leeuw, Patrick Mair} %% comma-separated
@@ -20,11 +20,11 @@
 \Shorttitle{SMACOF in \proglang{R}} %% a short title (if necessary)
 
 %% an abstract and keywords
-\Abstract{In this paper we present the methodology of multidimensional scaling problems (MDS) solved by means of the majorization algorithm. The objective function to be minimized is known as stress and functions which majorize stress are elaborated. This strategy to solve MDS problems is called SMACOF and it is implemented in an \pkg{R} package of the same name which is presented in this article. We extend the basic SMACOF theory in terms of configuration constraints, three-way data, unfolding models, and projection of the resulting configurations onto spheres and other quadratic surfaces. Various examples are presented to show the possibilities of the SMACOF approach offered by the corresponding package.
+\Abstract{In this paper we present the methodology of multidimensional scaling problems (MDS) solved by means of the majorization algorithm. The objective function to be minimized is known as stress and functions which majorize stress are elaborated. This strategy to solve MDS problems is called SMACOF and it is implemented in an \proglang{R} package of the same name which is presented in this article. We extend the basic SMACOF theory in terms of configuration constraints, three-way data, unfolding models, and projection of the resulting configurations onto spheres and other quadratic surfaces. Various examples are presented to show the possibilities of the SMACOF approach offered by the corresponding package.
 }
 
-\Keywords{smacof, multidimensional scaling, majorization, \proglang{R}}
-\Plainkeywords{smacof, multidimensional scaling, majorization, R} 
+\Keywords{SMACOF, multidimensional scaling, majorization, \proglang{R}}
+\Plainkeywords{SMACOF, multidimensional scaling, majorization, R} 
 
 %% publication information
 %% NOTE: This needs to filled out ONLY IF THE PAPER WAS ACCEPTED.
@@ -58,7 +58,7 @@
 
 \begin{document}
 \section{Introduction}
-From a general point of view, \emph{multidimensional scaling} (MDS) is a set of methods for discovering ``hidden'' structures in multidimensional data. Based on a proximity matrix derived from variables measured on objects as input entity, these distances are mapped on a lower dimensional (typically two or three dimensions) spatial representation. A classical example concerns airline distances between US cities in miles as symmetric input matrix. Applying MDS, it results in a two-dimensional graphical representation reflecting the US map \citep[see][]{Kruskal+Wish:1978}. Depending on the nature of the original data various proximity/dissimilarity measures can be taken into account. For an overview see \citet[][Chapter 1]{Cox+Cox:2001} and an implementation of numerous proximity measures in \proglang{R} is given by \citet{Meyer+Buchta:2007}. Typical application areas for MDS are, among others, social and behavioral sciences, marketing, biometrics, and ecology. 
+From a general point of view, \emph{multidimensional scaling} (MDS) is a set of methods for discovering ``hidden'' structures in multidimensional data. Based on a proximity matrix derived from variables measured on objects as input entity, these distances are mapped on a lower dimensional (typically two or three dimensions) spatial representation. A classical example concerns airline distances between US cities in miles as symmetric input matrix. Applying MDS, it results in a two-dimensional graphical representation reflecting the US map \citep[see][]{Kruskal+Wish:1978}. Depending on the nature of the original data various proximity/dissimilarity measures can be taken into account. For an overview see \citet[][Chapter 1]{Cox+Cox:2001} and an implementation of numerous proximity measures in \proglang{R} \citep{R:09} is given by \citet{Meyer+Buchta:2007}. Typical application areas for MDS are, among others, social and behavioral sciences, marketing, biometrics, and ecology. 
 
 \citet[][Chapter 14]{Mardia+Kent+Bibby:1979} provide a MDS chapter within the general framework of multivariate analysis. An early historical outline of MDS is given in \citet{Shepard:1980}. For introductory MDS reading we refer to \citet{Kruskal+Wish:1978} and more advanced topics can be found in \citet{borg-groenen-2} and \citet{Cox+Cox:2001}. 
 
@@ -73,7 +73,7 @@ For each MDS version we provide metric and non-metric variants. Non-metric MDS w
 
 Furthermore we will provide several extensions of the basic SMACOF approach in terms of constraints on the configuration, individual differences (i.e., three-way data structures), rectangular matrices, and quadratic surfaces. From early on in the history of MDS its inventors, notably~\citet{torgerson} and~\citet{shep1,shep2}, discovered that points in MDS solutions often fell on, or close to, quadratic manifolds such as circles, ellipses, or parabolas. Fitting quadratics with SMACOF will be one of the focal points of this paper (see Section \ref{sec:smacofQ}). Some of the first examples analyzed with the new techniques were the color similarity data of~\citet{ekman} and the color naming data of~\citet{filrap}. Another early application involved triadic comparisons of musical intervals~\citep{levelt_geer_plomp}, where the points appeared to fall on a parabola. A critical discussion can be found in \citet[][p. 386-388]{shepprez}. Around the same time, the triadic comparisons of Dutch political parties~\citep{degruijter} were carried out, which showed a curved left-right dimension, with parties ordered along an ellipse. 
 
-The smacof package has many options, and makes it possible to represent a given data matrix in many different ways. In some contexts, such as molecular conformation or geographic map making, we have prior knowledge what the dimensionality is, or what the appropriate constraints are. But the model selection issue is obviously an important problem in ``exploratory'' MDS. If there is no such prior knowledge, we have to rely on pseudo-inferential techniques such as \citet{Ramsay:1982} or \citet{mdsjack}. 
+The \pkg{smacof} package has many options, and makes it possible to represent a given data matrix in many different ways. In some contexts, such as molecular conformation or geographic map making, we have prior knowledge what the dimensionality is, or what the appropriate constraints are. But the model selection issue is obviously an important problem in ``exploratory'' MDS. If there is no such prior knowledge, we have to rely on pseudo-inferential techniques such as \citet{Ramsay:1982} or \citet{mdsjack}. 
 
 \section{Basic majorization theory}
 \label{sec:maj}
@@ -240,7 +240,7 @@ Further specifications of this partially restricted framework can be found in \c
 
 
 \subsection{SMACOF for individual differences}
-The last version of our basic SMACOF routines is SMACOF for individual differences (also known as three-way SMACOF). It is a somewhat natural extension of the classical MDS setting from Section \ref{sec:ssmacof} in terms of $k = 1, \ldots,K$ separate $n \times n$ symmetric dissimilarty matrices $\Delta_k$. A typical situation is, e.g., that we have $K$ judges and each of them produces a dissimilarity matrix or that we have $K$ replications on some MDS data. The very classical approach for MDS computation on such structures is INDSCAL \citep[INdividual Differences SCaling;][]{carcha}. An elaborated overview of additional algorithms is given in \citet[][Chapter 22]{borg-groenen-2}.
+The last version of our basic SMACOF routines is SMACOF for individual differences (also known as three-way SMACOF). It is a somewhat natural extension of the classical MDS setting from Section \ref{sec:ssmacof} in terms of $k = 1, \ldots,K$ separate $n \times n$ symmetric dissimilarty matrices $\Delta_k$. A typical situation is, e.g., that we have $K$ judges and each of them produces a dissimilarity matrix or that we have $K$ replications on some MDS data. The very classical approach for MDS computation on such structures is INDSCAL \citep[INdividual Differences SCALing;][]{carcha}. An elaborated overview of additional algorithms is given in \citet[][Chapter 22]{borg-groenen-2}.
 
 We will focus on the majorization solution and collect the $\Delta_k$ matrices in a block-diagonal structure
 \begin{equation*} 
@@ -538,7 +538,7 @@ Suppose \(x_0\) is the focal point, and \(\overline{x}_i\) is the projection of 
  
  
 %-------------------------- package description -------------------------------------- 
-\section{The R package smacof}
+\section[The R package smacof]{The \proglang{R} package \pkg{smacof}}
 \label{sec:package}
 So far there does not exist a comprehensive \proglang{R} package for MDS. There are functions in \pkg{MASS} to perform classical MDS, Sammon mapping, and non-metric MDS. For the latter variant there are also some functionalities in \pkg{vegan} \citep{vegan:2007}, \pkg{labdsv} \citep{labdsv:2006}, \pkg{ecodist} \citep{ecodist:2007}, and \pkg{xgobi} \citep{xgobi:2005}. Individual differences MDS is implemented in the \pkg{SensoMineR} \citep{sensominer:2007} package. 
 
@@ -552,8 +552,8 @@ We perform a two-dimensional basic SMACOF solution using \code{smacofSym()} whic
 We start with the transformation of similarities into dissimilarities by subtracting them from 1. Then we perform a two-dimensional basic SMACOF and a quadratic SMACOF, projecting the configurations on a sphere. Both computations are performed in a non-metric manner. 
 
 <<>>=
-library("smacof")
-data(ekman)
+require("smacof")
+data("ekman")
 ekman.d <- sim2diss(ekman, method = 1)
 res.basic <- smacofSym(ekman.d, metric = FALSE)
 @
@@ -578,7 +578,7 @@ plot(res.sphere, main = "Configurations Sphere SMACOF", asp = 1)
 
 The resulting configuration plots are given in Figure \ref{fig:ekman}. For the nonmetric basic SMACOF solution we see that the wavelength configurations are approximately circularly arranged. Starting with the lowest wavelength we see that the pairs 434-445 and 465-472 correspond to bluish, 490 to turqoise, the set of 504-555 to greenish, 584-610 to yellow-orange, and finally 628-674 to reddish. Since the color palette is commonly represented as a circle, it is somewhat natural to compute a two-dimensional (nonmetric) spherical SMACOF solution which can be found on the right-hand side of Figure \ref{fig:ekman}. Obviously, the configurations lie perfectly on a circle with a radius $\lambda=.0714$. 
 
-Now we try to evaluate the basic solution by comparing the smacof configuration to that obtained from other data. We can use the CIE Luv space \citep[see e.g.][]{Fairchild:2005} which is extensively used for applications such as computer graphics which deal with colored lights. It is based on human average color matching data and wavelength discrimination data and, thus, it is quite different than the Ekman judgments based on large color differences. Let us first obtain the Luv coordinates in \proglang{R}. First, we read-in the CIE XYZ 31 tristimulus values for an equal energy spectrum at the wavelengths used in the Ekman dataset from an online site. The last line in the code below adjusts these to equiluminance (a constant luminance plane).
+Now we try to evaluate the basic solution by comparing the SMACOF configuration to that obtained from other data. We can use the CIE Luv space \citep[see e.g.][]{Fairchild:2005} which is extensively used for applications such as computer graphics which deal with colored lights. It is based on human average color matching data and wavelength discrimination data and, thus, it is quite different than the Ekman judgments based on large color differences. Let us first obtain the Luv coordinates in \proglang{R}. First, we read-in the CIE XYZ 31 tristimulus values for an equal energy spectrum at the wavelengths used in the Ekman dataset from an online site. The last line in the code below adjusts these to equiluminance (a constant luminance plane).
 
 \begin{figure}[t]
 \begin{center}
@@ -587,7 +587,7 @@ Now we try to evaluate the basic solution by comparing the smacof configuration 
 \end{center}
 \end{figure} 
 
-<<>>=
+<<eval = FALSE>>=
 wl <- c(434, 445, 465, 472, 490, 504, 537, 555, 584, 600, 610, 628, 651, 674)
 CIE31 <- read.table("http://cvision.ucsd.edu/database/data/cmfs/ciexyz31_1.txt", header = FALSE, sep = ",", colClasses = rep("numeric", 4), nrows = 471)
 names(CIE31) <- c("WL", "xbar", "ybar", "zbar")
@@ -597,7 +597,7 @@ ekmanWL[, -1] <- ekmanWL[, -1]/ekmanWL[, "ybar"]
 
 In the next step for any given wavelength we extract the distance to the next higher one from the final MDS configuration. We do the same thing for the Luv data:
 
-<<>>=
+<<eval = FALSE>>=
 ekman.mds.wld <- res.basic$confdiss[cumsum(c(1, 13:2))]
 require(grDevices)
 ekmanLuv <- convertColor(ekmanWL[, -1], "XYZ", "Luv")
@@ -607,7 +607,7 @@ Luv.wld <- Luv.dist[cumsum(c(1, 13:2))]
 
 On the x-axis we plot the wavelengths and on the y-axis the distances to the subsequent one. 
 
-<<>>=
+<<eval = FALSE>>=
 plot(wl[-14], ekman.mds.wld, type = "b", ylim = c(0.05, 0.9), xlab = "wavelength", ylab = "distance", main = "Ekman MDS vs. Luv")
 lines(wl[-14], Luv.wld/400, col = "red", type = "b")
 legend(600, 0.9, c("Ekman", "Luv"), lty = 1, col = c("black", "red"))
@@ -620,8 +620,11 @@ As a metric unfolding example we use the breakfast dataset from \citet{grerao} w
 \code{toast} = toast pop-up, \code{butoast} = buttered toast, \code{engmuff} = English muffin and margarine, \code{jdonut} = jelly donut, \code{cintoast} = cinnamon toast, \code{bluemuff} = blueberry muffin and margarine, \code{hrolls} = hard rolls and butter, \code{toastmarm} = toast and marmalade, \code{butoastj} = buttered toast and jelly, \code{toastmarg} = toast and margarine, \code{cinbun} = cinnamon bun, \code{danpastry} = Danish pastry, \code{gdonut} = glazed donut, \code{cofcake} = coffee cake, and \code{cornmuff} = corn muffin and butter. For this $42 \times 15$ matrix we compute a rectangular SMACOF solution. 
 
 <<>>=
-data(breakfast)
+data("breakfast")
 res.rect <- smacofRect(breakfast, itmax = 1000)
+@
+
+<<eval=FALSE>>=
 plot(res.rect, joint = TRUE, xlim = c(-10, 10), asp = 1)
 plot(res.rect, plot.type = "Shepard", asp = 1)
 @
@@ -644,7 +647,7 @@ The Shepard diagram on the right-hand side in Figure \ref{fig:breakfast} represe
 The data set we provide for three-way SMACOF is described in \citet{Bro:1998}. The raw data consist of ratings of 10 breads on 11 different attributes carried out by 8 raters. Note that the bread samples are pairwise replications: Each of the 5 different breads, which have a different salt content, was presented twice for rating. The attributes are bread odor, yeast odor, off-flavor, color, moisture, dough, salt taste, sweet taste, yeast taste, other taste, and total. First we fit an unconstrained solution followed by a model with identity restriction. 
 
 <<>>=
-data(bread)
+data("bread")
 res.uc <- smacofIndDiff(bread)
 res.uc
 @
@@ -654,7 +657,7 @@ res.id <- smacofIndDiff(bread, constraint = "identity")
 res.id
 @
 
-<<>>=
+<<eval = FALSE>>=
 plot(res.uc, main = "Group Configurations Unconstrained", xlim = c(-1.2,1), ylim = c(-1.2,1), asp = 1)
 plot(res.id, main = "Group Configurations Identity", xlim = c(-1.2,1), ylim = c(-1.2,1), asp = 1)
 plot(res.uc, plot.type = "resplot", main = "Residuals Unconstrained", xlim = c(2,14), ylim = c(-3,3), asp = 1)
@@ -679,16 +682,16 @@ As an example for SMACOF with external constraints we use a data set collected b
 
 Based on this grouping they created a dissimilarity matrix according to the following rule: 1 if the objects were sorted in different groups, 0 for the same group. Based on these values we can compute the percentages of how often terms were not grouped together over all students \citep[see][p. 83]{borg-groenen-2}. 
 
-As external scales we have gender (male, female, missing), generation (two back, one back, same generation, one ahead, two ahead), and degree (first, second, etc.) of the kinship term. Using these external scales we fit a two-dimensional SMACOF solution with linear constraints and an ordinary smacof solution without covariates. 
+As external scales we have gender (male, female, missing), generation (two back, one back, same generation, one ahead, two ahead), and degree (first, second, etc.) of the kinship term. Using these external scales we fit a two-dimensional SMACOF solution with linear constraints and an ordinary SMACOF solution without covariates. 
 
-<<>>=
-data(kinshipdelta)
-data(kinshipscales)
+<<eval = FALSE>>=
+data("kinshipdelta")
+data("kinshipscales")
 res.sym <- smacofSym(kinshipdelta)
 res.lin <- smacofConstraint(kinshipdelta, constraint = "linear", external = kinshipscales)
 @
 
-<<>>=
+<<eval = FALSE, keepsource = TRUE>>=
 plot(res.sym, main = "Configuration Plot SMACOF", xlim = c(-1, 1), ylim = c(-1, 1.5), asp = 1)
 plot(res.lin, main = "Configuration Plot SMACOF Constraint",xlim = c(-1, 1), ylim = c(-1, 1.5), asp = 1)
 plot(res.sym, plot.type = "stressplot", main = "Stress Decomposition SMACOF", xlim = c(0, 16), ylim = c(3, 12), asp = 1)
@@ -715,7 +718,7 @@ The plot for the constrained solution shows a far more consistent picture. All t
 \citet{Cox+Cox:2001} took data from the New Geographical Digest in 1986 on which countries traded with other countries. For 20 countries the main trading partners are dichotomously scored (1 = trade performed, 0 = trade not performed). Based on this dichotomous matrix the dissimilarities are computed using the Jaccard coefficient. The most intuitive MDS approach is to project the resulting distances to a sphere which gives us a ``trading globe''. In this example we use the dual algorithm for spherical projection.  
 
 <<eval = FALSE>>=
-data(trading)
+data("trading")
 res.sphere <- smacofSphere.dual(trading, ndim = 3)
 plot3d(res.sphere, plot.sphere = FALSE)
 @
@@ -731,7 +734,7 @@ plot3d(res.sphere, plot.sphere = FALSE)
 Note that if we apply the dual algorithm, the first row in the configuration object \code{res.sphere\$conf} corresponds to the center of the sphere. However, on the left circumference of the globe we have a cluster of Commonwealth Nations (New Zealand, Australia, Canada, India). China is somewhat separated which reflects its situation in 1986. For this time, the cluster of the communist governed countries USSR, Czechoslovakia, and Eastern Germany is also reasonable. Around the ``south pole'' we have Japan, USA, West Germany, and UK. 
 
 \section{Discussion}
-In this final section we will discuss some relations to other models as well as some future extensions of the package. The \pkg{homals} package \citep{deLeeuw+Mair:2007} allows for the computation of various Gifi models \citep{Gifi:1990}. \citet{meulpsy} incorporates the MDS approach into Gifi's optimal scaling model family. \citet{tyd_sstress} developed ALSCAL (Alternating Least Squares SCALing) for stress minimization can be regarded as an alternative to majorization. Note that Gifi mainly uses ALS (alternating least squares) to minimize the corresponding loss functions. Especially, by looking at the restricted models in  Section \ref{sec:restr} the similarity between SMACOF and the Gifi approach becomes obvious \citep[see also][p. 233]{borg-groenen-2}. A general discussion can be found also in \citet[][Chapter 11]{Cox+Cox:2001}.
+In this final section we will discuss some relations to other models as well as some future extensions of the package. The \pkg{homals} package \citep{deLeeuw+Mair:2009a} allows for the computation of various Gifi models \citep{Gifi:1990}. \citet{meulpsy} incorporates the MDS approach into Gifi's optimal scaling model family. \citet{tyd_sstress} developed ALSCAL (Alternating Least Squares SCALing) for stress minimization can be regarded as an alternative to majorization. Note that Gifi mainly uses ALS (alternating least squares) to minimize the corresponding loss functions. Especially, by looking at the restricted models in  Section \ref{sec:restr} the similarity between SMACOF and the Gifi approach becomes obvious \citep[see also][p. 233]{borg-groenen-2}. A general discussion can be found also in \citet[][Chapter 11]{Cox+Cox:2001}.
 
 MDS is also related to correspondence analysis (CA) which, within the context of this special issue, is provided by the package \pkg{anacor}. CA is basically a two-mode technique, displaying row and column objects. From this point of view CA is related to the unfolding MDS, or, in our framework, to rectangular SMACOF from Section \ref{sec:rect}. 
 
