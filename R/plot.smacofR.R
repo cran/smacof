@@ -63,7 +63,7 @@ plot.smacofR <- function(x, plot.type = "confplot", joint = FALSE, plot.dim = c(
     if (missing(ylim)) ylim <- range(as.vector(x$confdiss))
 
     plot(as.vector(x$obsdiss), as.vector(x$confdiss), main = main, type = "p", pch = 1,
-         xlab = xlab, ylab = ylab, col = "lightgray", xlim = xlim, ylim = ylim, ...)
+         xlab = xlab, ylab = ylab, col = "darkgray", xlim = xlim, ylim = ylim, ...)
 
     if (!x$metric) {
       isofit <- isoreg(as.vector(x$obsdiss), as.vector(x$confdiss))  #isotonic regression
@@ -87,7 +87,7 @@ plot.smacofR <- function(x, plot.type = "confplot", joint = FALSE, plot.dim = c(
     
     plot(as.vector(x$confdiss), as.vector(resmat), main = main, type = "p",
          xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)
-    abline(h = 0, col = "lightgray", lty = 2)  
+    abline(h = 0, col = "darkgray", lty = 2)  
   }
 
   #----------------------- Stress decomposition -----------------

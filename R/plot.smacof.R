@@ -47,7 +47,7 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
         circle(0, 0, radius, lty = 2, border = "lightgray")
       }
     }
-    text(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), cex = 0.8)
+      text(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), cex = 0.8)    
   }
 
   #---------------- Shepard diagram ------------------
