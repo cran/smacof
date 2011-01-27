@@ -1,7 +1,7 @@
 `smacofSym` <-
 function(delta, ndim = 2, weightmat = NULL, init = NULL, 
                       metric = TRUE, ties = "primary",	verbose = FALSE, 
-                      relax = 1, modulus = 1, itmax = 1000, eps = 1e-6)  
+                      relax = FALSE, modulus = 1, itmax = 1000, eps = 1e-6)  
 {
 # delta ... dissimilarity matrix 
 # wghts ... weight structure. if not specified, weights is 1-structure
@@ -22,6 +22,8 @@ function(delta, ndim = 2, weightmat = NULL, init = NULL,
   
   p <- ndim                                     
   n <- attr(diss,"Size")
+  if (p > (n - 1)) stop("Maximum number of dimensions is n-1!")
+
   nn <- n*(n-1)/2
   m <- length(diss)
   
@@ -29,14 +31,13 @@ function(delta, ndim = 2, weightmat = NULL, init = NULL,
   
   if (is.null(weightmat)) {
     wgths <- initWeights(diss)
-  }  else  wgths <- weightmat
+  }  else  wgths <- as.dist(weightmat)
   
   #dhat <- normDiss(diss,wgths)            #normalize dissimilarities
   dhat <- normDissN(diss, wgths, 1)        #normalize to n(n-1)/2
                                  
-  if (is.null(init)) x <- torgerson(sqrt(diss), p=p) else x <- init   # x as matrix with starting values   
-  #if (!is.matrix(init)) x <- torgerson(sqrt(delta),p=p) else x <- init    
-  #if (!is.matrix(w)) w <- matrix(1,n,n)-diag(n)   
+  if (is.null(init)) x <- torgerson(sqrt(diss), p=p) else x <- as.matrix(init)   # x as matrix with starting values   
+  if (relax) relax <- 2 else relax <- 1 
   
   w <- vmat(wgths)                        #matrix V of weights and unit vectors
   v <- myGenInv(w)                        #Moore-Penrose inverse
@@ -51,9 +52,9 @@ function(delta, ndim = 2, weightmat = NULL, init = NULL,
  #--------------- begin majorization --------------------
  repeat {                                #majorization loop             
 	b <- bmat(dhat,wgths,d)            
-  y <- v%*%b%*%x                    #apply Guttman transform denoted as \bar(Y) in the paper
+        y <- v%*%b%*%x                    #apply Guttman transform denoted as \bar(Y) in the paper
 	y <- x+relax*(y-x)                #n \times p matrix of Guttman transformed distances x's
-  e <- dist(y)                      #new distance matrix for Y
+        e <- dist(y)                      #new distance matrix for Y
 	ssma <- sum(wgths*(dhat-e)^2)     #stress metric
 
 	if (!metric) {                    #for non-metric MDS only (PAVA)
@@ -68,11 +69,11 @@ function(delta, ndim = 2, weightmat = NULL, init = NULL,
   snon <- sum(wgths*(dhat-e)^2)     #stress non-metric
 
   #print out intermediate stress
-  if (verbose) cat("Iteration: ",formatC(itel,width=3, format="d")," Stress: ",
-		formatC(c(sold,ssma,snon),digits=8,width=12,format="f"),"\n")
+  if (verbose) cat("Iteration: ",formatC(itel,width=3, format="d")," Stress (not normalized):",
+		formatC(c(snon),digits=8,width=12,format="f"),"\n")
 
   if (((sold-snon)<eps) || (itel == itmax)) break()
-	x <- y                           #update configurations
+  x <- y                           #update configurations
   d <- e                           #update configuration distances
   sold <- snon                     #update stress
   itel <- itel+1	                 #increase iterations
@@ -93,8 +94,13 @@ function(delta, ndim = 2, weightmat = NULL, init = NULL,
 
  confdiss <- normDissN(e, wgths, 1)        #final normalization to n(n-1)/2
 
+ # point stress 
+ resmat <- as.matrix(dhat - confdiss)^2    #point stress
+ spp <- colMeans(resmat)
+ 
+  
 #return configurations, configuration distances, normalized observed distances 
-result <- list(obsdiss = dhat, confdiss = confdiss, conf = y, stress.m = ssma, stress.nm = snon,
+result <- list(delta = diss, obsdiss = dhat, confdiss = confdiss, conf = y, stress.m = ssma, stress.nm = snon, spp = spp,
                ndim = p, model = "Symmetric SMACOF", niter = itel, nobj = n, metric = metric, call = match.call()) 
 class(result) <- c("smacofB","smacof")
 result 

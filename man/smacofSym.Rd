@@ -3,10 +3,10 @@
 
 \title{Symmetric smacof}
 \description{
-Basic smacof on symmetric dissimilarity matrix 
+Multidimensional scaling (stress minimization: SMACOF) on symmetric dissimilarity matrix. 
 }
 \usage{
-smacofSym(delta, ndim = 2, weightmat = NULL, init = NULL, metric = TRUE, ties = "primary", verbose = FALSE, relax = 1, modulus = 1, itmax = 1000, eps = 1e-06)
+smacofSym(delta, ndim = 2, weightmat = NULL, init = NULL, metric = TRUE, ties = "primary", verbose = FALSE, relax = FALSE, modulus = 1, itmax = 1000, eps = 1e-06)
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -18,18 +18,22 @@ smacofSym(delta, ndim = 2, weightmat = NULL, init = NULL, metric = TRUE, ties = 
   \item{metric}{If \code{FALSE} non-metric MDS is performed}
   \item{ties}{Tie specification for non-metric MDS only: \code{"primary"}, \code{"secondary"}, or \code{"tertiary"}}
   \item{verbose}{If \code{TRUE}, intermediate stress is printed out}
-  \item{relax}{Relaxed smacof update}
-   \item{modulus}{Number of smacof iterations per monotone regression call}
+  \item{relax}{If \code{TRUE}, block relaxation is used for majorization}
+  \item{modulus}{Number of smacof iterations per monotone regression call}
   \item{itmax}{Maximum number of iterations}
   \item{eps}{Convergence criterion}
 }
-
+\details{This is the simplest MDS-SMACOF version of the package. It solves the stress target function for symmetric dissimiliby means of the majorization approach (SMACOF). The main output are the coordinates in the low-dimensional space (configurations; \code{conf}).
+The function also returns the point stress, i.e. the larger the contribution of a point to the total stress, the worse the fit (see also \code{\link{plot.smacof}}. 
+}
 \value{
+  \item{delta}{Observed dissimilarities}
   \item{obsdiss}{Observed dissimilarities, normalized}
   \item{confdiss}{Configuration dissimilarities}
   \item{conf}{Matrix of final configurations}
-  \item{stress.m}{stress value for metric MDS}
-  \item{stress.nm}{stress value for non-metric MDS (if computed)}
+  \item{stress.m}{Stress value for metric MDS}
+  \item{stress.nm}{Stress value for non-metric MDS (if computed)}
+  \item{spp}{Stress per point}
   \item{ndim}{Number of dimensions}
   \item{model}{Type of smacof model}
   \item{niter}{Number of iterations}

@@ -18,9 +18,6 @@ plot.smacofR <- function(x, plot.type = "confplot", joint = FALSE, plot.dim = c(
       if (missing(xlab)) xlab1 <- paste("Column Configurations D", x1,sep = "") else xlab1 <- xlab
       if (missing(xlab)) ylab1 <- paste("Column Configurations D", y1,sep = "") else ylab1 <- ylab
 
-      #fullconf <- rbind(x$conf.col[,c(x1,y1)],x$conf.row[,c(x1,y1)])
-      #if (missing(xlim)) xlim <- range(fullconf)
-      #if (missing(ylim)) ylim <- range(fullconf)
       if (missing(xlim)) xlim <- range(x$conf.col[,c(x1,y1)])
       if (missing(ylim)) ylim <- range(x$conf.row[,c(x1,y1)])
 
@@ -56,9 +53,6 @@ plot.smacofR <- function(x, plot.type = "confplot", joint = FALSE, plot.dim = c(
     if (missing(xlab)) xlab <- "Dissimilarities" else xlab <- xlab
     if (missing(ylab)) ylab <- "Configuration Distances" else ylab <- ylab
 
-    #ocdiss <- c(as.vector(x$obsdiss), as.vector(x$confdiss))
-    #if (missing(xlim)) xlim <- range(ocdiss)
-    #if (missing(ylim)) ylim <- range(ocdiss)
     if (missing(xlim)) xlim <- range(as.vector(x$obsdiss))
     if (missing(ylim)) ylim <- range(as.vector(x$confdiss))
 
@@ -73,6 +67,7 @@ plot.smacofR <- function(x, plot.type = "confplot", joint = FALSE, plot.dim = c(
     }
    
   }
+
 
   #--------------- Residual plot --------------------
   if (plot.type == "resplot") {
@@ -98,37 +93,32 @@ plot.smacofR <- function(x, plot.type = "confplot", joint = FALSE, plot.dim = c(
     if (missing(xlab)) xlab1 <- "Row Objects" else xlab1 <- xlab
     if (missing(xlab)) xlab2 <- "Column Objects" else xlab2 <- xlab
     if (missing(ylab)) ylab <- "Stress Proportion (%)" else ylab <- ylab
-    stress.ri <- ((as.matrix(x$obsdiss) - as.matrix(x$confdiss))^2) 
-    
-    # row-wise
-    stress.r <- rowSums(stress.ri)
-    decomp.stress <- stress.r/(sum(stress.r))*100
-    sdecomp.stress <- sort(decomp.stress, decreasing = TRUE)
-    xaxlab <- names(sdecomp.stress)
 
-    if (missing(xlim)) xlim1 <- c(1,length(decomp.stress)) else xlim1 <- xlim
-    if (missing(ylim)) ylim1 <- range(sdecomp.stress) else ylim1 <- ylim
+   
+    #row-wise
+    spp.perc.row <- sort((x$spp.row/sum(x$spp.row)*100), decreasing = TRUE)
+    xaxlab <- names(spp.perc.row)
+   
+    if (missing(xlim)) xlim1 <- c(1,length(spp.perc.row)) else xlim1 <- xlim
+    if (missing(ylim)) ylim1 <- range(spp.perc.row) else ylim1 <- ylim
     
-    plot(1:length(decomp.stress), sdecomp.stress, xaxt = "n", type = "p",
+    plot(1:length(spp.perc.row), spp.perc.row, xaxt = "n", type = "p",
          xlab = xlab1, ylab = ylab, main = main1, xlim = xlim1, ylim = ylim1, ...)
-    text(1:length(decomp.stress), sdecomp.stress, labels = xaxlab, pos = 3, cex = 0.8)
-    for (i in 1:length(sdecomp.stress)) lines(c(i,i), c(sdecomp.stress[i],0), col = "lightgray", lty = 2)                               
+    text(1:length(spp.perc.row), spp.perc.row, labels = xaxlab, pos = 3, cex = 0.8)
+    for (i in 1:length(spp.perc.row)) lines(c(i,i), c(spp.perc.row[i],0), col = "lightgray", lty = 2)                               
  
     #column-wise
-    dev.new()
-    stress.c <- colSums(stress.ri)
-    decomp.stress <- stress.c/(sum(stress.c))*100
-    sdecomp.stress <- sort(decomp.stress, decreasing = TRUE)
-    xaxlab <- names(sdecomp.stress)
-
-    if (missing(xlim)) xlim1 <- c(1,length(decomp.stress)) else xlim1 <- xlim
-    if (missing(ylim)) ylim1 <- range(sdecomp.stress) else ylim1 <- ylim
-
-    plot(1:length(decomp.stress), sdecomp.stress, xaxt = "n", type = "p",
+    dev.new()                      
+    spp.perc.col <- sort((x$spp.col/sum(x$spp.col)*100), decreasing = TRUE)
+    xaxlab <- names(spp.perc.col)
+   
+    if (missing(xlim)) xlim1 <- c(1,length(spp.perc.col)) else xlim1 <- xlim
+    if (missing(ylim)) ylim1 <- range(spp.perc.col) else ylim1 <- ylim
+    
+    plot(1:length(spp.perc.col), spp.perc.col, xaxt = "n", type = "p",
          xlab = xlab2, ylab = ylab, main = main2, xlim = xlim1, ylim = ylim1, ...)
-    text(1:length(decomp.stress), sdecomp.stress, labels = xaxlab, pos = 3, cex = 0.8)
-    for (i in 1:length(sdecomp.stress)) lines(c(i,i), c(sdecomp.stress[i],0), col = "lightgray", lty = 2)                               
- 
+    text(1:length(spp.perc.col), spp.perc.col, labels = xaxlab, pos = 3, cex = 0.8)
+    for (i in 1:length(spp.perc.col)) lines(c(i,i), c(spp.perc.col[i],0), col = "lightgray", lty = 2)  
   }
 
 }

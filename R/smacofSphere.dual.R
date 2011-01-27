@@ -10,6 +10,8 @@ smacofSphere.dual <- function(delta, penalty = 100, ndim = 2, weightmat = NULL,
  if ((is.matrix(diss)) || (is.data.frame(diss))) diss <- strucprep(diss)  #if data are provided as dissimilarity matrix
  p <- ndim
  n <- attr(diss,"Size")
+ if (p > (n - 1)) stop("Maximum number of dimensions is n-1!")
+ 
  nn <- n*(n-1)/2
  m <- length(diss)
 
@@ -17,11 +19,13 @@ smacofSphere.dual <- function(delta, penalty = 100, ndim = 2, weightmat = NULL,
   
  if (is.null(weightmat)) {
     wgths <- initWeights(diss)
- }  else  wgths <- weightmat
+ }  else  wgths <- as.dist(weightmat)
 
  dhat <- normDissN(diss,wgths,1)            #normalize dissimilarities
  if (is.null(init)) x <- torgerson(sqrt(diss), p=p) else x <- init   # x as matrix with starting values
 
+ if (relax) relax <- 2 else relax <- 1 
+ 
  mn <- c(1,rep(0,n))
  diss <- as.dist(rbind(0,cbind(0,as.matrix(diss))))         #add row/column
 
@@ -65,9 +69,7 @@ smacofSphere.dual <- function(delta, penalty = 100, ndim = 2, weightmat = NULL,
 	snon <- snon1+penalty*snon2                            #nonmetric joint stress
 
         if (verbose) cat("Iteration: ",formatC(itel,width=3, format="d"),"\n",
-		" StressOld: ",formatC(c(sold1,sold2,sold),digits=8,width=12,format="f"),"\n",
-		" StressSma: ",formatC(c(ssma1,ssma2,ssma),digits=8,width=12,format="f"),"\n",
-		" StressNon: ",formatC(c(snon1,snon2,snon),digits=8,width=12,format="f"),"\n",
+		"Stress (not normalized)",formatC(c(snon),digits=8,width=12,format="f"),"\n",
 		"\n\n")
 
         if (((sold-snon)<eps) || (itel == itmax)) break()      #convergence
@@ -95,8 +97,12 @@ e.temp <- as.dist(as.matrix(e)[,-1][-1,])      #remove dummy vector
 dummyvec <- as.matrix(e)[,1][-1]
 confdiss <- normDissN(e.temp, wgths, 1)        #final normalization to n(n-1)/2
 
+# point stress 
+resmat <- as.matrix(dhat1 - confdiss)^2    #point stress
+spp <- colMeans(resmat)
+  
  
-result <- list(obsdiss1 = dhat1, obsdiss2 = dhat2, confdiss = confdiss, conf = y, stress.m = ssma, stress.nm = snon,
+result <- list(delta = diss, obsdiss1 = dhat1, obsdiss2 = dhat2, confdiss = confdiss, conf = y, stress.m = ssma, stress.nm = snon, spp = spp,
                ndim = p, dummyvec = dummyvec, model = "Spherical SMACOF (dual)", niter = itel, nobj = n, metric = metric, call = match.call())
 class(result) <- c("smacofSP", "smacof")
 result

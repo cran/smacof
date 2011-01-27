@@ -24,11 +24,13 @@ smacofRect(delta, ndim = 2, weightmat = NULL, init = NULL, verbose = FALSE,
 }
 
 \value{
-  \item{obsdiss}{Observed dissimilarities}
+  \item{obsdiss}{Observed dissimilarities, corresponds to delta}
   \item{confdiss}{Configuration dissimilarities}
   \item{conf.row}{Matrix of final row configurations}
   \item{conf.col}{Matrix of final column configurations}
   \item{stress}{Final stress value}
+  \item{spp.row}{Stress per point, rows}
+  \item{spp.col}{Stress per point, columns}
   \item{ndim}{Number of dimensions}
   \item{model}{Type of smacof model}
   \item{niter}{Number of iterations}

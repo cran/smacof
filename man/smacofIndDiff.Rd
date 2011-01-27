@@ -31,6 +31,7 @@ More unrestricted models are \code{"diagonal"} which restricts only the configur
 }
 
 \value{
+  \item{delta}{Observed dissimilarities}
   \item{obsdiss}{List of observed dissimilarities, normalized}
   \item{confdiss}{List of configuration dissimilarities}
   \item{conf}{List of matrices of final configurations}
@@ -39,6 +40,7 @@ More unrestricted models are \code{"diagonal"} which restricts only the configur
   \item{stress.m}{stress value for metric MDS}
   \item{stress.nm}{stress value for non-metric MDS (if computed)}
   \item{stress.co}{Constrained stress value}
+  \item{spp}{Stress per point}
   \item{ndim}{Number of dimensions}
   \item{model}{Type of smacof model}
   \item{niter}{Number of iterations}

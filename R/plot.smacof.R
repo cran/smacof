@@ -1,6 +1,6 @@
 # plot method for all smacof objects
 
-plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, 
+plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, bubscale = 3,
                         main, xlab, ylab, xlim, ylim, ...)
 
 # x ... object of class smacof
@@ -31,9 +31,6 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     if (missing(xlab)) xlab <- paste("Configurations D", x1,sep = "") else xlab <- xlab
     if (missing(ylab)) ylab <- paste("Configurations D", y1,sep = "") else ylab <- ylab
 
-    #fullconf <- rbind(x$conf[,x1],x$conf[,y1])
-    #if (missing(xlim)) xlim <- range(fullconf)
-    #if (missing(ylim)) ylim <- range(fullconf)
     if (missing(xlim)) xlim <- range(x$conf[,x1])
     if (missing(ylim)) ylim <- range(x$conf[,y1])
     
@@ -51,74 +48,79 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
   }
 
   #---------------- Shepard diagram ------------------
-
   if (plot.type == "Shepard") {
     if (missing(main)) main <- paste("Shepard Diagram") else main <- main
     if (missing(xlab)) xlab <- "Dissimilarities" else xlab <- xlab
     if (missing(ylab)) ylab <- "Configuration Distances" else ylab <- ylab
 
-    #ocdiss <- c(as.vector(x$obsdiss), as.vector(x$confdiss))
-    #if (missing(xlim)) xlim <- range(ocdiss)
-    #if (missing(ylim)) ylim <- range(ocdiss)
-    if (missing(xlim)) xlim <- range(as.vector(x$obsdiss))
+    if (missing(xlim)) xlim <- range(as.vector(x$delta))
     if (missing(ylim)) ylim <- range(as.vector(x$confdiss))
 
-    plot(as.vector(x$obsdiss), as.vector(x$confdiss), main = main, type = "p", pch = 1,
-         xlab = xlab, ylab = ylab, col = "lightgray", xlim = xlim, ylim = ylim, ...)
+    plot(as.vector(x$delta), as.vector(x$confdiss), main = main, type = "p", pch = 1,
+         xlab = xlab, ylab = ylab, col = "darkgray", xlim = xlim, ylim = ylim, ...)
 
     if (!x$metric) {
-      isofit <- isoreg(as.vector(x$obsdiss), as.vector(x$confdiss))  #isotonic regression
+      isofit <- isoreg(as.vector(x$delta), as.vector(x$confdiss))  #isotonic regression
       points(sort(isofit$x), isofit$yf, type = "b", pch = 16)
     } else {
-      abline(0,1, lty = 2)
+      regfit <- lsfit(as.vector(x$delta), as.vector(x$confdiss))   #linear regression
+      abline(regfit, lwd = 0.5)
     }
   }
 
   #--------------- Residual plot --------------------
- 
   if (plot.type == "resplot") {
     if (missing(main)) main <- paste("Residual plot") else main <- main
-    if (missing(xlab)) xlab <- "Configuration Distances" else xlab <- xlab
-    if (missing(ylab)) ylab <- "Residuals" else ylab <- ylab
-    resmat <- residuals(x)
+    if (missing(xlab)) xlab <- "Normalized Dissimilarities (d-hats)" else xlab <- xlab
+    if (missing(ylab)) ylab <- "Configuration Distances" else ylab <- ylab
+    #resmat <- residuals(x)
 
-    if (missing(xlim)) xlim <- range(as.vector(x$confdiss))
-    if (missing(ylim)) ylim <- range(as.vector(resmat[lower.tri(resmat)]))
+    if (missing(xlim)) xlim <- range(as.vector(x$obsdiss))
+    if (missing(ylim)) ylim <- range(as.vector(x$confdiss))
     
-    plot(as.vector(x$confdiss), as.vector(resmat[lower.tri(resmat)]), main = main, type = "p",
-         xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)
-    abline(h = 0, col = "lightgray", lty = 2)  
+    plot(as.vector(x$obsdiss), as.vector(x$confdiss), main = main, type = "p", col = "darkgray",
+         xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim,...)
+    abline(0, 1)
   }
 
   #----------------------- Stress decomposition -----------------
- 
   if (plot.type == "stressplot") {
     if (missing(main)) main <- paste("Stress Decomposition Chart") else main <- main
     if (missing(xlab)) xlab <- "Objects" else xlab <- xlab
     if (missing(ylab)) ylab <- "Stress Proportion (%)" else ylab <- ylab
-    stress.ri <- ((as.matrix(x$obsdiss) - as.matrix(x$confdiss))^2)   #sorted decomposed stress values
-    stress.r <- rowSums(stress.ri)
-    decomp.stress <- stress.r/(sum(stress.r))*100
-    sdecomp.stress <- sort(decomp.stress, decreasing = TRUE)
-    xaxlab <- names(sdecomp.stress)
 
-    if (missing(xlim)) xlim1 <- c(1,length(decomp.stress)) else xlim1 <- xlim
-    if (missing(ylim)) ylim1 <- range(sdecomp.stress) else ylim1 <- ylim
+    spp.perc <- sort((x$spp/sum(x$spp)*100), decreasing = TRUE)
+    xaxlab <- names(spp.perc)
+
+    if (missing(xlim)) xlim1 <- c(1,length(spp.perc)) else xlim1 <- xlim
+    if (missing(ylim)) ylim1 <- range(spp.perc) else ylim1 <- ylim
     
-    plot(1:length(decomp.stress), sdecomp.stress, xaxt = "n", type = "p",
+    plot(1:length(spp.perc), spp.perc, xaxt = "n", type = "p",
          xlab = xlab, ylab = ylab, main = main, xlim = xlim1, ylim = ylim1, ...)
-    text(1:length(decomp.stress), sdecomp.stress, labels = xaxlab, pos = 3, cex = 0.8)
-    for (i in 1:length(sdecomp.stress)) lines(c(i,i), c(sdecomp.stress[i],0), col = "lightgray", lty = 2)
+    text(1:length(spp.perc), spp.perc, labels = xaxlab, pos = 3, cex = 0.8)
+    for (i in 1:length(spp.perc)) lines(c(i,i), c(spp.perc[i],0), col = "lightgray", lty = 2)
                                   
   }
 
-  #if (plot.type == "smearing") {
-  #  delta.r <- as.matrix(x$confdiss)[1,]
-  #  bw <- npregbw(formula=delta.r~x$conf[,1]+x$conf[,2], tol=.1, ftol=.1)
-  #  model <- npreg(bws = bw)
+  #------------------------------ bubble plot -------------------------
+  if (plot.type == "bubbleplot")
+  {
 
-    #predict(model, newdata)
-    #x... sequence(min(x$conf[,1],max(x$conf[,1]))
-    #y... sequence(min(x$conf[,2],max(x$conf[,2]))
+    if (missing(main)) main <- paste("Bubble Plot") else main <- main
+    if (missing(xlab)) xlab <- paste("Configurations D", x1,sep = "") else xlab <- xlab
+    if (missing(ylab)) ylab <- paste("Configurations D", y1,sep = "") else ylab <- ylab
+
+    if (missing(xlim)) xlim <- range(x$conf[,x1])*1.1
+    if (missing(ylim)) ylim <- range(x$conf[,y1])*1.1
+    
+    spp.perc <- x$spp/sum(x$spp)*100
+    bubsize <- (max(spp.perc) - spp.perc + 1)/length(spp.perc)*bubscale
+    
+    plot(x$conf, cex = bubsize, main = main, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim,...)
+    xylabels <- x$conf
+    ysigns <- sign(x$conf[,y1])
+    xylabels[,2] <- (abs(x$conf[,y1])-(x$conf[,y1]*(bubsize/50)))*ysigns 
+    text(xylabels, rownames(x$conf), pos = 1,cex = 0.7)
+  }  
 
 }

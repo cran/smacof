@@ -8,13 +8,13 @@
 \description{These methods provide various 2D plots for SMACOF models.
 }
 \usage{
-\method{plot}{smacof}(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, 
+\method{plot}{smacof}(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, bubscale = 3,
 main, xlab, ylab, xlim, ylim, ...)
 
 \method{plot}{smacofR}(x, plot.type = "confplot", joint = FALSE, plot.dim = c(1,2), 
 main, xlab, ylab, xlim, ylim, ...)
 
-\method{plot}{smacofID}(x, plot.type = "confplot", plot.dim = c(1,2), main, xlab, ylab, xlim, ylim, ...)
+\method{plot}{smacofID}(x, plot.type = "confplot", plot.dim = c(1,2), bubscale = 5, main, xlab, ylab, xlim, ylim, ...)
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -23,12 +23,14 @@ main, xlab, ylab, xlim, ylim, ...)
   \item{plot.type}{String indicating which type of plot to be produced: \code{"confplot"}, \code{"resplot"} 
   \code{"Shepard"}, \code{"stressplot"} (see details)}
   \item{plot.dim}{Vector with dimensions to be plotted.}
+  
   \item{main}{Plot title.}
   \item{xlab}{Label of x-axis.}
   \item{ylab}{Label of y-axis.}
   \item{xlim}{Scale x-axis.}
   \item{ylim}{Scale y-axis.}
   \item{sphere}{In case of spherical smacof, whether sphere should be plotted or not.}
+  \item{bubscale}{Scaling factor (size) for the bubble plot.}
   \item{joint}{If \code{TRUE}, the configurations are plotted jointly in rectangular smacof.}
   \item{\dots}{Further plot arguments passed: see \code{\link[graphics]{plot}}} in package \code{scatterplot3d} for detailed information.
 }
@@ -40,16 +42,17 @@ Plot description:
  
 - Configuration plot (\code{plot.type = "confplot"}): Plots the MDS configurations.
 
-- Residual plot (\code{plot.type = "resplot"}): Plots the configuration distances against  
-the corresponding residuals. 
+- Residual plot (\code{plot.type = "resplot"}): Plots the normalized dissimilarities (d-hats) distances against  
+the fitted distances. 
 
-- Shepard diagram (\code{plot.type = "Shepard"}): Diagram with the observed against the fitted distances including
-isotonic regression line.
+- Shepard diagram (\code{plot.type = "Shepard"}): Diagram with the observed dissimilarities against the fitted distances including
+(isotonic) regression line.
 
-- Stress decomposition plot (\code{plot.type = "stressplot"}): Plots the stress contribution in of each observation.
+- Stress decomposition plot (\code{plot.type = "stressplot"}): Plots the stress contribution in of each observation. The higher the contribution, the worse the fit. 
 
-For \code{smacofIndDiff()} the residual plot, Shepard diagram, and stress plot are based on the sum of the residuals across individuals/ways. 
-The configuration plot represents the group stimulus space (i.e., joint configurations).
+- Bubble plot (\code{plot.type = "bubbleplot"}, not available for rectangular SMACOF): Combines the configuration plot with the point stress contribution. The larger the bubbles, the better the fit. 
+
+For \code{smacofIndDiff()} the residual plot, Shepard diagram, and stress plot are based on the sum of the residuals across individuals/ways. The configuration plot represents the group stimulus space (i.e., joint configurations).
 
 }
 
@@ -62,6 +65,9 @@ res <- smacofSym(trading)
 plot(res, plot.type = "confplot")
 plot(res, plot.type = "Shepard")
 plot(res, plot.type = "stressplot")
+plot(res, plot.type = "resplot")
+plot(res, plot.type = "bubbleplot")
+
 
 ## Joint configuration plot and row/column stressplots for rectangular SMACOF
 data(breakfast)

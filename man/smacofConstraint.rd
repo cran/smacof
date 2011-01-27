@@ -3,10 +3,10 @@
 
 \title{SMACOF Constraint}
 \description{
-SMACOF with constraints on the configuration
+SMACOF with constraints on the configurations.
 }
 \usage{
-smacofConstraint(delta, constraint = "linear", external, ndim = 2, weightmat = NULL, startconf = NULL,
+smacofConstraint(delta, constraint = "linear", external, ndim = 2, weightmat = NULL, init = NULL,
 metric = TRUE, ties = "primary", verbose = FALSE, modulus = 1, itmax = 1000, eps = 1e-6)
 
 }
@@ -17,7 +17,7 @@ metric = TRUE, ties = "primary", verbose = FALSE, modulus = 1, itmax = 1000, eps
   \item{external}{Data frame or matrix with external covariates, or list for simplex and circumplex (see details)}
   \item{ndim}{Number of dimensions}
   \item{weightmat}{Optional matrix with dissimilarity weights}
-  \item{startconf}{Optional matrix with starting values for configurations (see details)} 
+  \item{init}{Optional matrix with starting values for configurations} 
   \item{metric}{If \code{FALSE} non-metric MDS is performed}
   \item{ties}{Tie specification for non-metric MDS only: \code{"primary"}, \code{"secondary"}, or \code{"tertiary"}}
   \item{verbose}{If \code{TRUE}, intermediate stress is printed out}
@@ -25,20 +25,22 @@ metric = TRUE, ties = "primary", verbose = FALSE, modulus = 1, itmax = 1000, eps
   \item{itmax}{Maximum number of iterations}
   \item{eps}{Convergence criterion}
 }
-\details{The user can specify a function with the following arguments: configuration matrix with starting values, 
-matrix V (based on the weight matrix, see package vignette), external scale matrix. 
-The function must return a matrix of resulting configurations. 
+\details{The argument \code{external} is mandatory and allows for the specification of a covariate data frame (or matrix) of dimension (n x q). Alternatively, for simplex fitting the user can specify a list of the following structure: \code{external = list("simplex", dim2)} with \code{dim2} denoting the dimension of the simplex with dim2 < n. For a circumplex fitting, the list has to be of the following form: \code{external = list("circumplex", dim2, k1, k2)} with 1 <= k1 <= k2 <= n (see also examples section). k1 and k2 denote the circumplex width.
 
-A matrix with starting configurations can be specifiied. For \code{constraint = "linear"} it has to be of dimension (n x p). For \code{constraint = "unique"} it is typically of the form X = (Y|D) with D as (n x n) diagonal matrix and Y (n x p) configuration matrix. Hence X is of dimension (n x (n + p)). For \code{constraint = "diagonal"} it is typically of dimension  (n x q) where q is the number of columns of the external scale matrix (and thus number of dimensions). If \code{constraint} is user-specified the specification of \code{startconf} is mandatory.
+In constraint smacof, the configuration matrix is subject of a constraint based on the external scales (predictors). This constraint can be specified using the \code{constraint} argument. We provide the following standard setting: For \code{constraint = "linear"} the configurations X are decomposed linearly, i.e. X = ZC where Z is the known predictor matrix specified using \code{external}. For \code{constraint = "unique"} we get the Bentler-Weeks uniqueness model. Hence X is of dimension (n x (n + p)). For \code{constraint = "diagonal"}, X typically of dimension  (n x q) where q is the number of columns of the external scale matrix (and thus number of dimensions). C is restricted to be diagonal. More technical details can be found in the package vignette, p. 6. 
 
-The argument \code{external} allows for the specification of a covariate data frame (or matrix) of dimension (n x q). Alternatively, for simplex fitting the user can specify a list of the following structure: \code{external = list("simplex", dim2)} with \code{dim2} denoting the dimension of the simplex with dim2 < n. For a circumplex the list has to be of the following form: \code{external = list("circumplex", dim2, k1, k2)} with 1 <= k1 <= k2 <= n (see also examples section). k1 and k2 denote the circumplex width.
+In addition, the user can specify his own constraint function with the following arguments: configuration matrix with starting values (\code{init}) (mandatory in this case), matrix V (\code{weightmat}; based on the weight matrix, see package vignette), external scale matrix (\code{external}). The function must return a matrix of resulting configurations. 
+
+
 }
 \value{
+  \item{delta}{Observed dissimilarities}
   \item{obsdiss}{Observed dissimilarities, normalized}
   \item{confdiss}{Configuration dissimilarities}
   \item{conf}{Matrix of final configurations}
   \item{stress.m}{stress value for metric MDS}
   \item{stress.nm}{stress value for non-metric MDS (if computed)}
+  \item{spp}{Stress per point}
   \item{ndim}{Number of dimensions}
   \item{model}{Type of smacof model}
   \item{niter}{Number of iterations}

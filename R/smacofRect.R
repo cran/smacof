@@ -64,8 +64,7 @@ smacofRect <- function(delta, ndim = 2, weightmat = NULL, init = NULL, verbose =
 
         if (verbose) {
 		cat("Iteration: ",formatC(itel,digits=6,width=6),
-	    	"   Stress:   ",formatC(lold,digits=6,width=12,format="f"),
-	    	" ==>",formatC(lnew,digits=6,width=12,format="f"),"\n")
+	    	"   Stress (not normalized):",formatC(lnew,digits=6,width=12,format="f"),"\n")
 	}
 
         if (((lold-lnew) < eps) || (itel==itmax)) break() 
@@ -78,9 +77,14 @@ smacofRect <- function(delta, ndim = 2, weightmat = NULL, init = NULL, verbose =
 colnames(y) <- colnames(x) <- paste("D",1:(dim(y)[2]),sep="")
 rownames(x) <- rownames(diss) <- rownames(d) <- rnames
 
- 
+# point stress 
+resmat <- as.matrix(d - diss)^2    #point stress
+spp.col <- colMeans(resmat)
+spp.row <- rowMeans(resmat)
+  
+
 #return configuration distances, row and column configurations, stress 
-result <- list(obsdiss = diss, confdiss = d, conf.row = x, conf.col = y, stress = lnew, 
+result <- list(obsdiss = diss, confdiss = d, conf.row = x, conf.col = y, stress = lnew, spp.row = spp.row, spp.col = spp.col,
                ndim = p, model = "Rectangular smacof", niter = itel, nind = n, nobj = m, metric = TRUE, call = match.call()) 
 class(result) <- "smacofR"
 result 
