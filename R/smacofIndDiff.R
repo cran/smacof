@@ -13,16 +13,17 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
 { 
   diss <- delta
   p <- ndim
-  wgths <- weightmat
   constr <- constraint
  
   if (!is.list(diss)) diss <- list(diss)
   if ((is.matrix(diss[[1]])) || (is.data.frame(diss[[1]]))) diss <- lapply(diss, strucprep)
 
-  if (is.null(weightmat)) wgths <- initWeights(diss)
+  if (is.null(weightmat)) wgths <- initWeights(diss) else  wgths <- as.dist(weightmat)
   if (!is.list(wgths)) wgths <- list(wgths)
   
   n <- attr(diss[[1]],"Size")
+  if (p > (n - 1)) stop("Maximum number of dimensions is n-1!")
+  
   nn <- n*(n-1)/2
   m <- length(diss)
   itel <- 1
@@ -162,8 +163,8 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
     }
     #--------- end nonmetric MDS ----
     
-    if (verbose) cat("Iteration: ",formatC(itel,width=3, format="d")," Stress: ",
-	formatC(c(sold,sunc,scon,snon),digits=8,width=12,format="f"),"\n")
+    if (verbose) cat("Iteration: ",formatC(itel,width=3, format="d")," Stress (not normalized): ",
+	formatC(c(snon),digits=8,width=12,format="f"),"\n")
 
     if (((sold-snon)<eps) || (itel == itmax)) break()         #convergence
     
@@ -202,10 +203,15 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
   for (j in 1:m) {                              #initialize weights, V, norm d as lists
 	 confdiss[[j]] <- normDissN(er[[j]], wgths[[j]], 1)
   }
+
+  #resmat <- as.matrix(dhat - confdiss)^2    #point stress
+  #spp <- colMeans(resmat)
+  resmat <- as.matrix(sumList(dh) - sumList(confdiss))^2
+  spp <- colMeans(resmat)
   
   #return configurations, configuration distances, normalized observed distances 
-  result <- list(obsdiss = dh, confdiss = confdiss, conf = yr, gspace = aconf, cweights = bconf,
-                 stress.m = ssma, stress.nm = snon, stress.uc = sunc, ndim = p, model = "Three-way SMACOF", niter = itel, nobj = n, metric = metric, call = match.call()) 
+  result <- list(delta = diss, obsdiss = dh, confdiss = confdiss, conf = yr, gspace = aconf, cweights = bconf,
+                 stress.m = ssma, stress.nm = snon, stress.uc = sunc, spp = spp, ndim = p, model = "Three-way SMACOF", niter = itel, nobj = n, metric = metric, call = match.call()) 
   class(result) <- "smacofID"
   result 
 }

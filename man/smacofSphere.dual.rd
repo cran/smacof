@@ -30,11 +30,13 @@ metric = TRUE, ties = "primary", verbose = FALSE, modulus = 1, itmax = 100, eps 
 }
 
 \value{
+  \item{delta}{Observed dissimilarities}
   \item{obsdiss}{Observed dissimilarities, normalized}
   \item{obsdiss1}{Dual SMACOF: Observed dissimilarities}
   \item{obsdiss2}{Dual SMACOF: Restriction matrix}
   \item{confdiss}{Configuration dissimilarities}
   \item{conf}{Matrix of final configurations}
+  \item{spp}{Stress per point}
   \item{stress.m}{stress value for metric MDS}
   \item{stress.nm}{stress value for non-metric MDS (if computed)}
   \item{ndim}{Number of dimensions}

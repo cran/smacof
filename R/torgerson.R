@@ -1,5 +1,5 @@
 `torgerson` <-
-function(diss, p=2)
+function(diss, p=p)
 {
 #diss ... dissimilarity matrix
 #p ... number of dimensions
@@ -17,6 +17,7 @@ function(diss, p=2)
 #-------------------- end subroutines --------------------
   z <- eigen(-doubleCenter(as.matrix(diss)^2)/2,symmetric=TRUE)
   v <- pmax(z$values,0)
-  return(z$vectors[,1:p]%*%diag(sqrt(v[1:p])))
+  if (p == 1) normdiag <- cbind(sqrt(v[1])) else normdiag <- diag(sqrt(v[1:p]))
+  return(z$vectors[,1:p]%*%normdiag)
 }
 

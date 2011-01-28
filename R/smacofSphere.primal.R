@@ -10,6 +10,8 @@ smacofSphere.primal <- function(delta, ndim = 2, weightmat = NULL, init = NULL,
  if ((is.matrix(diss)) || (is.data.frame(diss))) diss <- strucprep(diss)  #if data are provided as dissimilarity matrix
  p <- ndim
  n <- attr(diss,"Size")
+ if (p > (n - 1)) stop("Maximum number of dimensions is n-1!")
+ 
  nn <- n*(n-1)/2
  m <- length(diss)
  if (is.null(attr(diss, "Labels"))) attr(diss, "Labels") <- paste(1:n)
@@ -17,7 +19,7 @@ smacofSphere.primal <- function(delta, ndim = 2, weightmat = NULL, init = NULL,
 
  if (is.null(weightmat)) {
     wgths <- initWeights(diss)
- }  else  wgths <- weightmat
+ }  else  wgths <- as.dist(weightmat)
 
  dhat <- normDissN(diss,wgths,1)            #normalize dissimilarities
  if (is.null(init)) x <- torgerson(sqrt(diss), p=p) else x <- init   # x as matrix with starting values
@@ -39,10 +41,10 @@ smacofSphere.primal <- function(delta, ndim = 2, weightmat = NULL, init = NULL,
  #------------------------- begin majorization ---------------------------------
  repeat {
  	 b <- bmat(dhat,wgths,d)
-   y <- v%*%b%*%x                       #Guttman transform
+         y <- v%*%b%*%x                       #Guttman transform
 	 y <- sphereProj(y,w)                 #projection on the sphere
-	 #FIXME!!!
-   e <- dist(y)                         #distances for Y (to be enhanced with geodesics
+	
+         e <- dist(y)                         #extension: distances for Y to be enhanced with geodesics)
 	 ssma <- sum(wgths*(dhat-e)^2)        #metric stress
 
    if (!metric) {                       #nonmetric versions
@@ -55,8 +57,8 @@ smacofSphere.primal <- function(delta, ndim = 2, weightmat = NULL, init = NULL,
 			}
 	}
   snon <- sum(wgths*(dhat-e)^2)        #nonmetric stress
-	if (verbose) cat("Iteration: ",formatC(itel,width=3, format="d")," Stress: ",
-		formatC(c(sold,ssma,snon),digits=8,width=12,format="f"),"\n")
+	if (verbose) cat("Iteration: ",formatC(itel,width=3, format="d")," Stress (not normalized): ",
+		formatC(c(snon),digits=8,width=12,format="f"),"\n")
 	if (((sold-snon)<eps) || (itel == itmax)) break()
 
   x <- y                               #updates
@@ -79,8 +81,11 @@ if (!metric) ssma <- NULL
 
 confdiss <- normDissN(e, wgths, 1)        #final normalization to n(n-1)/2
 
+# point stress 
+resmat <- as.matrix(dhat - confdiss)^2    #point stress
+spp <- colMeans(resmat) 
 
-result <- list(obsdiss = dhat, confdiss = confdiss, conf = y, stress.m = ssma, stress.nm = snon,
+result <- list(delta = diss, obsdiss = dhat, confdiss = confdiss, conf = y, stress.m = ssma, stress.nm = snon, spp = spp,
                ndim = p, model = "Spherical SMACOF (primal)", niter = itel, nobj = n, metric = metric, call = match.call())
 class(result) <- c("smacofSP", "smacof")
 result
