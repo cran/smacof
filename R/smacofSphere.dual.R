@@ -2,7 +2,7 @@
 
 smacofSphere.dual <- function(delta, penalty = 100, ndim = 2, weightmat = NULL,
                               init = NULL, metric = TRUE, ties = "primary", verbose = FALSE,
-                              relax = 1, modulus = 1, itmax = 1000, eps = 1e-6)
+                              relax = FALSE, modulus = 1, itmax = 1000, eps = 1e-6)
 {
 # penalty ... penalty term kappa >0, 100 is reasonable
 
@@ -98,12 +98,13 @@ dummyvec <- as.matrix(e)[,1][-1]
 confdiss <- normDissN(e.temp, wgths, 1)        #final normalization to n(n-1)/2
 
 # point stress 
-resmat <- as.matrix(dhat1 - confdiss)^2    #point stress
+resmat <- (as.matrix(dhat1)[-1,-1] - as.matrix(confdiss))^2    #point stress
 spp <- colMeans(resmat)
+
+if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!")
   
  
-result <- list(delta = diss, obsdiss1 = dhat1, obsdiss2 = dhat2, confdiss = confdiss, conf = y, stress.m = ssma, stress.nm = snon, spp = spp,
-               ndim = p, dummyvec = dummyvec, model = "Spherical SMACOF (dual)", niter = itel, nobj = n, metric = metric, call = match.call())
+result <- list(delta = diss, obsdiss1 = dhat1, obsdiss2 = dhat2, confdiss = confdiss, conf = y, stress.m = ssma, stress.nm = snon, spp = spp, ndim = p, dummyvec = dummyvec, model = "Spherical SMACOF (dual)", niter = itel, nobj = n, metric = metric, call = match.call())
 class(result) <- c("smacofSP", "smacof")
 result
 }

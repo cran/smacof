@@ -83,10 +83,11 @@ confdiss <- normDissN(e, wgths, 1)        #final normalization to n(n-1)/2
 
 # point stress 
 resmat <- as.matrix(dhat - confdiss)^2    #point stress
-spp <- colMeans(resmat) 
+spp <- colMeans(resmat)
 
-result <- list(delta = diss, obsdiss = dhat, confdiss = confdiss, conf = y, stress.m = ssma, stress.nm = snon, spp = spp,
-               ndim = p, model = "Spherical SMACOF (primal)", niter = itel, nobj = n, metric = metric, call = match.call())
+ if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!")
+
+result <- list(delta = diss, obsdiss = dhat, confdiss = confdiss, conf = y, stress.m = ssma, stress.nm = snon, spp = spp, ndim = p, model = "Spherical SMACOF (primal)", niter = itel, nobj = n, metric = metric, call = match.call())
 class(result) <- c("smacofSP", "smacof")
 result
 }

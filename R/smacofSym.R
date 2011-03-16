@@ -97,7 +97,8 @@ function(delta, ndim = 2, weightmat = NULL, init = NULL,
  # point stress 
  resmat <- as.matrix(dhat - confdiss)^2    #point stress
  spp <- colMeans(resmat)
- 
+
+ if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!") 
   
 #return configurations, configuration distances, normalized observed distances 
 result <- list(delta = diss, obsdiss = dhat, confdiss = confdiss, conf = y, stress.m = ssma, stress.nm = snon, spp = spp,

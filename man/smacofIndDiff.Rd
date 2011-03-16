@@ -25,9 +25,8 @@ smacofIndDiff(delta, ndim = 2, weightmat = NULL, init = NULL, metric = TRUE,
   \item{itmax}{Maximum number of iterations}
   \item{eps}{Convergence criterion}
 }
-\details{If the constraint is \code{NULL}, INDSCAL is performed with identity configuration weight matrices.
-An additional restriction can be imposed with \code{"identity"} which restricts the configurations across individuals/replications/ways to be equal.
-More unrestricted models are \code{"diagonal"} which restricts only the configuration weight matrices to be diagonal and \code{"idioscal"} is unrestricted.
+\details{If the constraint is \code{NULL}, INDSCAL is performed with identity restriction on the weight matrix. 
+IDIOSCAL can be computed using the \code{"idioscal"} argument. The weight matrices are then unconstrained. Addtional weight restrictions can be imposed with \code{"identity"} which restricts the configurations across individuals/replications/ways to be equal, or \code{"diagonal"} which restricts only the configuration weight matrices to be diagonal. 
 }
 
 \value{

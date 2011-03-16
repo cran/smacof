@@ -194,20 +194,21 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
   sunc <- sunc/nn
   scon <- scon/nn
   
-  
   if (metric) snon <- NULL          #no non-metric stress
-  if (!metric) sold <- NULL
-  if (is.null(constraint)) scon <- NULL
+  if (!metric) ssma <- NULL  
+ # if (!metric) sold <- NULL
+ # if (is.null(constraint)) scon <- NULL
   
   confdiss <- rep(list(NULL), m)
   for (j in 1:m) {                              #initialize weights, V, norm d as lists
 	 confdiss[[j]] <- normDissN(er[[j]], wgths[[j]], 1)
   }
 
-  #resmat <- as.matrix(dhat - confdiss)^2    #point stress
-  #spp <- colMeans(resmat)
-  resmat <- as.matrix(sumList(dh) - sumList(confdiss))^2
+ 
+  resmat <- as.matrix(sumList(dh) - sumList(confdiss))^2 ##point stress
   spp <- colMeans(resmat)
+
+  if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!")
   
   #return configurations, configuration distances, normalized observed distances 
   result <- list(delta = diss, obsdiss = dh, confdiss = confdiss, conf = yr, gspace = aconf, cweights = bconf,
