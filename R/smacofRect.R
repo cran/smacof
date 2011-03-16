@@ -82,7 +82,8 @@ resmat <- as.matrix(d - diss)^2    #point stress
 spp.col <- colMeans(resmat)
 spp.row <- rowMeans(resmat)
   
-
+if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!")
+  
 #return configuration distances, row and column configurations, stress 
 result <- list(obsdiss = diss, confdiss = d, conf.row = x, conf.col = y, stress = lnew, spp.row = spp.row, spp.col = spp.col,
                ndim = p, model = "Rectangular smacof", niter = itel, nind = n, nobj = m, metric = TRUE, call = match.call()) 

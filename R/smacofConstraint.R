@@ -170,8 +170,9 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, w
   resmat <- as.matrix(dhat - confdiss)^2    #point stress
   spp <- colMeans(resmat)
 
-  result <- list(delta = diss, obsdiss = dhat, confdiss = confdiss, conf = y, stress.m = ssma, stress.nm = snon, spp = spp,
-               ndim = p, model = "SMACOF constraint", niter = itel, nobj = n, metric = metric, call = match.call()) 
+  if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!")
+
+  result <- list(delta = diss, obsdiss = dhat, confdiss = confdiss, conf = y, stress.m = ssma, stress.nm = snon, spp = spp, ndim = p, model = "SMACOF constraint", niter = itel, nobj = n, metric = metric, call = match.call()) 
   class(result) <- c("smacofB","smacof")
   result 
 }
