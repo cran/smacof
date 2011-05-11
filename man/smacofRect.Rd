@@ -16,7 +16,7 @@ smacofRect(delta, ndim = 2, weightmat = NULL, init = NULL, verbose = FALSE,
   \item{init}{Matrix with starting values for configurations (optional)}
   \item{verbose}{If \code{TRUE}, intermediate stress is printed out}
   \item{itmax}{Maximum number of iterations}
-  \item{reg}{Regularization factor, prevents distances from beeing 0}
+  \item{reg}{Regularization factor, prevents distances from being 0}
   \item{eps}{Convergence criterion}
 }
 \details{Creates an object of class \code{smacofR}. 
@@ -37,18 +37,26 @@ smacofRect(delta, ndim = 2, weightmat = NULL, init = NULL, verbose = FALSE,
   \item{nind}{Number of individuals (rows)}
   \item{nobj}{Number of objects (columns)}
 }
-\references{de Leeuw, J. \& Mair, P. (2009). Multidimensional scaling using majorization: 
+\references{de Leeuw, J. & Mair, P. (2009). Multidimensional scaling using majorization: 
 The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{http://www.jstatsoft.org/v31/i03/} 
 }
 \author{Jan de Leeuw and Patrick Mair}
 
-\seealso{\code{\link{smacofConstraint}}, \code{\link{smacofSym}}, \code{\link{smacofIndDiff}}, \code{\link{smacofSphere.primal}}, \code{\link{smacofSphere.dual}}}
+\seealso{\code{\link{smacofConstraint}}, \code{\link{smacofSym}}, \code{\link{smacofIndDiff}}, \code{\link{smacofSphere.primal}}, \code{\link{smacofSphere.dual}}, \code{\link{plot.smacof}}}
 
 \examples{
 data(breakfast)
 res <- smacofRect(breakfast)
 res
 summary(res)
+
+## various configuration plots
+plot(res)
+plot(res, type = "p", pch = 25)
+plot(res, type = "p", pch = 25, col.columns = 3, label.conf.columns = list(label = TRUE, pos = 3, col = 3), col.rows = 8, label.conf.rows = list(label = TRUE, pos = 3, col = 8))
+
+plot(res, joint = TRUE)
+plot(res, joint = TRUE, type = "p", pch = 25, col.columns = 4, label.conf.columns = list(label = TRUE, pos = 3, col = 4), col.rows = 8, label.conf.rows = list(label = TRUE, pos = 3, col = 8))
 }
 
 \keyword{models}

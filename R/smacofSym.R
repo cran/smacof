@@ -94,7 +94,7 @@ function(delta, ndim = 2, weightmat = NULL, init = NULL,
 
  confdiss <- normDissN(e, wgths, 1)        #final normalization to n(n-1)/2
 
- # point stress 
+ ## point stress 
  resmat <- as.matrix(dhat - confdiss)^2    #point stress
  spp <- colMeans(resmat)
 

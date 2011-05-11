@@ -39,12 +39,12 @@ The function also returns the point stress, i.e. the larger the contribution of 
   \item{niter}{Number of iterations}
   \item{nobj}{Number of objects}
 }
-\references{de Leeuw, J. \& Mair, P. (2009). Multidimensional scaling using majorization: 
+\references{de Leeuw, J. & Mair, P. (2009). Multidimensional scaling using majorization: 
 The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{http://www.jstatsoft.org/v31/i03/} 
 }
 \author{Jan de Leeuw and Patrick Mair}
 
-\seealso{\code{\link{smacofConstraint}}, \code{\link{smacofRect}}, \code{\link{smacofIndDiff}}, \code{\link{smacofSphere.primal}}, \code{\link{smacofSphere.dual}}}
+\seealso{\code{\link{smacofConstraint}}, \code{\link{smacofRect}}, \code{\link{smacofIndDiff}}, \code{\link{smacofSphere.primal}}, \code{\link{smacofSphere.dual}}, \code{\link{plot.smacof}}}
 \examples{
 
 ## simple SMACOF solution for kinship data
@@ -52,6 +52,8 @@ data(kinshipdelta)
 res <- smacofSym(kinshipdelta)
 res
 summary(res)
+plot(res)
+plot(res, type = "p", label.conf = list(TRUE, 3, "darkgray"), pch = 25, col = "red")
 
 ## 3D nonmetric SMACOF solution for trading data
 data(trading)
