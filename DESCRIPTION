@@ -1,8 +1,8 @@
 Package: smacof
 Type: Package
 Title: SMACOF for Multidimensional Scaling.
-Version: 1.1-3
-Date: 2011-03-16
+Version: 1.2-0
+Date: 2011-05-11
 Author: Jan de Leeuw, Patrick Mair
 Maintainer: Jan de Leeuw <deleeuw@stat.ucla.edu>
 Description: This package provides the following approaches of
@@ -15,10 +15,12 @@ Description: This package provides the following approaches of
         and spherical smacof (primal and dual algorithm). Each of these
         approaches is implemented in a metric and nonmetric manner
         including primary, secondary, and tertiary approaches for tie
-        handling.
+        handling. Jackknife and permutation tests are included as well.
 Imports: graphics, stats
-Depends: R (>= 2.8.0), polynom, rgl, scatterplot3d
-License: GPL
-Packaged: 2011-03-16 15:56:32 UTC; mair
+Depends: R (>= 2.13.0), polynom, rgl, scatterplot3d, Hmisc, colorspace
+License: GPL-2
 Repository: CRAN
-Date/Publication: 2011-03-16 20:03:35
+Repository/R-Forge/Project: psychor
+Repository/R-Forge/Revision: 125
+Date/Publication: 2011-05-26 21:16:53
+Packaged: 2011-05-23 21:13:43 UTC; rforge

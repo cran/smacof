@@ -8,13 +8,11 @@
 \description{These methods provide various 2D plots for SMACOF models.
 }
 \usage{
-\method{plot}{smacof}(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, bubscale = 3,
-main, xlab, ylab, xlim, ylim, ...)
+\method{plot}{smacof}(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, bubscale = 3, label.conf = list(label = TRUE, pos = 1, col = 1), type, main, xlab, ylab, xlim, ylim, ...)
 
-\method{plot}{smacofR}(x, plot.type = "confplot", joint = FALSE, plot.dim = c(1,2), 
-main, xlab, ylab, xlim, ylim, ...)
+\method{plot}{smacofR}(x, plot.type = "confplot", joint = FALSE, plot.dim = c(1,2), col.rows = "red", col.columns = "blue", label.conf.rows = list(label = TRUE, pos = 1, col = "red"), label.conf.columns = list(label = TRUE, pos = 1, col = "blue"), type, main, xlab, ylab, xlim, ylim, ...)
 
-\method{plot}{smacofID}(x, plot.type = "confplot", plot.dim = c(1,2), bubscale = 5, main, xlab, ylab, xlim, ylim, ...)
+\method{plot}{smacofID}(x, plot.type = "confplot", plot.dim = c(1,2), bubscale = 5, label.conf = list(label = TRUE, pos = 1, col = 1), type, main, xlab, ylab, xlim, ylim, ...)
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -23,16 +21,21 @@ main, xlab, ylab, xlim, ylim, ...)
   \item{plot.type}{String indicating which type of plot to be produced: \code{"confplot"}, \code{"resplot"} 
   \code{"Shepard"}, \code{"stressplot"} (see details)}
   \item{plot.dim}{Vector with dimensions to be plotted.}
-  
   \item{main}{Plot title.}
   \item{xlab}{Label of x-axis.}
   \item{ylab}{Label of y-axis.}
   \item{xlim}{Scale x-axis.}
   \item{ylim}{Scale y-axis.}
+  \item{type}{What type of plot should be drawn (see also \code{\link[graphics]{plot}}.}
   \item{sphere}{In case of spherical smacof, whether sphere should be plotted or not.}
   \item{bubscale}{Scaling factor (size) for the bubble plot.}
+  \item{label.conf}{List with arguments for plotting the labels of the configurations in a configuration plot (logical value whether to plot labels or not, label position, label color).}
   \item{joint}{If \code{TRUE}, the configurations are plotted jointly in rectangular smacof.}
-  \item{\dots}{Further plot arguments passed: see \code{\link[graphics]{plot}}} in package \code{scatterplot3d} for detailed information.
+  \item{col.rows}{Row colors in rectangular configuration plot.} 
+  \item{col.columns}{Column colors in rectangular configuration plot.} 
+  \item{label.conf.rows}{List with arguments for plotting the labels of the row configurations in a rectangular configuration plot (logical value whether to plot labels or not, label position, label color).} 
+  \item{label.conf.columns}{List with arguments for plotting the labels of the columns configurations in a rectangular configuration plot (logical value whether to plot labels or not, label position, label color).}
+  \item{\dots}{Further plot arguments passed: see \code{\link[graphics]{plot}} for detailed information.}
 }
 
 \details{\code{smacofSym()} creates object of class \code{"smacof"}, whereas \code{smacofRect()} produces 
@@ -74,7 +77,9 @@ data(breakfast)
 res <- smacofRect(breakfast)
 plot(res, plot.type = "confplot", joint = TRUE)
 plot(res, plot.type = "stressplot")
-
+plot(res, type = "p", pch = 25)
+plot(res, type = "p", pch = 25, col.columns = 3, label.conf.columns = list(label = TRUE, pos = 3, col = 3), col.rows = 8, label.conf.rows = list(label = TRUE, pos = 3, col = 8))
+plot(res, joint = TRUE, type = "p", pch = 25, col.columns = 4, label.conf.columns = list(label = TRUE, pos = 3, col = 4), col.rows = 8, label.conf.rows = list(label = TRUE, pos = 3, col = 8))
 }
 
 \keyword{ hplot }

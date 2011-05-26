@@ -1,6 +1,6 @@
 # plot method for all smacof objects
 
-plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, bubscale = 3,
+plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, bubscale = 3, label.conf = list(label = TRUE, pos = 1, col = 1), type, 
                         main, xlab, ylab, xlim, ylim, ...)
 
 # x ... object of class smacof
@@ -27,6 +27,7 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
 
   #----------------- configuration plot ---------------------
   if (plot.type == "confplot") {
+    
     if (missing(main)) main <- paste("Configuration Plot") else main <- main
     if (missing(xlab)) xlab <- paste("Configurations D", x1,sep = "") else xlab <- xlab
     if (missing(ylab)) ylab <- paste("Configurations D", y1,sep = "") else ylab <- ylab
@@ -34,7 +35,9 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     if (missing(xlim)) xlim <- range(x$conf[,x1])
     if (missing(ylim)) ylim <- range(x$conf[,y1])
     
-    plot(x$conf[,x1], x$conf[,y1], main = main, type = "n", xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)
+    if (missing(type)) type <- "n" else type <- type
+    
+    plot(x$conf[,x1], x$conf[,y1], main = main, type = type, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)
     if ((any(class(x) == "smacofSP")) && (sphere)) {
       if (x$model == "Spherical SMACOF (dual)") {                     #dual smacof centered around first configuration row
         radius <- sqrt((abs(x$conf[2,1])+abs(x$conf[1,1]))^2 + (abs(x$conf[2,2])+abs(x$conf[1,2]))^2)    #sphere radius dual
@@ -44,7 +47,10 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
         circle(0, 0, radius, lty = 2, border = "lightgray")
       }
     }
-      text(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), cex = 0.8)    
+    
+    ppos <- label.conf[[2]]
+    if (type == "n") ppos <- NULL
+    if (label.conf[[1]]) text(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), cex = 0.8, pos = ppos, col = label.conf[[3]])    
   }
 
   #---------------- Shepard diagram ------------------

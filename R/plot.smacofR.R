@@ -1,7 +1,8 @@
 # plot method for rectangular smacof
 
-plot.smacofR <- function(x, plot.type = "confplot", joint = FALSE, plot.dim = c(1,2), 
-                         main, xlab, ylab, xlim, ylim, ...)
+plot.smacofR <- function(x, plot.type = "confplot", joint = FALSE, plot.dim = c(1,2), col.rows = "red", col.columns = "blue",
+                         label.conf.rows = list(label = TRUE, pos = 1, col = "red"), label.conf.columns = list(label = TRUE, pos = 1, col = "blue"), 
+                         type, main, xlab, ylab, xlim, ylim, ...)
 
 # x ... object of class smacofR
 # plot.type ... types available: "confplot", "Shepard", "stressplot", "resplot"
@@ -13,37 +14,45 @@ plot.smacofR <- function(x, plot.type = "confplot", joint = FALSE, plot.dim = c(
   
   #--------------------------- configuration plot -----------------------
   if (plot.type == "confplot") {
-    if (!joint) {                                                                                 #separate devices
+    if (missing(type)) type <- "n" else type <- type
+    if (missing(xlab)) xlab1 <- paste("Configurations D", x1,sep = "") else xlab1 <- xlab  
+    if (missing(ylab)) ylab1 <- paste("Configurations D", y1,sep = "") else ylab1 <- ylab
+    ppos.rows <- label.conf.rows[[2]]
+    ppos.columns <- label.conf.columns[[2]]
+    if (type == "n") ppos.rows <- ppos.columns <- NULL
+
+    if (!joint) {                                                                                 
+      par(mfrow = c(1,2))
       if (missing(main)) main1 <- paste("Configuration Plot - Columns") else main1 <- main        #plot column configurations
-      if (missing(xlab)) xlab1 <- paste("Column Configurations D", x1,sep = "") else xlab1 <- xlab
-      if (missing(xlab)) ylab1 <- paste("Column Configurations D", y1,sep = "") else ylab1 <- ylab
+      #if (missing(xlab)) xlab1 <- paste("Column Configurations D", x1,sep = "") else xlab1 <- xlab
+      #if (missing(xlab)) ylab1 <- paste("Column Configurations D", y1,sep = "") else ylab1 <- ylab
 
       if (missing(xlim)) xlim <- range(x$conf.col[,c(x1,y1)])
       if (missing(ylim)) ylim <- range(x$conf.row[,c(x1,y1)])
 
-      plot(x$conf.col[,x1], x$conf.col[,y1], main = main1, xlab = xlab1, ylab = ylab1, type = "n", xlim = xlim, ylim = ylim,...)
-      text(x$conf.col[,x1], x$conf.col[,y1], labels = rownames(x$conf.col), col = "BLUE")
+      plot(x$conf.col[,x1], x$conf.col[,y1], main = main1, xlab = xlab1, ylab = ylab1, type = type, xlim = xlim, ylim = ylim, col = col.columns, ...)
+      if (label.conf.columns[[1]]) text(x$conf.col[,x1], x$conf.col[,y1], labels = rownames(x$conf.col), cex = 0.8, pos = ppos.columns, col = label.conf.columns[[3]])
 
       if (missing(main)) main1 <- paste("Configuration Plot - Rows") else main1 <- main       #plot row configurations
-      if (missing(xlab)) xlab1 <- paste("Column Configurations D", x1,sep = "") else xlab1 <- xlab
-      if (missing(ylab)) ylab1 <- paste("Column Configurations D", y1,sep = "") else ylab1 <- ylab
-      dev.new()
-      plot(x$conf.row[,x1], x$conf.row[,y1], main = main1, xlab = xlab1, ylab = ylab1, type = "n", xlim = xlim, ylim = ylim, ...)
-      text(x$conf.row[,x1], x$conf.row[,y1], labels = rownames(x$conf.row), col = "RED")
+      #if (missing(xlab)) xlab1 <- paste("Column Configurations D", x1,sep = "") else xlab1 <- xlab
+      #if (missing(ylab)) ylab1 <- paste("Column Configurations D", y1,sep = "") else ylab1 <- ylab
+      #dev.new()
       
-    } else {                                                                                     #joint plot
+      plot(x$conf.row[,x1], x$conf.row[,y1], main = main1, xlab = xlab1, ylab = ylab1, type = type, xlim = xlim, ylim = ylim, col = col.rows, ...)
+      if (label.conf.rows[[1]]) text(x$conf.row[,x1], x$conf.row[,y1], labels = rownames(x$conf.row), cex = 0.8, pos = ppos.rows, col = label.conf.rows[[3]])      
+    
+    } else { #joint plot
+      par(mfrow = c(1,1))
       if (missing(main)) main1 <- paste("Joint Configuration Plot") else main1 <- main        
-      if (missing(xlab)) xlab1 <- paste("Configurations D", x1,sep = "") else xlab1 <- xlab  
-      if (missing(ylab)) ylab1 <- paste("Configurations D", y1,sep = "") else ylab1 <- ylab
-
+      
       fullconf <- rbind(x$conf.col[,c(x1,y1)],x$conf.row[,c(x1,y1)])
       if (missing(xlim)) xlim <- range(fullconf)
       if (missing(ylim)) ylim <- range(fullconf)
       
-      plot(x$conf.col[,x1], x$conf.col[,y1], main = main1, xlab = xlab1, ylab = ylab1, type = "n", xlim = xlim, ylim = ylim, ...)
-      text(x$conf.col[,x1], x$conf.col[,y1], labels = rownames(x$conf.col), col = "BLUE")
-      points(x$conf.row[,x1], x$conf.row[,y1], main = main1, xlab = xlab1, ylab = ylab1, type = "n")
-      text(x$conf.row[,x1], x$conf.row[,y1], labels = rownames(x$conf.row), col = "RED")
+      plot(x$conf.col[,x1], x$conf.col[,y1], main = main1, xlab = xlab1, ylab = ylab1, type = type, xlim = xlim, ylim = ylim, col = col.columns, ...)
+      if (label.conf.columns[[1]]) text(x$conf.col[,x1], x$conf.col[,y1], labels = rownames(x$conf.col), cex = 0.8, pos = ppos.columns, col = label.conf.columns[[3]])
+      points(x$conf.row[,x1], x$conf.row[,y1], main = main1, xlab = xlab1, ylab = ylab1, type = type, xlim = xlim, ylim = ylim, col = col.rows, ...)
+      if (label.conf.rows[[1]]) text(x$conf.row[,x1], x$conf.row[,y1], labels = rownames(x$conf.row), cex = 0.8, pos = ppos.rows, col = label.conf.rows[[3]])      
     }
   }
 

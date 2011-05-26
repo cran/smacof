@@ -7,6 +7,8 @@ export(smacofSphere.primal)
 export(smacofSphere.dual)
 export(sim2diss)
 export(plot3dstatic)
+export(jackknife)
+export(permtest)
 
 S3method(print, smacofB)
 S3method(summary, smacofB)
@@ -28,6 +30,12 @@ S3method(plot, smacofID)
 S3method(plot3dstatic, smacof)
 S3method(plot3dstatic, smacofR)
 S3method(plot3dstatic, smacofID)
+S3method(print, smacofJK)
+S3method(plot, smacofJK)
+S3method(jackknife, smacofB)
+S3method(permtest, smacofB)
+S3method(print, smacofPerm)
+S3method(plot, smacofPerm)
 
 
 

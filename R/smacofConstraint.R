@@ -27,6 +27,8 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, w
   nn <- n*(n-1)/2
   m <- length(diss)
   
+  simpcirc <- FALSE
+  
   if (is.null(attr(diss, "Labels"))) attr(diss, "Labels") <- paste(1:n)
  
   #---- external specification -----
@@ -54,6 +56,7 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, w
       el1 <- as.matrix(ind.all[ind.good,])
       external[el1] <- 1
     }
+    simpcirc <- TRUE
   }
 
   K <- dim(external)[2]  
@@ -169,11 +172,26 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, w
 
   resmat <- as.matrix(dhat - confdiss)^2    #point stress
   spp <- colMeans(resmat)
-
+  
+  if ((constraint == "diagonal") && (!simpcirc)) {
+    if (p != ncol(y)) {
+      warning("Number of dimensions is set equal to number of external variables!")
+      p <- ncol(y)     ## adapt dimensions for diagonal restriction
+    }
+  }
+  if (simpcirc) {
+    if (p != ncol(y)) {
+      warning("Number of dimensions is set equal to dimension defined by simplex/circumplex")
+      p <- ncol(y)     ## adapt dimensions for simplex/circumplex fitting
+    }
+  }
+  
   if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!")
 
   result <- list(delta = diss, obsdiss = dhat, confdiss = confdiss, conf = y, stress.m = ssma, stress.nm = snon, spp = spp, ndim = p, model = "SMACOF constraint", niter = itel, nobj = n, metric = metric, call = match.call()) 
   class(result) <- c("smacofB","smacof")
   result 
 }
+
+
 
