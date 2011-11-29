@@ -1,7 +1,7 @@
 #SMACOF for individual differences (list of dissimilarity matrices)
 
 smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric = TRUE,
-                          ties = "primary", constraint = NULL, verbose = FALSE, modulus = 1,
+                          ties = "primary", constraint = "indscal", verbose = FALSE, modulus = 1,
                           itmax = 1000, eps = 1e-6)
   
 # delta ... list of input objects: either of class dist() or a symmetric matrix
@@ -13,7 +13,11 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
 { 
   diss <- delta
   p <- ndim
+  if (constraint == "indscal") constraint <- "diagonal"
+  
   constr <- constraint
+  
+  
  
   if (!is.list(diss)) diss <- list(diss)
   if ((is.matrix(diss[[1]])) || (is.data.frame(diss[[1]]))) diss <- lapply(diss, strucprep)
@@ -105,7 +109,7 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
         yr<-repList(aconf,m)
 	     }
 
-       #-- configuration weights diagonal
+       #-- configuration weights diagonal INDSCAL
        if (constr=="diagonal") {
 		    aux0<-matrix(0,n,p)
 		    for (j in 1:m) {

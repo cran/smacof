@@ -8,11 +8,11 @@
 \description{These methods provide various 2D plots for SMACOF models.
 }
 \usage{
-\method{plot}{smacof}(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, bubscale = 3, label.conf = list(label = TRUE, pos = 1, col = 1), type, main, xlab, ylab, xlim, ylim, ...)
+\method{plot}{smacof}(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, bubscale = 3, label.conf = list(label = TRUE, pos = 1, col = 1), identify = FALSE, type, main, xlab, ylab, xlim, ylim, ...)
 
 \method{plot}{smacofR}(x, plot.type = "confplot", joint = FALSE, plot.dim = c(1,2), col.rows = "red", col.columns = "blue", label.conf.rows = list(label = TRUE, pos = 1, col = "red"), label.conf.columns = list(label = TRUE, pos = 1, col = "blue"), type, main, xlab, ylab, xlim, ylim, ...)
 
-\method{plot}{smacofID}(x, plot.type = "confplot", plot.dim = c(1,2), bubscale = 5, label.conf = list(label = TRUE, pos = 1, col = 1), type, main, xlab, ylab, xlim, ylim, ...)
+\method{plot}{smacofID}(x, plot.type = "confplot", plot.dim = c(1,2), bubscale = 5, label.conf = list(label = TRUE, pos = 1, col = 1), identify = FALSE, type, main, xlab, ylab, xlim, ylim, ...)
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -26,10 +26,11 @@
   \item{ylab}{Label of y-axis.}
   \item{xlim}{Scale x-axis.}
   \item{ylim}{Scale y-axis.}
-  \item{type}{What type of plot should be drawn (see also \code{\link[graphics]{plot}}.}
+  \item{type}{What type of plot should be drawn (see also \code{\link[graphics]{plot}}).}
   \item{sphere}{In case of spherical smacof, whether sphere should be plotted or not.}
   \item{bubscale}{Scaling factor (size) for the bubble plot.}
   \item{label.conf}{List with arguments for plotting the labels of the configurations in a configuration plot (logical value whether to plot labels or not, label position, label color).}
+  \item{identify}{If \code{TRUE}, the \code{identify()} function is called internally that allows to add configuration labels by mouse click.}
   \item{joint}{If \code{TRUE}, the configurations are plotted jointly in rectangular smacof.}
   \item{col.rows}{Row colors in rectangular configuration plot.} 
   \item{col.columns}{Column colors in rectangular configuration plot.} 
