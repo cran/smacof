@@ -1,26 +1,14 @@
 Package: smacof
 Type: Package
 Title: SMACOF for Multidimensional Scaling.
-Version: 1.2-0
-Date: 2011-05-11
-Author: Jan de Leeuw, Patrick Mair
+Version: 1.2-1
+Date: 2011-11-30
+Author: Jan de Leeuw, Patrick Mair 
 Maintainer: Jan de Leeuw <deleeuw@stat.ucla.edu>
-Description: This package provides the following approaches of
-        multidimensional scaling (MDS) based on stress minimization by
-        means of majorization (smacof): Simple smacof on symmetric
-        dissimilarity matrices, smacof for rectangular matrices
-        (unfolding models), smacof with constraints on the
-        configuration, three-way smacof for individual differences
-        (including constraints for idioscal, indscal, and identity),
-        and spherical smacof (primal and dual algorithm). Each of these
-        approaches is implemented in a metric and nonmetric manner
-        including primary, secondary, and tertiary approaches for tie
-        handling. Jackknife and permutation tests are included as well.
+Description: This package provides the following approaches of multidimensional scaling (MDS) based on stress minimization by means of majorization (smacof): Simple smacof on symmetric dissimilarity matrices, smacof for rectangular matrices (unfolding models), smacof with constraints on the configuration, three-way smacof for individual differences (including constraints for idioscal, indscal, and identity), and spherical smacof (primal and dual algorithm). Each of these approaches is implemented in a metric and nonmetric manner including primary, secondary, and tertiary approaches for tie handling. Jackknife and permutation tests are included as well. 
 Imports: graphics, stats
 Depends: R (>= 2.13.0), polynom, rgl, scatterplot3d, Hmisc, colorspace
 License: GPL-2
+Packaged: 2011-11-29 14:02:15 UTC; mair
 Repository: CRAN
-Repository/R-Forge/Project: psychor
-Repository/R-Forge/Revision: 125
-Date/Publication: 2011-05-26 21:16:53
-Packaged: 2011-05-23 21:13:43 UTC; rforge
+Date/Publication: 2011-11-29 16:49:27

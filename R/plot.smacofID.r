@@ -1,6 +1,8 @@
 # plot method for all smacof objects
 
-plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), bubscale = 5, label.conf = list(label = TRUE, pos = 1, col = 1), type, main, xlab, ylab, xlim, ylim, ...)
+plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), bubscale = 5, 
+                          label.conf = list(label = TRUE, pos = 1, col = 1), identify = FALSE, 
+                          type, main, xlab, ylab, xlim, ylim, ...)
 
 # x ... object of class smacofID
 # plot.type ... types available: "confplot", "Shepard", "resplot"
@@ -21,12 +23,18 @@ plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), bubscale
     if (missing(ylim)) ylim <- range(x$gspace[,y1])
     
     if (missing(type)) type <- "n" else type <- type
+    if (identify) type <- "p"
     
     ppos <- label.conf[[2]]
     if (type == "n") ppos <- NULL
 
     plot(x$gspace[,x1], x$gspace[,y1], main = main, type = type, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)
-    if (label.conf[[1]]) text(x$gspace[,x1], x$gspace[,y1], labels = rownames(x$gspace), cex = 0.8, pos = ppos, col = label.conf[[3]])
+    
+    if (!identify) {
+      if (label.conf[[1]]) text(x$gspace[,x1], x$gspace[,y1], labels = rownames(x$gspace), cex = 0.8, pos = ppos, col = label.conf[[3]])    
+    } else {
+      identify(x$gspace[,x1], x$gspace[,y1], labels = rownames(x$gspace), cex = 0.8)
+    }
   }
 
   #---------------- Shepard diagram ------------------

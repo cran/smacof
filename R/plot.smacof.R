@@ -1,7 +1,8 @@
 # plot method for all smacof objects
 
-plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, bubscale = 3, label.conf = list(label = TRUE, pos = 1, col = 1), type, 
-                        main, xlab, ylab, xlim, ylim, ...)
+plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, bubscale = 3, 
+                        label.conf = list(label = TRUE, pos = 1, col = 1), identify = FALSE, 
+                        type, main, xlab, ylab, xlim, ylim, ...)
 
 # x ... object of class smacof
 # plot.type ... types available: "confplot", "Shepard", "resplot"
@@ -36,6 +37,7 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     if (missing(ylim)) ylim <- range(x$conf[,y1])
     
     if (missing(type)) type <- "n" else type <- type
+    if (identify) type <- "p"
     
     plot(x$conf[,x1], x$conf[,y1], main = main, type = type, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)
     if ((any(class(x) == "smacofSP")) && (sphere)) {
@@ -48,9 +50,14 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
       }
     }
     
-    ppos <- label.conf[[2]]
-    if (type == "n") ppos <- NULL
-    if (label.conf[[1]]) text(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), cex = 0.8, pos = ppos, col = label.conf[[3]])    
+    if (!identify) {
+      ppos <- label.conf[[2]]
+      if (type == "n") ppos <- NULL
+      if (label.conf[[1]]) text(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), cex = 0.8, pos = ppos, col = label.conf[[3]])    
+    } else {
+      identify(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), cex = 0.8)
+    }
+    
   }
 
   #---------------- Shepard diagram ------------------
