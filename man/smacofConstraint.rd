@@ -6,8 +6,9 @@
 SMACOF with constraints on the configurations.
 }
 \usage{
-smacofConstraint(delta, constraint = "linear", external, ndim = 2, weightmat = NULL, init = NULL,
-metric = TRUE, ties = "primary", verbose = FALSE, modulus = 1, itmax = 1000, eps = 1e-6)
+smacofConstraint(delta, constraint = "linear", external, ndim = 2, 
+weightmat = NULL, init = NULL, metric = TRUE, ties = "primary", verbose = FALSE, 
+modulus = 1, itmax = 1000, eps = 1e-6)
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -75,21 +76,25 @@ C
 Z%*%C                             ## check: should be equal to X   
 
 ## SMACOF with diagonal constraints
-res.diag <- smacofConstraint(kinshipdelta, constraint = "diagonal", external = kinshipscales, ndim = 3)
+res.diag <- smacofConstraint(kinshipdelta, constraint = "diagonal", 
+external = kinshipscales, ndim = 3)
 X <- res.diag$conf                ## resulting configurations X
 C <- solve(t(Z)\%*\%Z)\%*\%t(Z)\%*\%X   ## compute C out of X = ZC
 round(C, 3)
 Z\%*\%C                             ## check: should be equal to X   
 
 ## SMACOF with unique constraints (Bentler-Weeks model)
-res.unique <- smacofConstraint(kinshipdelta, constraint = "unique", external = kinshipscales)
+res.unique <- smacofConstraint(kinshipdelta, constraint = "unique", 
+external = kinshipscales)
 
 ## Fitting a simplex with q = 4 (i.e., n-1), diagonal constraints
-res.simp <- smacofConstraint(kinshipdelta, constraint = "diagonal", external = list("simplex", 4), ndim = 3)
+res.simp <- smacofConstraint(kinshipdelta, constraint = "diagonal", 
+external = list("simplex", 4), ndim = 3)
 plot3d(res.simp)
 
 ## Fitting a circumplex with q = 3, k1 = 1, k2 = 2, diagonal constraints
-res.circ <- smacofConstraint(kinshipdelta, constraint = "diagonal", external = list("circumplex", 3, 1, 2), ndim = 3)
+res.circ <- smacofConstraint(kinshipdelta, constraint = "diagonal", 
+external = list("circumplex", 3, 1, 2), ndim = 3)
 plot3d(res.circ)
 
 

@@ -83,6 +83,9 @@ spp.col <- colMeans(resmat)
 spp.row <- rowMeans(resmat)
   
 if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!")
+
+## stress normalization
+lnew <- sqrt(sum(w*(diss-d)^2)/sum(d^2))
   
 #return configuration distances, row and column configurations, stress 
 result <- list(obsdiss = diss, confdiss = d, conf.row = x, conf.col = y, stress = lnew, spp.row = spp.row, spp.col = spp.col,

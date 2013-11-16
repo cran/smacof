@@ -8,10 +8,12 @@
 }
 \usage{
 smacofSphere.dual(delta, penalty = 100, ndim = 2, weightmat = NULL, init = NULL, 
-metric = TRUE, ties = "primary", verbose = FALSE, relax = FALSE, modulus = 1, itmax = 1000, eps = 1e-6)
+metric = TRUE, ties = "primary", verbose = FALSE, relax = FALSE, modulus = 1, 
+itmax = 1000, eps = 1e-6)
 
 smacofSphere.primal(delta, ndim = 2, weightmat = NULL, init = NULL,
-metric = TRUE, ties = "primary", verbose = FALSE, modulus = 1, itmax = 1000, eps = 1e-6)
+metric = TRUE, ties = "primary", verbose = FALSE, modulus = 1, itmax = 1000, 
+eps = 1e-6)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

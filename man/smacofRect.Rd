@@ -28,7 +28,7 @@ smacofRect(delta, ndim = 2, weightmat = NULL, init = NULL, verbose = FALSE,
   \item{confdiss}{Configuration dissimilarities}
   \item{conf.row}{Matrix of final row configurations}
   \item{conf.col}{Matrix of final column configurations}
-  \item{stress}{Final stress value}
+  \item{stress}{Final, normalized stress value}
   \item{spp.row}{Stress per point, rows}
   \item{spp.col}{Stress per point, columns}
   \item{ndim}{Number of dimensions}
@@ -53,10 +53,14 @@ summary(res)
 ## various configuration plots
 plot(res)
 plot(res, type = "p", pch = 25)
-plot(res, type = "p", pch = 25, col.columns = 3, label.conf.columns = list(label = TRUE, pos = 3, col = 3), col.rows = 8, label.conf.rows = list(label = TRUE, pos = 3, col = 8))
+plot(res, type = "p", pch = 25, col.columns = 3, 
+label.conf.columns = list(label = TRUE, pos = 3, col = 3), 
+col.rows = 8, label.conf.rows = list(label = TRUE, pos = 3, col = 8))
 
 plot(res, joint = TRUE)
-plot(res, joint = TRUE, type = "p", pch = 25, col.columns = 4, label.conf.columns = list(label = TRUE, pos = 3, col = 4), col.rows = 8, label.conf.rows = list(label = TRUE, pos = 3, col = 8))
+plot(res, joint = TRUE, type = "p", pch = 25, col.columns = 4, 
+label.conf.columns = list(label = TRUE, pos = 3, col = 4), col.rows = 8, 
+label.conf.rows = list(label = TRUE, pos = 3, col = 8))
 }
 
 \keyword{models}

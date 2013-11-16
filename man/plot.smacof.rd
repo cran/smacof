@@ -8,11 +8,19 @@
 \description{These methods provide various 2D plots for SMACOF models.
 }
 \usage{
-\method{plot}{smacof}(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, bubscale = 3, label.conf = list(label = TRUE, pos = 1, col = 1), identify = FALSE, type, main, xlab, ylab, xlim, ylim, ...)
+\method{plot}{smacof}(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, 
+bubscale = 3, label.conf = list(label = TRUE, pos = 1, col = 1), 
+identify = FALSE, type, main, xlab, ylab, xlim, ylim, ...)
 
-\method{plot}{smacofR}(x, plot.type = "confplot", joint = FALSE, plot.dim = c(1,2), col.rows = "red", col.columns = "blue", label.conf.rows = list(label = TRUE, pos = 1, col = "red"), label.conf.columns = list(label = TRUE, pos = 1, col = "blue"), type, main, xlab, ylab, xlim, ylim, ...)
+\method{plot}{smacofR}(x, plot.type = "confplot", joint = FALSE, plot.dim = c(1,2), 
+col.rows = "red", col.columns = "blue", 
+label.conf.rows = list(label = TRUE, pos = 1, col = "red"), 
+label.conf.columns = list(label = TRUE, pos = 1, col = "blue"), 
+type, main, xlab, ylab, xlim, ylim, ...)
 
-\method{plot}{smacofID}(x, plot.type = "confplot", plot.dim = c(1,2), bubscale = 5, label.conf = list(label = TRUE, pos = 1, col = 1), identify = FALSE, type, main, xlab, ylab, xlim, ylim, ...)
+\method{plot}{smacofID}(x, plot.type = "confplot", plot.dim = c(1,2), bubscale = 5, 
+label.conf = list(label = TRUE, pos = 1, col = 1), identify = FALSE, type, main, xlab, 
+ylab, xlim, ylim, ...)
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -77,10 +85,18 @@ plot(res, plot.type = "bubbleplot")
 data(breakfast)
 res <- smacofRect(breakfast)
 plot(res, plot.type = "confplot", joint = TRUE)
+
 plot(res, plot.type = "stressplot")
+
 plot(res, type = "p", pch = 25)
-plot(res, type = "p", pch = 25, col.columns = 3, label.conf.columns = list(label = TRUE, pos = 3, col = 3), col.rows = 8, label.conf.rows = list(label = TRUE, pos = 3, col = 8))
-plot(res, joint = TRUE, type = "p", pch = 25, col.columns = 4, label.conf.columns = list(label = TRUE, pos = 3, col = 4), col.rows = 8, label.conf.rows = list(label = TRUE, pos = 3, col = 8))
+
+plot(res, type = "p", pch = 25, col.columns = 3, 
+label.conf.columns = list(label = TRUE, pos = 3, col = 3), col.rows = 8, 
+label.conf.rows = list(label = TRUE, pos = 3, col = 8))
+
+plot(res, joint = TRUE, type = "p", pch = 25, col.columns = 4, 
+label.conf.columns = list(label = TRUE, pos = 3, col = 4), 
+col.rows = 8, label.conf.rows = list(label = TRUE, pos = 3, col = 8))
 }
 
 \keyword{ hplot }

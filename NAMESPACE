@@ -1,4 +1,4 @@
-import("stats", "graphics", "rgl", "scatterplot3d")
+import("stats", "graphics", "rgl", "scatterplot3d", "Hmisc", "colorspace", "polynom")
 export(smacofSym)
 export(smacofRect)
 export(smacofIndDiff)
