@@ -11,7 +11,8 @@
 \usage{
 \method{jackknife}{smacofB}(object, eps = 1e-6, itmax = 100, verbose = FALSE)
 
-\method{plot}{smacofJK}(x, plot.dim = c(1,2), hclpar = list(start = 30, end = 200), plot.lines = TRUE, main, xlab, ylab, xlim, ylim, ...)
+\method{plot}{smacofJK}(x, plot.dim = c(1,2), hclpar = list(start = 30, end = 200), 
+plot.lines = TRUE, main, xlab, ylab, xlim, ylim, ...)
 
 }
 %- maybe also 'usage' for other objects documented here.

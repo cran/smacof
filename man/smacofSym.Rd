@@ -6,7 +6,9 @@
 Multidimensional scaling (stress minimization: SMACOF) on symmetric dissimilarity matrix. 
 }
 \usage{
-smacofSym(delta, ndim = 2, weightmat = NULL, init = NULL, metric = TRUE, ties = "primary", verbose = FALSE, relax = FALSE, modulus = 1, itmax = 1000, eps = 1e-06)
+smacofSym(delta, ndim = 2, weightmat = NULL, init = NULL, metric = TRUE, 
+ties = "primary", verbose = FALSE, relax = FALSE, modulus = 1, itmax = 1000, 
+eps = 1e-06)
 
 }
 %- maybe also 'usage' for other objects documented here.
