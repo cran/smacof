@@ -71,7 +71,8 @@ The traditional way of performing MDS is referred to as \emph{classical scaling}
 
 For each MDS version we provide metric and non-metric variants. Non-metric MDS will be described in a separate section since, within each majorization iteration, it includes an additional optimization step (see Section \ref{sec:nmsmacof}). However, for both approaches, the particular objective function (or loss function) we use in this paper is a sum of squares, commonly called \emph{stress}. We use majorization to minimize stress and this MDS solving strategy is known as SMACOF (Scaling by MAjorizing a COmplicated Function). 
 
-Furthermore we will provide several extensions of the basic SMACOF approach in terms of constraints on the configuration, individual differences (i.e., three-way data structures), rectangular matrices, and quadratic surfaces. From early on in the history of MDS its inventors, notably~\citet{torgerson} and~\citet{shep1,shep2}, discovered that points in MDS solutions often fell on, or close to, quadratic manifolds such as circles, ellipses, or parabolas. Fitting quadratics with SMACOF will be one of the focal points of this paper (see Section \ref{sec:smacofQ}). Some of the first examples analyzed with the new techniques were the color similarity data of~\citet{ekman} and the color naming data of~\citet{filrap}. Another early application involved triadic comparisons of musical intervals~\citep{levelt_geer_plomp}, where the points appeared to fall on a parabola. A critical discussion can be found in \citet[][p. 386-388]{shepprez}. Around the same time, the triadic comparisons of Dutch political parties~\citep{degruijter} were carried out, which showed a curved left-right dimension, with parties ordered along an ellipse. 
+Furthermore we will provide several extensions of the basic SMACOF approach in terms of constraints on the configuration, individual differences (i.e., three-way data structures), rectangular matrices, and quadratic surfaces. From early on in the history of MDS its inventors, notably~\citet{torgerson} and~\citet{shep1,shep2}, discovered that points in MDS solutions often fell on, or close to, quadratic manifolds such as circles, ellipses, or parabolas. Fitting quadratics with SMACOF will be one of the focal points of this paper (see Section \ref{sec:smacofQ}). Some of the first examples analyzed with the new techniques were the color similarity data of~\citet{ekman} and the color naming data of~\citet{filrap}. Another early application involved triadic comparisons of musical intervals~\citep{levelt_geer_plomp}, where the points appeared to fall on a parabola. A critical discussion can be found in \citet[][p. 386-388]{shepprez}. Around the same time, the triadic comparisons of Dutch political parties~\citep{
+degruijter} were carried out, which showed a curved left-right dimension, with parties ordered along an ellipse. 
 
 The \pkg{smacof} package has many options, and makes it possible to represent a given data matrix in many different ways. In some contexts, such as molecular conformation or geographic map making, we have prior knowledge what the dimensionality is, or what the appropriate constraints are. But the model selection issue is obviously an important problem in ``exploratory'' MDS. If there is no such prior knowledge, we have to rely on pseudo-inferential techniques such as \citet{Ramsay:1982} or \citet{mdsjack}. 
 
@@ -377,7 +378,8 @@ When solving the monotone (or isotonic) regression problem in step $t$, one part
 
 \section{Extended SMACOF: Quadratic surfaces}
 \label{sec:smacofQ}
-The fact that quadratic surfaces frequently show up empirically leads to some interesting technical and methodological problems. In some cases it may be appropriate to require that the points computed by MDS are indeed located exactly on some parametric surface. If we are measuring distances between cities on earth, for example, an exact spherical or elliptical representation of the cities makes perfect sense~\citep{coxcoxs}. Furthermore, it may be appropriate for these nonlinear configurations to measure distance as the shortest geodesic on the non-linear manifold. Again, using the earth as an example, the Euclidean distance, which goes through the earth, may not be as relevant as the geodesic distance measured over the surface of the earth. In addition, since a sphere in three dimensions is really two-dimensional, we could look for ways to portray non-linear structures in higher dimensions locally faithfully in fewer dimensions. This is basically the classical problem of cartography, in which we compute a suitable projection of the surface of the earth on the plane.
+The fact that quadratic surfaces frequently show up empirically leads to some interesting technical and methodological problems. In some cases it may be appropriate to require that the points computed by MDS are indeed located exactly on some parametric surface. If we are measuring distances between cities on earth, for example, an exact spherical or elliptical representation of the cities makes perfect sense~\citep{coxcoxs}. Furthermore, it may be appropriate for these nonlinear configurations to measure distance as the shortest geodesic on the non-linear manifold. Again, using the earth as an example, the Euclidean distance, which goes through the earth, may not be as relevant as the geodesic distance measured over the surface of the earth. In addition, since a sphere in three dimensions is really two-dimensional, we could look for ways to portray non-linear structures in higher dimensions locally faithfully in fewer dimensions. This is basically the classical problem of cartography, in which we compute a 
+suitable projection of the surface of the earth on the plane.
 
 Much more recently, the problem of finding the best MDS representation with points on a sphere came up in computer vision. Ron Kimmel and his group at the Technion in Haifa have published a number of papers in which approximate geodetic distances along arbitrary surfaces are used in MDS with great-circle distances along a sphere. The two-dimensional spherical coordinates are then used to flatten the sphere. A representative paper is~\citet{elad}. Nonlinear methods for dimensionality reduction are described in \citet{Roweis+Saul:2000} and \citet{Tenenbaum+deSilva+Langford:2000}. 
 
@@ -555,15 +557,15 @@ We start with the transformation of similarities into dissimilarities by subtrac
 require("smacof")
 data("ekman")
 ekman.d <- sim2diss(ekman, method = 1)
-res.basic <- smacofSym(ekman.d, metric = FALSE)
+res.basic <- smacofSym(ekman.d, type = "ordinal")
 @
 <<eval = FALSE>>=
-res.sphere <- smacofSphere.primal(ekman.d, metric = FALSE)
+res.sphere <- smacofSphere(ekman.d, type = "ordinal")
 @
 
 <<eval = FALSE>>=
-plot(res.basic, main = "Configurations Basic SMACOF", asp = 1)
-plot(res.sphere, main = "Configurations Sphere SMACOF", asp = 1)
+plot(res.basic, main = "Configurations Basic SMACOF")
+plot(res.sphere, main = "Configurations Sphere SMACOF")
 @
 
 
@@ -719,7 +721,7 @@ The plot for the constrained solution shows a far more consistent picture. All t
 
 <<eval = FALSE>>=
 data("trading")
-res.sphere <- smacofSphere.dual(trading, ndim = 3)
+res.sphere <- smacofSphere(trading, ndim = 3)
 plot3d(res.sphere, plot.sphere = FALSE)
 @
 

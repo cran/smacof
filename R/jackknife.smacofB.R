@@ -8,10 +8,10 @@ jackknife.smacofB <- function(object, eps = 1e-6, itmax = 100, verbose = FALSE)
     n <- nrow(delta)
     x0 <- object$conf
     ndim <- object$ndim
-    metric <- object$metric
+   type <- object$type
     
     #x0 <- smacofSym (delta, ndim = ndim, metric = metric) $ conf
-    xx <- smacofDeleteOne(delta, ndim = ndim, metric = metric)
+    xx <- smacofDeleteOne(delta, ndim = ndim, type = type)
     kk <- array(rep(diag (ndim), n), c(ndim, ndim, n))
     cc <- matrix(0, n, ndim)
     bb <- matrix(0, n, ndim)

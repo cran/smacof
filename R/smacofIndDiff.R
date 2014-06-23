@@ -1,16 +1,18 @@
 #SMACOF for individual differences (list of dissimilarity matrices)
 
-smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric = TRUE,
-                          ties = "primary", constraint = "indscal", verbose = FALSE, modulus = 1,
-                          itmax = 1000, eps = 1e-6)
+smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordinal"), 
+                          constraint = c("indscal", "idioscal", "identity"),
+                          weightmat = NULL, init = NULL, ties = "primary", 
+                          verbose = FALSE, modulus = 1, itmax = 1000, eps = 1e-6)
   
 # delta ... list of input objects: either of class dist() or a symmetric matrix
 # contstraint ... either NULL, "identity", "diagonal", "idioscal"
 # ties ... primary, secondary, tertiary
-
+{
   
-
-{ 
+  type <- match.arg(type, c("ratio", "interval", "ordinal"), several.ok = FALSE)
+  constraint <- match.arg(constraint, c("indscal", "idioscal", "identity"), several.ok = FALSE)
+  
   diss <- delta
   p <- ndim
   if (constraint == "indscal") constraint <- "diagonal"
@@ -154,7 +156,7 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
     snon <- scon                                
 
     #-------- nonmetric MDS ----------
-    if (!metric) {
+    if (type == "ordinal") {
 	    if ((itel%%modulus) == 0) {
         snon<-0
         dh<-list()
@@ -170,7 +172,20 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
 	       }
       }
     }
-    #--------- end nonmetric MDS ----
+    
+    if (type == "interval") {
+      snon<-0
+      dh<-list()
+      for(j in 1:m) {
+        ds <- diss[[j]]
+        es <- er[[j]]
+        ws <- wgths[[j]]
+        Amat <- cbind(1, as.vector(ds), as.vector(ds)^2) 
+        do <- nnlsPred(Amat, as.vector(es), as.vector(ws))$pred
+        dh <- appendList(dh,normDissN(do,ws,1))
+        snon <- snon+sum(ws*(dh[[j]]-es)^2)
+      }
+    }
     
     if (verbose) cat("Iteration: ",formatC(itel,width=3, format="d")," Stress (not normalized): ", formatC(c(snon),digits=8,width=12,format="f"),"\n")
 
@@ -204,8 +219,8 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
   sunc <- sunc/nn
   scon <- scon/nn
   
-  if (metric) snon <- NULL          #no non-metric stress
-  if (!metric) ssma <- NULL  
+  stress <- sqrt(snon)
+  
   
   confdiss <- rep(list(NULL), m)
   for (j in 1:m) {                              #initialize weights, V, norm d as lists
@@ -222,7 +237,7 @@ smacofIndDiff <- function(delta, ndim = 2, weightmat = NULL, init = NULL, metric
   
   #return configurations, configuration distances, normalized observed distances 
   result <- list(delta = diss, obsdiss = dh, confdiss = confdiss, conf = yr, gspace = aconf, cweights = bconf,
-                 stress.m = ssma, stress.nm = snon, stress.uc = sunc, spp = spp, sps = sps, ndim = p, model = "Three-way SMACOF", niter = itel, nobj = n, metric = metric, call = match.call()) 
+                 stress = stress, spp = spp, sps = sps, ndim = p, model = "Three-way SMACOF", niter = itel, nobj = n, type = type, call = match.call()) 
   class(result) <- "smacofID"
   result 
 }

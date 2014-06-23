@@ -1,18 +1,33 @@
 Package: smacof
 Type: Package
-Title: SMACOF for Multidimensional Scaling.
-Version: 1.2-3
-Date: 2013-11-16
-Author: Jan de Leeuw, Patrick Mair 
-Maintainer: Jan de Leeuw <deleeuw@stat.ucla.edu>
-Description: This package provides the following approaches of multidimensional scaling (MDS) based on stress minimization by means of majorization (smacof): Simple smacof on symmetric dissimilarity matrices, smacof for rectangular matrices (unfolding models), smacof with constraints on the configuration, three-way smacof for individual differences (including constraints for idioscal, indscal, and identity), and spherical smacof (primal and dual algorithm). Each of these approaches is implemented in a metric and nonmetric manner including primary, secondary, and tertiary approaches for tie handling. Jackknife and permutation tests are included as well. 
-Imports: graphics, stats
-Depends: R (>= 3.0.2), polynom, rgl, scatterplot3d, Hmisc, colorspace
+Title: Multidimensional Scaling in R: SMACOF.
+Version: 1.5-0
+Date: 2014-06-13
+Authors@R: c(person("Patrick", "Mair", role = c("aut", "cre"), email =
+    "mair@fas.harvard.edu"), person("Jan", "De Leeuw", role = "aut"),
+    person("Ingwer", "Borg", role = "ctb"), person("Patrick J. F.", "Groenen",
+    role = "ctb"))
+Author: Patrick Mair [aut, cre], Jan De Leeuw [aut], Ingwer Borg [ctb], Patrick
+    J. F. Groenen [ctb]
+Maintainer: Patrick Mair <mair@fas.harvard.edu>
+Description: This package provides the following approaches of multidimensional
+    scaling (MDS) based on stress minimization by means of majorization
+    (smacof): Simple smacof (basic MDS) on symmetric dissimilarity matrices,
+    smacof for rectangular matrices (unfolding models), smacof with constraints
+    on the configuration, three-way smacof for individual differences
+    (including constraints for idioscal, indscal, and identity), and spherical
+    smacof (primal and dual algorithm). Each of these approaches is implemented
+    in a metric and nonmetric manner including primary, secondary, and tertiary
+    approaches for tie handling. Jackknife and permutation tests are included
+    as well.
+Imports: graphics, stats, polynom, scatterplot3d, Hmisc, colorspace,
+        nnls
+Depends: R (>= 3.0.2), rgl
 License: GPL-2
+LazyData: yes
+LazyLoad: yes
+ByteCompile: yes
+NeedsCompilation: yes
+Packaged: 2014-06-23 09:03:19 UTC; patrick
 Repository: CRAN
-Repository/R-Forge/Project: psychor
-Repository/R-Forge/Revision: 142
-Repository/R-Forge/DateTimeStamp: 2013-12-01 22:33:37
-Date/Publication: 2013-12-03 17:50:33
-Packaged: 2013-12-01 23:15:39 UTC; rforge
-NeedsCompilation: no
+Date/Publication: 2014-06-23 21:01:54

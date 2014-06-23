@@ -12,8 +12,6 @@ data(rect_constr)
 
 \format{The rectangles are object of class \code{dist}, the constraints are given as matrix
 }
-\details{Note that the labels are given in German. 
-}
 
 \references{
 Borg, I., & Leutner, D. (1983). Dimensional models for the perception of rectangles. Perception and Psychophysics, 34, 257-269.

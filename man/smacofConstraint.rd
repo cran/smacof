@@ -3,12 +3,16 @@
 
 \title{SMACOF Constraint}
 \description{
-SMACOF with constraints on the configurations.
+SMACOF with internal constraints on the configurations.
 }
 \usage{
 smacofConstraint(delta, constraint = "linear", external, ndim = 2, 
-weightmat = NULL, init = NULL, metric = TRUE, ties = "primary", verbose = FALSE, 
-modulus = 1, itmax = 1000, eps = 1e-6)
+                 type = c("ratio", "interval", "ordinal", "mspline"), weightmat = NULL,
+                 init = NULL, ties = "primary", verbose = FALSE, modulus = 1, 
+                 itmax = 1000, eps = 1e-6, spline.intKnots = 4, spline.degree = 2, 
+                 constraint.type = c("ratio", "interval", "ordinal", "spline", 
+                 "mspline"), constraint.ties = "primary", 
+                 constraint.spline.intKnots = 2, constraint.spline.degree = 2)
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -17,14 +21,27 @@ modulus = 1, itmax = 1000, eps = 1e-6)
   \item{constraint}{Type of constraint: \code{"linear"}, \code{"unique"}, \code{"diagonal"}, or a user-specified function (see details)}
   \item{external}{Data frame or matrix with external covariates, or list for simplex and circumplex (see details)}
   \item{ndim}{Number of dimensions}
+  \item{type}{MDS type: \code{"interval"}, \code{"ratio"}, \code{"ordinal"}, or \code{"mspline"} (nonmetric MDS)}
   \item{weightmat}{Optional matrix with dissimilarity weights}
   \item{init}{Optional matrix with starting values for configurations} 
-  \item{metric}{If \code{FALSE} non-metric MDS is performed}
   \item{ties}{Tie specification for non-metric MDS only: \code{"primary"}, \code{"secondary"}, or \code{"tertiary"}}
   \item{verbose}{If \code{TRUE}, intermediate stress is printed out}
   \item{modulus}{Number of smacof iterations per monotone regression call}
   \item{itmax}{Maximum number of iterations}
   \item{eps}{Convergence criterion}
+  \item{spline.degree}{Degree of the spline for \code{"mspline"} MDS type}
+  \item{spline.intKnots}{Number of interior knots of the spline for \code{"mspline"} MDS type}
+  \item{constraint.type}{Transformation for \code{external} covariates: \code{"ratio"},
+                 \code{"interval"}, \code{"ordinal"}, \code{"spline"}, \code{"spline"}, or         
+                 \code{"mspline"})}
+  \item{constraint.ties}{Tie specification for \code{external} covariates with 
+                \code{constraint.type = "ordinal"}: \code{"primary"}, 
+                \code{"secondary"}, or \code{"tertiary"}}
+  \item{constraint.spline.intKnots}{Number of interior knots for \code{external} covariates
+               with \code{constraint.type = "spline"} or \code{"mspline"}}
+  \item{constraint.spline.degree}{Degree of the spline for \code{external} covariates
+               with \code{constraint.type = "spline"} or \code{"mspline"}}
+  
 }
 \details{The argument \code{external} is mandatory and allows for the specification of a covariate data frame (or matrix) of dimension (n x q). Alternatively, for simplex fitting the user can specify a list of the following structure: \code{external = list("simplex", dim2)} with \code{dim2} denoting the dimension of the simplex with dim2 < n. For a circumplex fitting, the list has to be of the following form: \code{external = list("circumplex", dim2, k1, k2)} with 1 <= k1 <= k2 <= n (see also examples section). k1 and k2 denote the circumplex width.
 
@@ -33,6 +50,8 @@ In constraint smacof, the configuration matrix is subject of a constraint based 
 For \code{constraint = "linear"} the configurations X are decomposed linearly, i.e. X = ZC where Z is the known predictor matrix specified using \code{external}. 
 
 The same for \code{constraint = "diagonal"} where X needs to be of dimension  (n x q) where q is the number of columns of the external scale matrix (and thus number of dimensions). Here, C is restricted to be diagonal. 
+
+For \code{constraint = "linear"} or \code{"diagonal"}, the external covariates Z can be optimally transformed as specified by \code{constraint.type}. Choosing the number of covariates equal to the number of dimensions together with \code{constraint.type = "ordinal"}, \code{constraint.ties = "primary"} will effectively restrict the configuration to parallel regions defined by the categories of the covariates. Note that missing values of the covariates are estimated by the model.
 
 For \code{constraint = "unique"} we get the Bentler-Weeks uniqueness model. Hence X is of dimension (n x (n + p)). This implies that we fit a certain number of dimensions p and, in addition we extract n additional dimensions where each object is scored on a separate dimension. More technical details can be found in the corresponding JSS article (reference see below).
 
@@ -45,10 +64,11 @@ In addition, the user can specify his own constraint function with the following
   \item{obsdiss}{Observed dissimilarities, normalized}
   \item{confdiss}{Configuration dissimilarities}
   \item{conf}{Matrix of final configurations}
-  \item{stress.m}{stress value for metric MDS}
-  \item{stress.nm}{stress value for non-metric MDS (if computed)}
+  \item{C}{Matrix with restrictions}
+  \item{stress}{Stress-1 value}
   \item{spp}{Stress per point}
   \item{ndim}{Number of dimensions}
+  \item{extvars}{List for each external covariate with a list of class \code{"optscal"}}
   \item{model}{Type of smacof model}
   \item{niter}{Number of iterations}
   \item{nobj}{Number of objects}
@@ -60,7 +80,7 @@ de Leeuw, J., & Heiser, W. (1980). Multidimensional scaling with restrictions on
 }
 \author{Jan de Leeuw and Patrick Mair}
 
-\seealso{\code{\link{smacofSym}}, \code{\link{smacofRect}}, \code{\link{smacofIndDiff}}, \code{\link{smacofSphere.primal}}, \code{\link{smacofSphere.dual}}}
+\seealso{\code{\link{smacofSym}}, \code{\link{smacofRect}}, \code{\link{smacofIndDiff}}, \code{\link{smacofSphere}}}
 \examples{
 
 ## SMACOF with linear configuration constraints
@@ -69,19 +89,32 @@ data(kinshipscales)
 res.lin1 <- smacofConstraint(kinshipdelta, constraint = "linear", external = kinshipscales)
 
 ## X = ZC decomposition
-Z <- as.matrix(kinshipscales)     ## matrix Z with external constraints
 X <- res.lin1$conf                ## resulting configurations X
-C <- solve(t(Z)\%*\%Z)\%*\%t(Z)\%*\%X   ## compute C out of X = ZC
+Z <- as.matrix(kinshipscales) 
+C <- res.lin1$C
 C
-Z%*%C                             ## check: should be equal to X   
+Z\%*\%C                             ## check: should be equal to X   
 
 ## SMACOF with diagonal constraints
 res.diag <- smacofConstraint(kinshipdelta, constraint = "diagonal", 
 external = kinshipscales, ndim = 3)
 X <- res.diag$conf                ## resulting configurations X
-C <- solve(t(Z)\%*\%Z)\%*\%t(Z)\%*\%X   ## compute C out of X = ZC
-round(C, 3)
+C <- res.diag$C
 Z\%*\%C                             ## check: should be equal to X   
+
+## SMACOF with parallel regional constraints 
+data(morse)
+data(morsescales)
+res.unc <- smacofSym(morse,  type = "ordinal", ties = "primary", ndim = 2)
+res.parreg <- smacofConstraint(morse, type = "ordinal", ties = "primary", 
+constraint = "linear", external = as.data.frame(morsescales[,2:3]), 
+constraint.type = "ordinal", constraint.ties = "primary", ndim = 2, 
+init = res.unc$conf)
+X <- res.parreg$conf                ## resulting configurations X
+C <- res.parreg$C                   ## Matrix of weights
+Z <- res.parreg$external            ## optimally transformed external variables
+Z\%*\%C                               ## check: should be equal to X   
+
 
 ## SMACOF with unique constraints (Bentler-Weeks model)
 res.unique <- smacofConstraint(kinshipdelta, constraint = "unique", 

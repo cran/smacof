@@ -5,13 +5,14 @@
 \description{Variant of smacof for rectangular matrices (typically ratings, preferences) which is also known as metric unfolding.
 }
 \usage{
-smacofRect(delta, ndim = 2, weightmat = NULL, init = NULL, verbose = FALSE,
-           itmax = 1000, reg = 1e-6, eps = 1e-6)
+smacofRect(delta, ndim = 2, circle = c("none","row","column"), weightmat = NULL, 
+           init = NULL, verbose = FALSE, itmax = 1000, reg = 1e-6, eps = 1e-6)
 }
 
 \arguments{
   \item{delta}{Data frame or matrix of preferences, ratings, dissimilarities.}
   \item{ndim}{Number of dimensions}
+  \item{circle}{If \code{"column"}, the column configurations are restricted to be on a circle, if \code{"row"}, row configurations are on a circle, if \code{"none"}, there are no restrictions on row and column configurations}
   \item{weightmat}{Optional matrix with dissimilarity weights}
   \item{init}{Matrix with starting values for configurations (optional)}
   \item{verbose}{If \code{TRUE}, intermediate stress is printed out}
@@ -19,8 +20,7 @@ smacofRect(delta, ndim = 2, weightmat = NULL, init = NULL, verbose = FALSE,
   \item{reg}{Regularization factor, prevents distances from being 0}
   \item{eps}{Convergence criterion}
 }
-\details{Creates an object of class \code{smacofR}. 
-
+\details{Creates an object of class \code{smacofR}. The code for the circular restriction was provided by Patrick Groenen.
 }
 
 \value{
@@ -31,6 +31,7 @@ smacofRect(delta, ndim = 2, weightmat = NULL, init = NULL, verbose = FALSE,
   \item{stress}{Final, normalized stress value}
   \item{spp.row}{Stress per point, rows}
   \item{spp.col}{Stress per point, columns}
+  \item{congvec}{Vector of congruency coefficients}
   \item{ndim}{Number of dimensions}
   \item{model}{Type of smacof model}
   \item{niter}{Number of iterations}
@@ -42,7 +43,7 @@ The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{http://
 }
 \author{Jan de Leeuw and Patrick Mair}
 
-\seealso{\code{\link{smacofConstraint}}, \code{\link{smacofSym}}, \code{\link{smacofIndDiff}}, \code{\link{smacofSphere.primal}}, \code{\link{smacofSphere.dual}}, \code{\link{plot.smacof}}}
+\seealso{\code{\link{smacofConstraint}}, \code{\link{smacofSym}}, \code{\link{smacofIndDiff}}, \code{\link{smacofSphere}}}
 
 \examples{
 data(breakfast)

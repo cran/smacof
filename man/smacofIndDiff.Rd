@@ -6,18 +6,19 @@
 }
 
 \usage{
-smacofIndDiff(delta, ndim = 2, weightmat = NULL, init = NULL, metric = TRUE,
-              ties = "primary", constraint = "indscal", verbose = FALSE, modulus = 1,
-              itmax = 1000, eps = 1e-6)
+smacofIndDiff(delta, ndim = 2, type = c("ratio", "interval", "ordinal"), 
+              constraint = c("indscal", "idioscal", "identity"),
+              weightmat = NULL, init = NULL, ties = "primary",  
+              verbose = FALSE, modulus = 1, itmax = 1000, eps = 1e-6)
 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{delta}{A list of dissimilarity matrices or a list objects of class \code{dist}}
   \item{ndim}{Number of dimensions}
+  \item{type}{MDS type}
   \item{weightmat}{Optional matrix with dissimilarity weights}
   \item{init}{Matrix with starting values for configurations (optional)}
-  \item{metric}{If \code{FALSE} non-metric MDS is performed}
   \item{ties}{Tie specification for non-metric MDS}
   \item{constraint}{Either \code{"indscal"}, \code{"idioscal"}, or \code{"identity"} (see details)}
   \item{verbose}{If \code{TRUE}, intermediate stress is printed out}
@@ -35,9 +36,7 @@ smacofIndDiff(delta, ndim = 2, weightmat = NULL, init = NULL, metric = TRUE,
   \item{conf}{List of matrices of final configurations}
   \item{gspace}{Joint configurations aka group stimulus space}
   \item{cweights}{Configuration weights}
-  \item{stress.m}{stress value for metric MDS}
-  \item{stress.nm}{stress value for non-metric MDS (if computed)}
-  \item{stress.co}{Constrained stress value}
+  \item{stress}{Stress-1 value}
   \item{spp}{Stress per point}
   \item{sps}{Stress per subject (matrix)}
   \item{ndim}{Number of dimensions}
@@ -51,7 +50,7 @@ The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{http://
 }
 \author{Jan de Leeuw and Patrick Mair}
 
-\seealso{\code{\link{smacofConstraint}}, \code{\link{smacofSym}}, \code{\link{smacofRect}}, \code{\link{smacofSphere.primal}}, \code{\link{smacofSphere.dual}}}
+\seealso{\code{\link{smacofConstraint}}, \code{\link{smacofSym}}, \code{\link{smacofRect}}, \code{\link{smacofSphere}}}
 
 \examples{
 data(perception)

@@ -1,8 +1,8 @@
 # plot method for all smacof objects
 
 plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, bubscale = 3, 
-                        label.conf = list(label = TRUE, pos = 1, col = 1), identify = FALSE, 
-                        type, main, xlab, ylab, xlim, ylim, ...)
+                        col = 1, label.conf = list(label = TRUE, pos = 3, col = 1, cex = 0.8), identify = FALSE, 
+                        type = "p", pch = 20, asp = 1, main, xlab, ylab, xlim, ylim, ...)
 
 # x ... object of class smacof
 # plot.type ... types available: "confplot", "Shepard", "resplot"
@@ -21,10 +21,12 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
   x1 <- plot.dim[1]
   y1 <- plot.dim[2]
   
-  if (x$model == "Spherical SMACOF (dual)") {             #remove first column
+  if ((any(class(x) == "smacofSP")) && (x$alg == "dual")) {             #remove first column
      x$obsdiss <- as.dist(as.matrix(x$obsdiss1)[,-1][-1,])
      x$confdiss <- as.dist(as.matrix(x$confdiss)[,-1][-1,])
   }   
+  
+  if (type == "n") label.conf$pos <- NULL
 
   #----------------- configuration plot ---------------------
   if (plot.type == "confplot") {
@@ -36,26 +38,25 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     if (missing(xlim)) xlim <- range(x$conf[,x1])
     if (missing(ylim)) ylim <- range(x$conf[,y1])
     
-    if (missing(type)) type <- "n" else type <- type
-    if (identify) type <- "p"
+    #if (missing(type)) type <- "n" else type <- type
+    #if (identify) type <- "p"
     
-    plot(x$conf[,x1], x$conf[,y1], main = main, type = type, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)
+    plot(x$conf[,x1], x$conf[,y1], main = main, type = type, xlab = xlab, ylab = ylab, 
+         xlim = xlim, ylim = ylim, pch = pch, asp = asp, col = col, ...)
+    if (label.conf[[1]]) text(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), 
+                              cex = label.conf$cex, pos = label.conf$pos, 
+                              col = label.conf$col)
+      
     if ((any(class(x) == "smacofSP")) && (sphere)) {
-      if (x$model == "Spherical SMACOF (dual)") {                     #dual smacof centered around first configuration row
-        radius <- sqrt((abs(x$conf[2,1])+abs(x$conf[1,1]))^2 + (abs(x$conf[2,2])+abs(x$conf[1,2]))^2)    #sphere radius dual
-        circle(x$conf[1,1], x$conf[1,2], radius, lty = 2, border = "lightgray")
-      } else {
+      if (x$alg == "primal") {                     
         radius <- sqrt(x$conf[2,1]^2 + x$conf[2,2]^2)
         circle(0, 0, radius, lty = 2, border = "lightgray")
       }
     }
     
-    if (!identify) {
-      ppos <- label.conf[[2]]
-      if (type == "n") ppos <- NULL
-      if (label.conf[[1]]) text(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), cex = 0.8, pos = ppos, col = label.conf[[3]])    
-    } else {
-      identify(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), cex = 0.8)
+    if (identify) {
+      identify(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), cex = label.conf$cex, pos = label.conf$cex, 
+               col = label.conf$col)
     }
     
   }
@@ -69,16 +70,18 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     if (missing(xlim)) xlim <- range(as.vector(x$delta))
     if (missing(ylim)) ylim <- range(as.vector(x$confdiss))
 
-    plot(as.vector(x$delta), as.vector(x$confdiss), main = main, type = "p", pch = 1,
+    plot(as.vector(x$delta), as.vector(x$confdiss), main = main, type = "p", pch = 20, cex = .5,
          xlab = xlab, ylab = ylab, col = "darkgray", xlim = xlim, ylim = ylim, ...)
 
-    if (!x$metric) {
-      isofit <- isoreg(as.vector(x$delta), as.vector(x$confdiss))  #isotonic regression
-      points(sort(isofit$x), isofit$yf, type = "b", pch = 16)
-    } else {
-      regfit <- lsfit(as.vector(x$delta), as.vector(x$confdiss))   #linear regression
-      abline(regfit, lwd = 0.5)
-    }
+    points(as.vector(x$delta[x$iord]),as.vector(x$obsdiss[x$iord]), type = "b", pch = 20, cex = .5)
+    
+#     if (x$type == "ordinal") {
+#       isofit <- isoreg(as.vector(x$delta), as.vector(x$confdiss))  #isotonic regression
+#       points(sort(isofit$x), isofit$yf, type = "b", pch = 20)
+#     } else {
+#       regfit <- lsfit(as.vector(x$delta), as.vector(x$confdiss))   #linear regression
+#       abline(regfit, lwd = 0.5)
+#     }
   }
 
   #--------------- Residual plot --------------------

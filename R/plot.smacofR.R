@@ -1,8 +1,11 @@
 # plot method for rectangular smacof
 
-plot.smacofR <- function(x, plot.type = "confplot", joint = FALSE, plot.dim = c(1,2), col.rows = "red", col.columns = "blue",
-                         label.conf.rows = list(label = TRUE, pos = 1, col = "red"), label.conf.columns = list(label = TRUE, pos = 1, col = "blue"), 
-                         type, main, xlab, ylab, xlim, ylim, ...)
+plot.smacofR <- function(x, plot.type = "confplot", joint = TRUE, plot.dim = c(1,2), 
+                         col.rows = hcl(0), 
+                         col.columns = hcl(240),
+                         label.conf.rows = list(label = TRUE, pos = 3, col = hcl(0, l = 50), cex = 0.8), 
+                         label.conf.columns = list(label = TRUE, pos = 3, col = hcl(240, l = 50), cex = 0.8), 
+                         type = "p", pch = 20, main, xlab, ylab, xlim, ylim, ...)
 
 # x ... object of class smacofR
 # plot.type ... types available: "confplot", "Shepard", "stressplot", "resplot"
@@ -14,7 +17,7 @@ plot.smacofR <- function(x, plot.type = "confplot", joint = FALSE, plot.dim = c(
   
   #--------------------------- configuration plot -----------------------
   if (plot.type == "confplot") {
-    if (missing(type)) type <- "n" else type <- type
+    #if (missing(type)) type <- "n" else type <- type
     if (missing(xlab)) xlab1 <- paste("Configurations D", x1,sep = "") else xlab1 <- xlab  
     if (missing(ylab)) ylab1 <- paste("Configurations D", y1,sep = "") else ylab1 <- ylab
     ppos.rows <- label.conf.rows[[2]]
@@ -30,16 +33,20 @@ plot.smacofR <- function(x, plot.type = "confplot", joint = FALSE, plot.dim = c(
       if (missing(xlim)) xlim <- range(x$conf.col[,c(x1,y1)])
       if (missing(ylim)) ylim <- range(x$conf.row[,c(x1,y1)])
 
-      plot(x$conf.col[,x1], x$conf.col[,y1], main = main1, xlab = xlab1, ylab = ylab1, type = type, xlim = xlim, ylim = ylim, col = col.columns, ...)
-      if (label.conf.columns[[1]]) text(x$conf.col[,x1], x$conf.col[,y1], labels = rownames(x$conf.col), cex = 0.8, pos = ppos.columns, col = label.conf.columns[[3]])
+      plot(x$conf.col[,x1], x$conf.col[,y1], main = main1, xlab = xlab1, ylab = ylab1, type = type, 
+           xlim = xlim, ylim = ylim, col = col.columns, pch = pch, ...)
+      if (label.conf.columns[[1]]) text(x$conf.col[,x1], x$conf.col[,y1], labels = rownames(x$conf.col), 
+                                        cex = label.conf.columns$cex, pos = ppos.columns, 
+                                        col = label.conf.columns[[3]])
 
       if (missing(main)) main1 <- paste("Configuration Plot - Rows") else main1 <- main       #plot row configurations
       #if (missing(xlab)) xlab1 <- paste("Column Configurations D", x1,sep = "") else xlab1 <- xlab
       #if (missing(ylab)) ylab1 <- paste("Column Configurations D", y1,sep = "") else ylab1 <- ylab
-      #dev.new()
       
-      plot(x$conf.row[,x1], x$conf.row[,y1], main = main1, xlab = xlab1, ylab = ylab1, type = type, xlim = xlim, ylim = ylim, col = col.rows, ...)
-      if (label.conf.rows[[1]]) text(x$conf.row[,x1], x$conf.row[,y1], labels = rownames(x$conf.row), cex = 0.8, pos = ppos.rows, col = label.conf.rows[[3]])      
+      plot(x$conf.row[,x1], x$conf.row[,y1], main = main1, xlab = xlab1, ylab = ylab1, type = type, 
+           xlim = xlim, ylim = ylim, col = col.rows, pch = pch, ...)
+      if (label.conf.rows[[1]]) text(x$conf.row[,x1], x$conf.row[,y1], labels = rownames(x$conf.row), 
+                                     cex = label.conf.rows$cex, pos = ppos.rows, col = label.conf.rows[[3]])      
     
     } else { #joint plot
       par(mfrow = c(1,1))
@@ -49,10 +56,15 @@ plot.smacofR <- function(x, plot.type = "confplot", joint = FALSE, plot.dim = c(
       if (missing(xlim)) xlim <- range(fullconf)
       if (missing(ylim)) ylim <- range(fullconf)
       
-      plot(x$conf.col[,x1], x$conf.col[,y1], main = main1, xlab = xlab1, ylab = ylab1, type = type, xlim = xlim, ylim = ylim, col = col.columns, ...)
-      if (label.conf.columns[[1]]) text(x$conf.col[,x1], x$conf.col[,y1], labels = rownames(x$conf.col), cex = 0.8, pos = ppos.columns, col = label.conf.columns[[3]])
-      points(x$conf.row[,x1], x$conf.row[,y1], main = main1, xlab = xlab1, ylab = ylab1, type = type, xlim = xlim, ylim = ylim, col = col.rows, ...)
-      if (label.conf.rows[[1]]) text(x$conf.row[,x1], x$conf.row[,y1], labels = rownames(x$conf.row), cex = 0.8, pos = ppos.rows, col = label.conf.rows[[3]])      
+      plot(x$conf.col[,x1], x$conf.col[,y1], main = main1, xlab = xlab1, ylab = ylab1, type = type, 
+           xlim = xlim, ylim = ylim, col = col.columns, pch = pch, ...)
+      if (label.conf.columns[[1]]) text(x$conf.col[,x1], x$conf.col[,y1], labels = rownames(x$conf.col), 
+                                        cex = label.conf.columns$cex, pos = ppos.columns, 
+                                        col = label.conf.columns[[3]])
+      points(x$conf.row[,x1], x$conf.row[,y1], main = main1, xlab = xlab1, ylab = ylab1, type = type, 
+             xlim = xlim, ylim = ylim, col = col.rows, pch = pch, ...)
+      if (label.conf.rows[[1]]) text(x$conf.row[,x1], x$conf.row[,y1], labels = rownames(x$conf.row),
+                                     cex = label.conf.rows$cex, pos = ppos.rows, col = label.conf.rows[[3]])      
     }
   }
 

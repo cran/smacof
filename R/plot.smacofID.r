@@ -52,7 +52,7 @@ plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), bubscale
     plot(as.vector(delta), as.vector(confdiss), main = main, type = "p", pch = 1,
          xlab = xlab, ylab = ylab, col = "darkgray", xlim = xlim, ylim = ylim, ...)
 
-    if (!x$metric) {
+    if (x$type == "ordinal") {
       isofit <- isoreg(as.vector(delta), as.vector(confdiss))  #isotonic regression
       points(sort(isofit$x), isofit$yf, type = "b", pch = 16)
     } else {

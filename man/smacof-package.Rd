@@ -10,8 +10,8 @@
 \tabular{ll}{
 Package: \tab smacof\cr
 Type: \tab Package\cr
-Version: \tab 1.0-0\cr
-Date: \tab 2008-07-31\cr
+Version: \tab 1.4-0\cr
+Date: \tab 2014-05-12\cr
 License: \tab GPL\cr
 }
 The function for basic SMACOF on symmetric dissimilarity matrices is \code{smacofSym()}. For rectangular input matrices (unfolding model) \code{smacofRect()} is appropriate and by means of \code{smacofIndDiff()} individual difference models (three-way MDS) can be computed.
@@ -28,7 +28,7 @@ The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{http://
 }
 
 \keyword{ package }
-\seealso{\code{\link{smacofSym}}, \code{\link{smacofRect}}, \code{\link{smacof}}, \code{\link{smacofIndDiff}}, \code{\link{smacofSphere.primal}}, \code{\link{smacofSphere.dual}}
+\seealso{\code{\link{smacofSym}}, \code{\link{smacofRect}}, \code{\link{smacof}}, \code{\link{smacofIndDiff}}, \code{\link{smacofSphere}}
 }
 
 
