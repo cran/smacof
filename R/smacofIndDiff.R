@@ -16,15 +16,10 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
   diss <- delta
   p <- ndim
   if (constraint == "indscal") constraint <- "diagonal"
-  
   constr <- constraint
-  
-  
- 
   if (!is.list(diss)) diss <- list(diss)
   if ((is.matrix(diss[[1]])) || (is.data.frame(diss[[1]]))) diss <- lapply(diss, strucprep)
-
-  if (is.null(weightmat)) wgths <- initWeights(diss)
+  if (is.null(weightmat)) wgths <- initWeights(diss) else wgths <- weightmat
   if (!is.list(wgths)) {
     wgths <- list(wgths)
     if (length(wgths) != length(diss)) wgths <- sapply(diss, function(wwr) return(wgths))
@@ -42,8 +37,7 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
   if (is.null(attr(diss[[1]], "Labels"))) {
      for (i in 1:m) attr(diss[[i]], "Labels") <- paste(1:n)
   }
-  
-      
+        
   dr <- list()
   wr <- list()
   vr <- list()
@@ -59,15 +53,15 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
 
   if (is.null(init)) {  
     aconf <- torgerson(sumList(diss),p)        #torgerson 
-  } else xr <- init                              #list of starting values 
+  } else aconf <- init                              #list of starting values 
   #else aconf <- matrix(rnorm(n*p),n,p)     
   
   bconf <- repList(diag(p),m)                  #1-matrix
   for (j in 1:m) {                             
-	if (is.null(init)) xr[[j]] <- aconf%*%bconf[[j]]  #same starting values for all ways
-	dr[[j]] <- dist(xr[[j]])                          #configuration distances
-        sf1 <- sf1 + sum(wgths[[j]]*dr[[j]]*dh[[j]])
-	sf2 <- sf2 + sum(wgths[[j]]*dr[[j]]^2)
+    xr[[j]] <- aconf%*%bconf[[j]]  #same starting values for all ways
+    dr[[j]] <- dist(xr[[j]])                          #configuration distances
+    sf1 <- sf1 + sum(wgths[[j]]*dr[[j]]*dh[[j]])
+    sf2 <- sf2 + sum(wgths[[j]]*dr[[j]]^2)
   }
   
   lb <- sf1/sf2                           #normalization constant
@@ -214,11 +208,7 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
   rownames(aconf) <- labels(diss[[1]])
   names(bconf) <- names(dh)
   
-  snon <- snon/nn                   #stress normalization
-  ssma <- sold/nn
-  sunc <- sunc/nn
-  scon <- scon/nn
-  
+  snon <- (snon/m)/nn                   #stress normalization  nn <- n*(n-1)/2, m number lists
   stress <- sqrt(snon)
   
   

@@ -16,8 +16,8 @@ plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), bubscale
   
   if (plot.type == "confplot") {
     if (missing(main)) main <- paste("Group Configurations") else main <- main
-    if (missing(xlab)) xlab <- paste("Configurations D", x1,sep = "") else xlab <- xlab
-    if (missing(ylab)) ylab <- paste("Configurations D", y1,sep = "") else ylab <- ylab
+    if (missing(xlab)) xlab <- paste("Dimension", x1,sep = " ") else xlab <- xlab
+    if (missing(ylab)) ylab <- paste("Dimension", y1,sep = " ") else ylab <- ylab
 
     if (missing(xlim)) xlim <- range(x$gspace[,x1])
     if (missing(ylim)) ylim <- range(x$gspace[,y1])
@@ -101,8 +101,8 @@ plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), bubscale
   {
 
     if (missing(main)) main <- paste("Bubble Plot") else main <- main
-    if (missing(xlab)) xlab <- paste("Configurations D", x1,sep = "") else xlab <- xlab
-    if (missing(ylab)) ylab <- paste("Configurations D", y1,sep = "") else ylab <- ylab
+    if (missing(xlab)) xlab <- paste("Dimension", x1,sep = " ") else xlab <- xlab
+    if (missing(ylab)) ylab <- paste("Dimension", y1,sep = " ") else ylab <- ylab
 
     if (missing(xlim)) xlim <- range(x$gspace[,x1])*1.1
     if (missing(ylim)) ylim <- range(x$gspace[,y1])*1.1

@@ -1,8 +1,11 @@
 \name{smacofIndDiff}
 \alias{smacofIndDiff}
+\alias{indscal}
+\alias{idioscal}
 
-\title{smacof for Individual Differences}
-\description{Performs smacof for individual differences also known as Three-Way smacof on a list of dissimilarity matrices. Various restrictions decompositions and restrictions on the weight matrix are provided.
+\title{SMACOF for Individual Differences}
+\description{Performs smacof for individual differences also known as Three-Way smacof on a list of dissimilarity matrices. Various restrictions decompositions and restrictions on the weight matrix are provided. The most prominent models are 
+INDSCAL and IDIOSCAL.
 }
 
 \usage{
@@ -10,6 +13,14 @@ smacofIndDiff(delta, ndim = 2, type = c("ratio", "interval", "ordinal"),
               constraint = c("indscal", "idioscal", "identity"),
               weightmat = NULL, init = NULL, ties = "primary",  
               verbose = FALSE, modulus = 1, itmax = 1000, eps = 1e-6)
+              
+indscal(delta, ndim = 2, type = c("ratio", "interval", "ordinal"), 
+        weightmat = NULL, init = NULL, ties = "primary", 
+        verbose = FALSE, modulus = 1, itmax = 1000, eps = 1e-6)
+
+idioscal(delta, ndim = 2, type = c("ratio", "interval", "ordinal"), 
+         weightmat = NULL, init = NULL, ties = "primary", 
+         verbose = FALSE, modulus = 1, itmax = 1000, eps = 1e-6)
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -26,7 +37,14 @@ smacofIndDiff(delta, ndim = 2, type = c("ratio", "interval", "ordinal"),
   \item{itmax}{Maximum number of iterations}
   \item{eps}{Convergence criterion}
 }
-\details{If the constraint is \code{"indscal"}, INDSCAL is performed with configuration weight matrices restricted to be diagonal. IDIOSCAL can be computed using the \code{"idioscal"} argument. The weight matrices are then unconstrained. Addtional weight restrictions can be imposed with \code{"identity"} which restricts the configurations across individuals/replications/ways to be equal
+\details{If the constraint is \code{"indscal"}, INDSCAL is performed with configuration weight matrices restricted to be diagonal. \code{indscal()} is a corresponding wrapper function that can be used instead of \code{smacofIndDiff()} with 
+\code{"indscal"} constraints.
+
+IDIOSCAL can be computed using the \code{"idioscal"} argument. The weight matrices are then unconstrained. 
+\code{idioscal()} is a corresponding wrapper function that can be used instead of \code{smacofIndDiff()} with 
+\code{"idioscal"} constraints.
+
+Addtional weight restrictions can be imposed with \code{"identity"} which restricts the configurations across individuals/replications/ways to be equal. 
 }
 
 \value{
@@ -81,6 +99,11 @@ plot(res.helm, plot.type = "bubbleplot")
 plot(res.helm, plot.type = "stressplot")
 plot(res.helm, plot.type = "Shepard")
 plot(res.helm, plot.type = "resplot")
+
+## idioscal and indscal with starting configurations:
+startconf <- matrix(rnorm(20), 10, 2)
+idioscal(helm, init = startconf)
+indscal(helm, init = startconf)
 
 }
 

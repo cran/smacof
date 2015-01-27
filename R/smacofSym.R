@@ -57,7 +57,7 @@
   #dhat <- normDiss(diss,wgths)            #normalize dissimilarities
   dhat <- normDissN(diss, wgths, 1)        #normalize to n(n-1)/2
   
-  if (is.null(init)) x <- torgerson(sqrt(diss), p=p) else x <- as.matrix(init)   # x as matrix with starting values   
+  if (is.null(init)) x <- torgerson(diss, p=p) else x <- as.matrix(init)   # x as matrix with starting values   
   if (relax) relax <- 2 else relax <- 1 
   
   w    <- vmat(wgths)                      #matrix V of weights and unit vectors

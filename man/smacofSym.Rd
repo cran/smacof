@@ -1,9 +1,10 @@
 \name{smacofSym}
 \alias{smacofSym}
+\alias{mds}
 
 \title{Symmetric smacof}
 \description{
-Multidimensional scaling (stress minimization: SMACOF) on symmetric dissimilarity matrix. 
+Multidimensional scaling on a symmetric dissimilarity matrix using SMACOF. 
 }
 \usage{
 smacofSym(delta, ndim = 2, type = c("ratio", "interval", "ordinal", "mspline"), 
@@ -11,6 +12,10 @@ smacofSym(delta, ndim = 2, type = c("ratio", "interval", "ordinal", "mspline"),
           relax = FALSE, modulus = 1, itmax = 1000, eps = 1e-06, 
           spline.degree = 2, spline.intKnots = 2)
 
+mds(delta, ndim = 2, type = c("ratio", "interval", "ordinal", "mspline"), 
+    weightmat = NULL, init = NULL, ties = "primary", verbose = FALSE, 
+    relax = FALSE, modulus = 1, itmax = 1000, eps = 1e-06, 
+    spline.degree = 2, spline.intKnots = 2)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -28,9 +33,11 @@ smacofSym(delta, ndim = 2, type = c("ratio", "interval", "ordinal", "mspline"),
   \item{spline.degree}{Degree of the spline for \code{"mspline"} MDS type}
   \item{spline.intKnots}{Number of interior knots of the spline for \code{"mspline"} MDS type}
 }
-\details{This is the simplest MDS-SMACOF version of the package. It solves the stress target function for symmetric dissimiliby means of the majorization approach (SMACOF) and reports the Stress-1 value (normalized). The main output are the coordinates in the low-dimensional space (configurations; \code{conf}).
-This function allows for fitting three basic types of MDS: ratio MDS (default), interval MDS (polynomial transformation), and ordinal MDS (aka nonmetric MDS).
-It also returns the point stress, i.e. the larger the contribution of a point to the total stress, the worse the fit (see also \code{\link{plot.smacof}}. 
+\details{This is the simplest MDS-SMACOF version of the package. It solves the stress target function for symmetric dissimiliby means of the majorization approach (SMACOF) and reports the Stress-1 value (normalized). The main output are the coordinates in the low-dimensional space (configurations; \code{conf}). 
+
+The function \code{mds()} is a wrapper function and can be used instead of \code{smacofSym()}
+
+This function allows for fitting three basic types of MDS: ratio MDS (default), interval MDS (polynomial transformation), and ordinal MDS (aka nonmetric MDS). It also returns the point stress, i.e. the larger the contribution of a point to the total stress, the worse the fit (see also \code{\link{plot.smacof}}. 
 }
 \value{
   \item{delta}{Observed dissimilarities, not normalized}
@@ -58,8 +65,7 @@ Borg, I., Groenen, P. J. F., & Mair, P. (2013). Applied Multidimensional Scaling
 \examples{
 
 ## simple SMACOF solution for kinship data
-data(kinshipdelta)
-res <- smacofSym(kinshipdelta)
+res <- mds(kinshipdelta)
 res
 summary(res)
 plot(res)

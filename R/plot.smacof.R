@@ -32,8 +32,8 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
   if (plot.type == "confplot") {
     
     if (missing(main)) main <- paste("Configuration Plot") else main <- main
-    if (missing(xlab)) xlab <- paste("Configurations D", x1,sep = "") else xlab <- xlab
-    if (missing(ylab)) ylab <- paste("Configurations D", y1,sep = "") else ylab <- ylab
+    if (missing(xlab)) xlab <- paste("Dimension", x1,sep = " ") else xlab <- xlab
+    if (missing(ylab)) ylab <- paste("Dimension", y1,sep = " ") else ylab <- ylab
 
     if (missing(xlim)) xlim <- range(x$conf[,x1])
     if (missing(ylim)) ylim <- range(x$conf[,y1])
@@ -123,8 +123,8 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
   {
 
     if (missing(main)) main <- paste("Bubble Plot") else main <- main
-    if (missing(xlab)) xlab <- paste("Configurations D", x1,sep = "") else xlab <- xlab
-    if (missing(ylab)) ylab <- paste("Configurations D", y1,sep = "") else ylab <- ylab
+    if (missing(xlab)) xlab <- paste("Dimension", x1,sep = " ") else xlab <- xlab
+    if (missing(ylab)) ylab <- paste("Dimension", y1,sep = " ") else ylab <- ylab
 
     if (missing(xlim)) xlim <- range(x$conf[,x1])*1.1
     if (missing(ylim)) ylim <- range(x$conf[,y1])*1.1

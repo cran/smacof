@@ -1,14 +1,14 @@
 Package: smacof
 Type: Package
 Title: Multidimensional Scaling in R: SMACOF.
-Version: 1.5-0
-Date: 2014-06-13
+Version: 1.6-2
+Date: 2014-12-19
 Authors@R: c(person("Patrick", "Mair", role = c("aut", "cre"), email =
     "mair@fas.harvard.edu"), person("Jan", "De Leeuw", role = "aut"),
     person("Ingwer", "Borg", role = "ctb"), person("Patrick J. F.", "Groenen",
-    role = "ctb"))
+    role = "aut"))
 Author: Patrick Mair [aut, cre], Jan De Leeuw [aut], Ingwer Borg [ctb], Patrick
-    J. F. Groenen [ctb]
+    J. F. Groenen [aut]
 Maintainer: Patrick Mair <mair@fas.harvard.edu>
 Description: This package provides the following approaches of multidimensional
     scaling (MDS) based on stress minimization by means of majorization
@@ -16,10 +16,9 @@ Description: This package provides the following approaches of multidimensional
     smacof for rectangular matrices (unfolding models), smacof with constraints
     on the configuration, three-way smacof for individual differences
     (including constraints for idioscal, indscal, and identity), and spherical
-    smacof (primal and dual algorithm). Each of these approaches is implemented
-    in a metric and nonmetric manner including primary, secondary, and tertiary
-    approaches for tie handling. Jackknife and permutation tests are included
-    as well.
+    smacof (primal and dual algorithm). The MDS type can be ratio, interval, ordinal manner 
+    (including primary, secondary, and tertiary approaches for tie handling), and msplines. 
+    Jackknife and permutation tests are provided. 
 Imports: graphics, stats, polynom, scatterplot3d, Hmisc, colorspace,
         nnls
 Depends: R (>= 3.0.2), rgl
@@ -28,6 +27,6 @@ LazyData: yes
 LazyLoad: yes
 ByteCompile: yes
 NeedsCompilation: yes
-Packaged: 2014-06-23 09:03:19 UTC; patrick
+Packaged: 2014-12-19 19:54:13 UTC; patrick
 Repository: CRAN
-Date/Publication: 2014-06-23 21:01:54
+Date/Publication: 2015-01-27 09:12:25

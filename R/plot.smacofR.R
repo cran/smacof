@@ -18,8 +18,8 @@ plot.smacofR <- function(x, plot.type = "confplot", joint = TRUE, plot.dim = c(1
   #--------------------------- configuration plot -----------------------
   if (plot.type == "confplot") {
     #if (missing(type)) type <- "n" else type <- type
-    if (missing(xlab)) xlab1 <- paste("Configurations D", x1,sep = "") else xlab1 <- xlab  
-    if (missing(ylab)) ylab1 <- paste("Configurations D", y1,sep = "") else ylab1 <- ylab
+    if (missing(xlab)) xlab1 <- paste("Dimension", x1,sep = " ") else xlab1 <- xlab  
+    if (missing(ylab)) ylab1 <- paste("Dimension", y1,sep = " ") else ylab1 <- ylab
     ppos.rows <- label.conf.rows[[2]]
     ppos.columns <- label.conf.columns[[2]]
     if (type == "n") ppos.rows <- ppos.columns <- NULL

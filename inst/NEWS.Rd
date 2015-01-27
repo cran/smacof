@@ -1,6 +1,13 @@
 \name{NEWS}
 \title{News for Package \pkg{smacof}}
 \encoding{UTF-8}
+
+\section{Changes in Version 1.6-0}{
+ \itemize{
+    \item Bug in \code{smacofIndDiff} with initial starting configurations fixed. Stress is now normalized to Stress-1.
+    \item Several wrapper functions added: \code{mds}, \code{unfolding}, \code{indscal}, \code{idioscal}. 
+}
+}
 \section{Changes in Version 1.5-0}{
  \itemize{
     \item Recoding of transformations:

@@ -1,5 +1,6 @@
 \name{smacofRect}
 \alias{smacofRect}
+\alias{unfolding}
 
 \title{Rectangular smacof}
 \description{Variant of smacof for rectangular matrices (typically ratings, preferences) which is also known as metric unfolding.
@@ -7,6 +8,9 @@
 \usage{
 smacofRect(delta, ndim = 2, circle = c("none","row","column"), weightmat = NULL, 
            init = NULL, verbose = FALSE, itmax = 1000, reg = 1e-6, eps = 1e-6)
+           
+unfolding(delta, ndim = 2, circle = c("none","row","column"), weightmat = NULL, 
+          init = NULL, verbose = FALSE, itmax = 1000, reg = 1e-6, eps = 1e-6)
 }
 
 \arguments{
@@ -20,7 +24,7 @@ smacofRect(delta, ndim = 2, circle = c("none","row","column"), weightmat = NULL,
   \item{reg}{Regularization factor, prevents distances from being 0}
   \item{eps}{Convergence criterion}
 }
-\details{Creates an object of class \code{smacofR}. The code for the circular restriction was provided by Patrick Groenen.
+\details{Creates an object of class \code{smacofR}. The \code{unfolding()} function is a wrapper function and can be used instead of \code{smacofRect()}.
 }
 
 \value{
@@ -46,8 +50,7 @@ The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{http://
 \seealso{\code{\link{smacofConstraint}}, \code{\link{smacofSym}}, \code{\link{smacofIndDiff}}, \code{\link{smacofSphere}}}
 
 \examples{
-data(breakfast)
-res <- smacofRect(breakfast)
+res <- unfolding(breakfast)
 res
 summary(res)
 
@@ -57,11 +60,6 @@ plot(res, type = "p", pch = 25)
 plot(res, type = "p", pch = 25, col.columns = 3, 
 label.conf.columns = list(label = TRUE, pos = 3, col = 3), 
 col.rows = 8, label.conf.rows = list(label = TRUE, pos = 3, col = 8))
-
-plot(res, joint = TRUE)
-plot(res, joint = TRUE, type = "p", pch = 25, col.columns = 4, 
-label.conf.columns = list(label = TRUE, pos = 3, col = 4), col.rows = 8, 
-label.conf.rows = list(label = TRUE, pos = 3, col = 8))
 }
 
 \keyword{models}

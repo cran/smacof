@@ -9,8 +9,8 @@ plot.smacofJK <- function(x, plot.dim = c(1,2), hclpar = list(start = 30, end = 
   x1 <- plot.dim[1]
   y1 <- plot.dim[2]
   if (missing(main)) main <- paste("SMACOF Jackknife Plot") else main <- main
-  if (missing(xlab)) xlab <- paste("Configurations D", x1,sep = "") else xlab <- xlab
-  if (missing(ylab)) ylab <- paste("Configurations D", y1,sep = "") else ylab <- ylab
+  if (missing(xlab)) xlab <- paste("Dimension", x1,sep = " ") else xlab <- xlab
+  if (missing(ylab)) ylab <- paste("Dimension", y1,sep = " ") else ylab <- ylab
   
   #if (missing(type)) type <- "n" else type <- type
       
