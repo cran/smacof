@@ -11,6 +11,8 @@ smacofSphere <- function(delta, algorithm = c("dual", "primal"), ndim = 2, type 
  if (alg == "dual") {
   diss <- delta
   if ((is.matrix(diss)) || (is.data.frame(diss))) diss <- strucprep(diss)  #if data are provided as dissimilarity matrix
+  checkdiss(diss)
+  
   p <- ndim
   n <- attr(diss,"Size")
   if (p > (n - 1)) stop("Maximum number of dimensions is n-1!")
@@ -25,7 +27,11 @@ smacofSphere <- function(delta, algorithm = c("dual", "primal"), ndim = 2, type 
   }  else  wgths <- as.dist(weightmat)
   
   dhat <- normDissN(diss,wgths,1)            #normalize dissimilarities
-  if (is.null(init)) x <- torgerson(sqrt(diss), p=p) else x <- init   # x as matrix with starting values
+  dhat[is.na(dhat)] <- 1     ## in case of missing dissimilarities, pseudo value for dhat 
+    
+  
+  ## --- starting values
+  x <- initConf(init, diss, n, p)
   
   if (relax) relax <- 2 else relax <- 1 
   
@@ -89,6 +95,9 @@ smacofSphere <- function(delta, algorithm = c("dual", "primal"), ndim = 2, type 
     d <- e
     sold <- snon
     itel <- itel+1
+    
+    if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!")
+    
   }
   #-------------- end majorization ---------------
   
@@ -97,7 +106,6 @@ smacofSphere <- function(delta, algorithm = c("dual", "primal"), ndim = 2, type 
   attr(dhat1, "Labels") <- labels(diss)
   attr(e, "Labels") <- labels(diss)
   
-  
   stress <- sqrt(snon/nn)                   #stress normalization
   
   e.temp <- as.dist(as.matrix(e)[,-1][-1,])      #remove dummy vector
@@ -105,16 +113,19 @@ smacofSphere <- function(delta, algorithm = c("dual", "primal"), ndim = 2, type 
   confdiss <- normDissN(e.temp, wgths, 1)        #final normalization to n(n-1)/2
   
   # point stress 
-  resmat <- (as.matrix(dhat1)[-1,-1] - as.matrix(confdiss))^2    #point stress
-  spp <- colMeans(resmat)
-  dhat <- list(dhat1, dhat2)
+  dhat <- as.dist(as.matrix(dhat1)[-1,-1])
+  spoint <- spp(dhat, confdiss, wgths)
   
-  if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!")
- 
-## --- primal algorithm ---  
+  ss <- y[1,]
+  y <- t(apply(y, 1, function(xx) xx - ss)[,-1] )  ## correct the configurations for plotting
+  
+  
+## -------------------------------------- primal algorithm ------------------------------------------  
 } else {
   diss <- delta
   if ((is.matrix(diss)) || (is.data.frame(diss))) diss <- strucprep(diss)  #if data are provided as dissimilarity matrix
+  checkdiss(diss)
+  
   p <- ndim
   n <- attr(diss,"Size")
   if (p > (n - 1)) stop("Maximum number of dimensions is n-1!")
@@ -129,8 +140,11 @@ smacofSphere <- function(delta, algorithm = c("dual", "primal"), ndim = 2, type 
   }  else  wgths <- as.dist(weightmat)
   
   dhat <- normDissN(diss,wgths,1)            #normalize dissimilarities
-  if (is.null(init)) x <- torgerson(sqrt(diss), p=p) else x <- init   # x as matrix with starting values
+  dhat[is.na(dhat)] <- 1     ## in case of missing dissimilarities, pseudo value for dhat 
   
+ 
+  ## --- starting values
+  x <- initConf(init, diss, n, p)
   
   w <- vmat(wgths)
   v <- myGenInv(w)
@@ -189,22 +203,22 @@ smacofSphere <- function(delta, algorithm = c("dual", "primal"), ndim = 2, type 
   rownames(y) <- labels(diss)
   attr(dhat, "Labels") <- labels(diss)
   attr(e, "Labels") <- labels(diss)
+  dhat[is.na(diss)] <- NA                 ## in case of NA's
   
   stress <- sqrt(snon/nn)                   #stress normalization
   
   confdiss <- normDissN(e, wgths, 1)        #final normalization to n(n-1)/2
   
   # point stress 
-  resmat <- as.matrix(dhat - confdiss)^2    #point stress
-  spp <- colMeans(resmat)
+  spoint <- spp(dhat, confdiss, wgths)
   
   dummyvec <- NA
   if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!")
 }
   
   
-result <- list(delta = diss, obsdiss = dhat, confdiss = confdiss, conf = y, 
-               stress = stress, spp = spp, ndim = p, dummyvec = dummyvec, 
+result <- list(delta = diss, dhat = dhat, confdiss = confdiss, conf = y, 
+               stress = stress, spp = spoint$spp, ndim = p, weightmat = wgths, resmat = spoint$resmat, dummyvec = dummyvec, 
                model = "Spherical SMACOF", niter = itel, nobj = n, type = type, 
                algorithm = alg, call = match.call())
 

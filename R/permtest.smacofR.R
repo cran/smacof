@@ -1,4 +1,4 @@
-permtest.smacofR <- function(object, nrep = 100, verbose = TRUE, seed = NULL)
+permtest.smacofR <- function(object, nrep = 100, verbose = TRUE)
 {
 ## val ... stress value  
 ## n... number of objects
@@ -19,7 +19,6 @@ permtest.smacofR <- function(object, nrep = 100, verbose = TRUE, seed = NULL)
     #perms <- shuffleSet(m, nset = nper)
     
     for (irep in 1:nrep) {
-      if (!is.null(seed)) set.seed(seed + irep)
       permmat <- t(apply(data, 1, function(pp) {     ## computes permuted matrix
         ind <- sample(1:m, m)
         pp[ind]

@@ -23,6 +23,7 @@
     diss <- strucprep(diss)  #if data are provided as dissimilarity matrix
     attr(diss, "Labels") <- rownames(delta)
   }
+  checkdiss(diss)           ## check whether dissimilarities are all positive       
   
   p <- ndim                                     
   n <- attr(diss,"Size")
@@ -33,13 +34,17 @@
   
   if (is.null(attr(diss, "Labels"))) attr(diss, "Labels") <- paste(1:n)
   
+  ## --- weights
   if (is.null(weightmat)) {
     wgths <- initWeights(diss)
   }  else  {
     wgths <- as.dist(weightmat)
   }
   
-  # Prepare for optimal scaling
+  ## --- starting values
+  x <- initConf(init, diss, n, p)
+  
+  ## --- Prepare for optimal scaling
   trans <- type
   if (trans=="ratio"){
     trans <- "none"
@@ -54,21 +59,22 @@
   }
   disobj <- transPrep(diss,trans = trans, spline.intKnots = spline.intKnots, spline.degree = spline.degree)
   
-  #dhat <- normDiss(diss,wgths)            #normalize dissimilarities
-  dhat <- normDissN(diss, wgths, 1)        #normalize to n(n-1)/2
-  
-  if (is.null(init)) x <- torgerson(diss, p=p) else x <- as.matrix(init)   # x as matrix with starting values   
+  ## dhats and missings
+  dhat <- normDissN(diss, wgths, 1)        ## normalize to n(n-1)/2
+  dhat[is.na(dhat)] <- 1     ## in case of missing dissimilarities, pseudo value for dhat 
+    
+    
   if (relax) relax <- 2 else relax <- 1 
   
   w    <- vmat(wgths)                      #matrix V of weights and unit vectors
   v    <- myGenInv(w)                      #Moore-Penrose inverse
   itel <- 1                                #iteration number
   d    <- dist(x)                          #Euclidean distances d(X)
-  lb   <- sum(wgths*d*dhat)/sum(wgths*d^2) #denominator: normalization tr(X'VX); 
+  lb   <- sum(wgths*d*dhat, na.rm = TRUE)/sum(wgths*d^2) #denominator: normalization tr(X'VX); 
   x    <- lb*x                             #modify x with lb-factor
   d    <- lb*d                             #modify d with lb-factor
   
-  sold <- sum(wgths*(dhat-d)^2)/nn         #stress (to be minimized in repeat loop)
+  sold <- sum(wgths*(dhat-d)^2, na.rm = TRUE)/nn         #stress (to be minimized in repeat loop)
   
   #--------------- begin majorization --------------------
   repeat {                                #majorization loop             
@@ -76,9 +82,9 @@
     y <- v%*%b%*%x                    #apply Guttman transform denoted as \bar(Y) in the paper
     y <- x+relax*(y-x)                #n \times p matrix of Guttman transformed distances x's
     e <- dist(y)                      #new distance matrix for Y
-    ssma <- sum(wgths*(dhat-e)^2)     #stress metric
+    ssma <- sum(wgths*(dhat-e)^2)     ## stress 
     
-    dhat2 <- transform(e, disobj, w = wgths, normq = nn)
+    dhat2 <- transform(e, disobj, w = wgths, normq = nn)  ## dhat update
     dhat <- dhat2$res
     
     snon <- sum(wgths*(dhat-e)^2)/nn     #stress non-metric
@@ -103,19 +109,21 @@
   dhat <- structure(dhat, Size = n, call = quote(as.dist.default(m=b)), class = "dist", Diag = FALSE, Upper = FALSE) 
   attr(dhat, "Labels") <- labels(diss)
   attr(e, "Labels") <- labels(diss)
+  dhat[is.na(diss)] <- NA                 ## in case of NA's
   
   confdiss <- normDissN(e, wgths, 1)        #final normalization to n(n-1)/2
   
-  ## point stress 
-  resmat <- as.matrix(dhat - confdiss)^2    #point stress
-  spp <- colMeans(resmat)
+  ## stress-per-point 
+  spoint <- spp(dhat, confdiss, wgths)
   
   if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!") 
   
   #return configurations, configuration distances, normalized observed distances 
-  result <- list(delta = diss, obsdiss = dhat, confdiss = confdiss, iord = dhat2$iord.prim, conf = y, stress = stress, spp = spp,
-                 ndim = p, model = "Symmetric SMACOF", niter = itel, nobj = n, type = type, call = match.call()) 
+  result <- list(delta = diss, dhat = dhat, confdiss = confdiss, iord = dhat2$iord.prim, conf = y, stress = stress, 
+                 spp = spoint$spp, ndim = p, weightmat = wgths, resmat = spoint$resmat, model = "Symmetric SMACOF", niter = itel, nobj = n, 
+                 type = type, call = match.call()) 
   class(result) <- c("smacofB","smacof")
   result 
 }
 
+mds <- smacofSym

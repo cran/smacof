@@ -8,10 +8,7 @@ function(object, ...)
   cat("\n\n")
   cat("Stress per point:\n")
 
-  spp.perc <- object$spp/sum(object$spp)*100
-  sppmat <- cbind(sort(object$spp), sort(spp.perc))
-  colnames(sppmat) <- c("SPP","SPP(%)")
-  print(round(sppmat, 4))
+  print(round(object$spp,2))
   cat("\n")
 
 }

@@ -1,5 +1,5 @@
 ## MDS permutation test
-permtest.smacof <- function(object, nrep = 100, verbose = TRUE, seed = NULL)
+permtest.smacof <- function(object, nrep = 100, verbose = TRUE)
 {
 ## val ... stress value  
 ## n... number of objects
@@ -20,7 +20,6 @@ permtest.smacof <- function(object, nrep = 100, verbose = TRUE, seed = NULL)
 
     repeat 
      {
-      if (!is.null(seed)) set.seed(seed + irep)
       delta <- matrix (0, n, n)
       delta[outer(1:n, 1:n, ">")] <- sample(dissvec,m)           ## sample dissimilarity matrix
       #delta[outer(1:n, 1:n, ">")] <- sample(1:m,m)           ## how it was before

@@ -19,6 +19,9 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
   constr <- constraint
   if (!is.list(diss)) diss <- list(diss)
   if ((is.matrix(diss[[1]])) || (is.data.frame(diss[[1]]))) diss <- lapply(diss, strucprep)
+  checkdiss(diss)           ## sanity check
+  
+  ## --- weight matrix
   if (is.null(weightmat)) wgths <- initWeights(diss) else wgths <- weightmat
   if (!is.list(wgths)) {
     wgths <- list(wgths)
@@ -51,10 +54,9 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
   xr <-list()                                  #configurations as list
   sold <- sf1 <- sf2 <- 0                      #stress init
 
-  if (is.null(init)) {  
-    aconf <- torgerson(sumList(diss),p)        #torgerson 
-  } else aconf <- init                              #list of starting values 
-  #else aconf <- matrix(rnorm(n*p),n,p)     
+  ## --- starting values
+  aconf <- initConf(init, diss, n, p, inddiff = TRUE)
+    
   
   bconf <- repList(diag(p),m)                  #1-matrix
   for (j in 1:m) {                             
@@ -217,8 +219,8 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
 	 confdiss[[j]] <- normDissN(er[[j]], wgths[[j]], 1)
   }
 
-  resmat <- as.matrix(sumList(dh) - sumList(confdiss))^2 ##point stress
-  spp <- colMeans(resmat)
+  ## stress-per-point 
+  spoint <- spp(dh, confdiss, wgths)
   
   reslist <- mapply(function(ldh, lcd) {(as.matrix(ldh) - as.matrix(lcd))^2}, dh, confdiss, SIMPLIFY = FALSE) 
   sps <- sapply(reslist, mean)
@@ -226,8 +228,9 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
   if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!")
   
   #return configurations, configuration distances, normalized observed distances 
-  result <- list(delta = diss, obsdiss = dh, confdiss = confdiss, conf = yr, gspace = aconf, cweights = bconf,
-                 stress = stress, spp = spp, sps = sps, ndim = p, model = "Three-way SMACOF", niter = itel, nobj = n, type = type, call = match.call()) 
+  result <- list(delta = diss, dhat = dh, confdiss = confdiss, conf = yr, gspace = aconf, cweights = bconf,
+                 stress = stress, spp = spoint$spp, weightmat = wgths, resmat = spoint$resmat, sps = sps, ndim = p, 
+                 model = "Three-way SMACOF", niter = itel, nobj = n, type = type, call = match.call()) 
   class(result) <- "smacofID"
   result 
 }

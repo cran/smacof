@@ -1,4 +1,4 @@
-#smacof with linear constraints on the configuration (de Leeuw & Heiser, 1980; Borg & Groenen, p. 236)
+## smacof with external constraints on the configuration (de Leeuw & Heiser, 1980; Borg & Groenen, p. 236)
 
 smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, type = c("ratio", "interval", "ordinal", "mspline"), 
                              weightmat = NULL, init = NULL, ties = "primary", verbose = FALSE, 
@@ -37,6 +37,8 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, t
     diss <- strucprep(diss)  #if data are provided as dissimilarity matrix
     attr(diss, "Labels") <- rownames(delta)
   }
+  checkdiss(diss)
+  
   p <- ndim                                     
   n <- attr(diss,"Size")
   if (p > (n - 1)) stop("Maximum number of dimensions is n-1!")
@@ -68,7 +70,7 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, t
       } else if(constraint.trans=="mspline"){
         constraint.trans <- "mspline"
       }
-      extvars[[s]] <- transPrep(external[,s]-mean(external[,s]),
+      extvars[[s]] <- transPrep(external[,s]-mean(external[,s], na.rm = TRUE),
                                 trans = constraint.trans, 
                                 spline.intKnots = constraint.spline.intKnots, 
                                 spline.degree = constraint.spline.degree,
@@ -125,10 +127,13 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, t
   
   
   dhat <- normDissN(diss,wgths,1)               #normalize dissimilarities
+  dhat[is.na(dhat)] <- 1     ## in case of missing dissimilarities, pseudo value for dhat 
+  
   w <- vmat(wgths)                              #matrix V
   v <- myGenInv(w)                              #Moore-Penrose inverse
   itel <- 1
   
+  ## --- starting values 
   startconf <- init
   if (!is.null(startconf)) startconf <- as.matrix(init)   # x as matrix with starting values   
   xstart <- startconf
@@ -251,11 +256,12 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, t
   dhat <- structure(dhat, Size = n, call = quote(as.dist.default(m=b)), class = "dist", Diag = FALSE, Upper = FALSE) 
   attr(dhat, "Labels") <- labels(diss)
   attr(e, "Labels") <- labels(diss)
+  dhat[is.na(diss)] <- NA                 ## in case of NA's
   
   confdiss <- normDissN(e, wgths, 1)        #final normalization to n(n-1)/2
   
-  resmat <- as.matrix(dhat - confdiss)^2    #point stress
-  spp <- colMeans(resmat)
+  ## stress-per-point 
+  spoint <- spp(dhat, confdiss, wgths)
   
   if ((constraint == "diagonal") && (!simpcirc)) {
     if (p != ncol(y)) {
@@ -286,9 +292,9 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, t
     extvars = NULL
   }
   
-  result <- list(delta = diss, obsdiss = dhat, confdiss = confdiss, conf = y, C = C, 
-                 stress = stress, spp = spp, ndim = p, iord = dhat2$iord.prim, extvars = extvars,
-                 external = external, model = "SMACOF constraint", 
+  result <- list(delta = diss, dhat = dhat, confdiss = confdiss, conf = y, C = C, 
+                 stress = stress, spp = spoint$spp, ndim = p, iord = dhat2$iord.prim, extvars = extvars,
+                 external = external, weightmat = wgths, resmat = spoint$resmat, model = "SMACOF constraint", 
                  niter = itel, nobj = n, type = type, call = match.call()) 
   class(result) <- c("smacofB","smacof")
   result 

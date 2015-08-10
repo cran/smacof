@@ -8,7 +8,7 @@ function(x,...)
   cat("Number of subjects:",x$nind,"\n")
   cat("Number of objects:",x$nobj,"\n")
   
-  cat("\nFinal stress value:",x$stress,"\n")
+  cat("\nStress-1 value:",x$stress,"\n")
   cat("Number of iterations:",x$niter,"\n")
   cat("\n")
 }

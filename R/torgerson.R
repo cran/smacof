@@ -1,9 +1,8 @@
-`torgerson` <-
-function(diss, p=p)
+torgerson <- function(delta, p = 2)
 {
+  
 #diss ... dissimilarity matrix
 #p ... number of dimensions
-
 #------------------- begin subroutines -------------------
 #Torgerson's double centering
   doubleCenter <- function(x) {
@@ -15,9 +14,13 @@ function(diss, p=p)
     return((x-outer(xr,xc,"+"))+s)
   }
 #-------------------- end subroutines --------------------
+  diss <- as.matrix(delta)
+  
   z <- eigen(-doubleCenter(as.matrix(diss)^2)/2,symmetric=TRUE)
   v <- pmax(z$values,0)
   if (p == 1) normdiag <- cbind(sqrt(v[1])) else normdiag <- diag(sqrt(v[1:p]))
-  return(z$vectors[,1:p]%*%normdiag)
+  conf <- z$vectors[,1:p]%*%normdiag
+  rownames(conf) <- rownames(diss)
+  return(conf)
 }
 

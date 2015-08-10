@@ -9,6 +9,8 @@
   diss <- delta
   rnames <- rownames(delta)
   if (is.data.frame(diss)) diss <- as.matrix(diss)
+  checkdiss(diss)
+  
   n <- dim(diss)[1]                       #number of individuals
   m <- dim(diss)[2]                       #number of objects
   p <- ndim
@@ -101,8 +103,10 @@ rownames(x) <- rownames(diss) <- rownames(d) <- rnames
 # point stress 
 resmat <- as.matrix(d - diss)^2    #point stress
 spp.col <- colMeans(resmat, na.rm = TRUE)
+spp.col <- spp.col/sum(spp.col)*100
 spp.row <- rowMeans(resmat, na.rm = TRUE)
-  
+spp.row <- spp.row/sum(spp.row)*100
+
 if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!")
 
 ## stress normalization

@@ -1,8 +1,8 @@
 Package: smacof
 Type: Package
-Title: Multidimensional Scaling in R: SMACOF.
-Version: 1.6-2
-Date: 2014-12-19
+Title: Multidimensional Scaling
+Version: 1.7-0
+Date: 2015-08-06
 Authors@R: c(person("Patrick", "Mair", role = c("aut", "cre"), email =
     "mair@fas.harvard.edu"), person("Jan", "De Leeuw", role = "aut"),
     person("Ingwer", "Borg", role = "ctb"), person("Patrick J. F.", "Groenen",
@@ -10,23 +10,22 @@ Authors@R: c(person("Patrick", "Mair", role = c("aut", "cre"), email =
 Author: Patrick Mair [aut, cre], Jan De Leeuw [aut], Ingwer Borg [ctb], Patrick
     J. F. Groenen [aut]
 Maintainer: Patrick Mair <mair@fas.harvard.edu>
-Description: This package provides the following approaches of multidimensional
+Description: Provides the following approaches for multidimensional
     scaling (MDS) based on stress minimization by means of majorization
-    (smacof): Simple smacof (basic MDS) on symmetric dissimilarity matrices,
-    smacof for rectangular matrices (unfolding models), smacof with constraints
-    on the configuration, three-way smacof for individual differences
-    (including constraints for idioscal, indscal, and identity), and spherical
-    smacof (primal and dual algorithm). The MDS type can be ratio, interval, ordinal manner 
-    (including primary, secondary, and tertiary approaches for tie handling), and msplines. 
-    Jackknife and permutation tests are provided. 
-Imports: graphics, stats, polynom, scatterplot3d, Hmisc, colorspace,
-        nnls
-Depends: R (>= 3.0.2), rgl
-License: GPL-2
+    (smacof): basic MDS on symmetric dissimilarity matrices,
+    MDS with external constraints on the configuration, individual difference scaling (idioscal, indscal, and friends), 
+    MDS with spherical restrictions, and unfolding. The MDS type can be ratio, interval, ordinal, and monotone splines. 
+    Various tools and extensiosn like jackknife MDS, permutation tests, gravity models, inverse MDS, unidimensional scaling,
+    classical scaling, and Procrustes. 
+Imports: graphics, stats, polynom, Hmisc, colorspace, nnls, grDevices
+Depends: R (>= 3.0.2)
+License: GPL-3
+Suggests: knitr, RgoogleMaps
+VignetteBuilder: knitr
 LazyData: yes
 LazyLoad: yes
 ByteCompile: yes
 NeedsCompilation: yes
-Packaged: 2014-12-19 19:54:13 UTC; patrick
+Packaged: 2015-08-09 23:29:21 UTC; patrick
 Repository: CRAN
-Date/Publication: 2015-01-27 09:12:25
+Date/Publication: 2015-08-10 09:21:42

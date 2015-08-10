@@ -66,7 +66,7 @@ plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), bubscale
     if (missing(main)) main <- paste("Residual plot") else main <- main
     if (missing(xlab)) xlab <- "Aggregated Normalized Dissimilarities (d-hats)" else xlab <- xlab
     if (missing(ylab)) ylab <- "Aggregated Configuration Distances" else ylab <- ylab
-    obsdiss <- sumList(x$obsdiss)
+    obsdiss <- sumList(x$dhat)
     confdiss <- sumList(x$confdiss)
 
     if (missing(xlim)) xlim <- range(as.vector(obsdiss))
@@ -83,7 +83,7 @@ plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), bubscale
     if (missing(xlab)) xlab <- "Objects" else xlab <- xlab
     if (missing(ylab)) ylab <- "Stress Proportion (%)" else ylab <- ylab
 
-    spp.perc <- sort((x$spp/sum(x$spp)*100), decreasing = TRUE)
+    spp.perc <- sort(x$spp, decreasing = TRUE)
     xaxlab <- names(spp.perc)
 
     if (missing(xlim)) xlim1 <- c(1,length(spp.perc)) else xlim1 <- xlim

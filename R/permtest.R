@@ -1,2 +1,2 @@
 permtest <-
-function(object, nrep = 100, verbose = TRUE, seed = NULL)UseMethod("permtest")
+function(object, nrep = 100, verbose = TRUE)UseMethod("permtest")

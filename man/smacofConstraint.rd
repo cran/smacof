@@ -21,7 +21,7 @@ smacofConstraint(delta, constraint = "linear", external, ndim = 2,
   \item{constraint}{Type of constraint: \code{"linear"}, \code{"unique"}, \code{"diagonal"}, or a user-specified function (see details)}
   \item{external}{Data frame or matrix with external covariates, or list for simplex and circumplex (see details)}
   \item{ndim}{Number of dimensions}
-  \item{type}{MDS type: \code{"interval"}, \code{"ratio"}, \code{"ordinal"}, or \code{"mspline"} (nonmetric MDS)}
+  \item{type}{MDS type: \code{"interval"}, \code{"ratio"}, \code{"ordinal"} (nonmetric MDS), or \code{"mspline"}}
   \item{weightmat}{Optional matrix with dissimilarity weights}
   \item{init}{Optional matrix with starting values for configurations} 
   \item{ties}{Tie specification for non-metric MDS only: \code{"primary"}, \code{"secondary"}, or \code{"tertiary"}}
@@ -32,7 +32,7 @@ smacofConstraint(delta, constraint = "linear", external, ndim = 2,
   \item{spline.degree}{Degree of the spline for \code{"mspline"} MDS type}
   \item{spline.intKnots}{Number of interior knots of the spline for \code{"mspline"} MDS type}
   \item{constraint.type}{Transformation for \code{external} covariates: \code{"ratio"},
-                 \code{"interval"}, \code{"ordinal"}, \code{"spline"}, \code{"spline"}, or         
+                 \code{"interval"}, \code{"ordinal"}, \code{"spline"}, or         
                  \code{"mspline"})}
   \item{constraint.ties}{Tie specification for \code{external} covariates with 
                 \code{constraint.type = "ordinal"}: \code{"primary"}, 
@@ -98,39 +98,34 @@ Z\%*\%C                             ## check: should be equal to X
 ## SMACOF with diagonal constraints
 res.diag <- smacofConstraint(kinshipdelta, constraint = "diagonal", 
 external = kinshipscales, ndim = 3)
-X <- res.diag$conf                ## resulting configurations X
-C <- res.diag$C
-Z\%*\%C                             ## check: should be equal to X   
 
-## SMACOF with parallel regional constraints 
-data(morse)
-data(morsescales)
-res.unc <- smacofSym(morse,  type = "ordinal", ties = "primary", ndim = 2)
+## linear constraints, no optimal scaling
+res.lin <- smacofConstraint(morse, type = "ordinal", ties = "primary", 
+                            constraint = "linear", 
+                            external = morsescales[,2:3])                       
+                               
+## linear constraints, optimal scaling (regional MDS)                               
 res.parreg <- smacofConstraint(morse, type = "ordinal", ties = "primary", 
-constraint = "linear", external = as.data.frame(morsescales[,2:3]), 
-constraint.type = "ordinal", constraint.ties = "primary", ndim = 2, 
-init = res.unc$conf)
-X <- res.parreg$conf                ## resulting configurations X
-C <- res.parreg$C                   ## Matrix of weights
-Z <- res.parreg$external            ## optimally transformed external variables
-Z\%*\%C                               ## check: should be equal to X   
-
+                               constraint = "linear", 
+                               external = morsescales[,2:3], 
+                               constraint.type = "ordinal")
+plot(res.parreg)
 
 ## SMACOF with unique constraints (Bentler-Weeks model)
 res.unique <- smacofConstraint(kinshipdelta, constraint = "unique", 
-external = kinshipscales)
+                               external = kinshipscales)
+plot(res.unique)                               
+                               
 
 ## Fitting a simplex with q = 4 (i.e., n-1), diagonal constraints
 res.simp <- smacofConstraint(kinshipdelta, constraint = "diagonal", 
-external = list("simplex", 4), ndim = 3)
-plot3d(res.simp)
+                             external = list("simplex", 4), ndim = 3)
+plot(res.simp)
 
 ## Fitting a circumplex with q = 3, k1 = 1, k2 = 2, diagonal constraints
 res.circ <- smacofConstraint(kinshipdelta, constraint = "diagonal", 
-external = list("circumplex", 3, 1, 2), ndim = 3)
-plot3d(res.circ)
-
-
+                             external = list("circumplex", 3, 1, 2), ndim = 3)
+plot(res.circ)
 }
 
 \keyword{models}

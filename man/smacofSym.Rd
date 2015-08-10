@@ -23,7 +23,7 @@ mds(delta, ndim = 2, type = c("ratio", "interval", "ordinal", "mspline"),
   \item{ndim}{Number of dimensions}
   \item{weightmat}{Optional matrix with dissimilarity weights}
   \item{init}{Matrix with starting values for configurations (optional)}
-  \item{type}{MDS type: \code{"interval"}, \code{"ratio"}, or \code{"ordinal"} (nonmetric MDS)}
+  \item{type}{MDS type: \code{"interval"}, \code{"ratio"}, \code{"ordinal"} (nonmetric MDS), or \code{"mspline"}}
   \item{ties}{Tie specification for ordinal MDS only: \code{"primary"}, \code{"secondary"}, or \code{"tertiary"}}
   \item{verbose}{If \code{TRUE}, intermediate stress is printed out}
   \item{relax}{If \code{TRUE}, block relaxation is used for majorization}
@@ -33,7 +33,7 @@ mds(delta, ndim = 2, type = c("ratio", "interval", "ordinal", "mspline"),
   \item{spline.degree}{Degree of the spline for \code{"mspline"} MDS type}
   \item{spline.intKnots}{Number of interior knots of the spline for \code{"mspline"} MDS type}
 }
-\details{This is the simplest MDS-SMACOF version of the package. It solves the stress target function for symmetric dissimiliby means of the majorization approach (SMACOF) and reports the Stress-1 value (normalized). The main output are the coordinates in the low-dimensional space (configurations; \code{conf}). 
+\details{This is the simplest MDS-SMACOF version of the package. It solves the stress target function for symmetric dissimiliarities by means of the majorization approach (SMACOF) and reports the Stress-1 value (normalized). The main output are the coordinates in the low-dimensional space (configurations; \code{conf}). 
 
 The function \code{mds()} is a wrapper function and can be used instead of \code{smacofSym()}
 
@@ -41,11 +41,13 @@ This function allows for fitting three basic types of MDS: ratio MDS (default), 
 }
 \value{
   \item{delta}{Observed dissimilarities, not normalized}
-  \item{obsdiss}{Observed dissimilarities, normalized}
-  \item{confdiss}{Configuration dissimilarities}
+  \item{dhat}{Disparities (transformed proximities, approximated distances, d-hats)}
+  \item{confdiss}{Configuration distances}
   \item{conf}{Matrix of fitted configurations}
-  \item{stress}{Stress-1 value for metric MDS}
-  \item{spp}{Stress per point}
+  \item{stress}{Stress-1 value}
+  \item{spp}{Stress per point (stress contribution in percentages)}
+  \item{resmat}{Matrix with squared residuals.}
+  \item{weightmat}{Weight matrix.}
   \item{ndim}{Number of dimensions}
   \item{model}{Name of smacof model}
   \item{niter}{Number of iterations}
@@ -69,7 +71,7 @@ res <- mds(kinshipdelta)
 res
 summary(res)
 plot(res)
-plot(res, type = "p", label.conf = list(TRUE, 3, "darkgray"), pch = 25, col = "red")
+plot(res, type = "p", label.conf = list(label = TRUE, col = "darkgray"), pch = 25, col = "red")
 
 ## interval MDS
 res <- smacofSym(kinshipdelta, type = "interval")

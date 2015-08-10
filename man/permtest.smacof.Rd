@@ -10,8 +10,8 @@
 \description{These methods perform a permutation test for a symmetric or an unfolding SMACOF model.
 }
 \usage{
-\method{permtest}{smacof}(object, nrep = 100, verbose = TRUE, seed = NULL)
-\method{permtest}{smacofR}(object, nrep = 100, verbose = TRUE, seed = NULL)
+\method{permtest}{smacof}(object, nrep = 100, verbose = TRUE)
+\method{permtest}{smacofR}(object, nrep = 100, verbose = TRUE)
 \method{plot}{smacofPerm}(x, alpha = 0.05, main, xlab, ylab, ...)
 
 }
@@ -20,8 +20,7 @@
   \item{object}{Object of class \code{"smacofB"}, i.e., an MDS solution from \code{smacofSym()}}
   \item{nrep}{Number of permutations}
   \item{verbose}{If \code{TRUE}, permutation is printed out}
-  \item{seed}{Provide integer, if random seed should be set}
-   
+     
   \item{x}{Object of class \code{"smacofPerm"}}
   \item{alpha}{Alpha level}
   \item{main}{Plot title.}

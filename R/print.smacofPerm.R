@@ -8,7 +8,7 @@ print.smacofPerm <- function(x,...)
   cat("Number of replications (permutations):",x$nrep,"\n")
   cat("\n")
   cat("Observed stress value:",x$stress.obs,"\n")
-  cat("P-value:", x$pval,"\n")
+  cat("p-value:", x$pval,"\n")
   cat("\n")
 }
 

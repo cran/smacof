@@ -2,6 +2,21 @@
 \title{News for Package \pkg{smacof}}
 \encoding{UTF-8}
 
+\section{Changes in Version 1.7-0}{
+ \itemize{
+    \item Some datasets added. 
+    \item Stress-per-point (spp) is now returned as percentage stress contribution including the squared error matrix (\code{resmat}). 
+    \item If there are missing input dissimilarities, the corresponding weight matrix is created automatically.
+    \item Sanity check for negative input dissimilarities. 
+    \item Some plot cosmetrics.
+    \item Output value structure for dual algorithm in \code{smacofSphere} changed, circle added in configuration plot. 
+    \item Function \code{randomstress} for computing (average) stress values based on random input dissimilarities. 
+    \item Unidimensional scaling added (all permutations): \code{uniscale}. 
+    \item Procrustes added: \code{Procrustes} including print and plot methods.    
+    \item Function \code{torgerson} (for classical scaling) is now exported. 
+    \item Bug in \code{smacofConstraint} for external missing values removed.
+}
+}
 \section{Changes in Version 1.6-0}{
  \itemize{
     \item Bug in \code{smacofIndDiff} with initial starting configurations fixed. Stress is now normalized to Stress-1.

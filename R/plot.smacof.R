@@ -1,14 +1,20 @@
 # plot method for all smacof objects
 
-plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, bubscale = 3, 
-                        col = 1, label.conf = list(label = TRUE, pos = 3, col = 1, cex = 0.8), identify = FALSE, 
-                        type = "p", pch = 20, asp = 1, main, xlab, ylab, xlim, ylim, ...)
+plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, bubscale = 1, 
+                        col = 1, label.conf = list(label = TRUE, pos = 3, col = 1, cex = 0.8), shepard.x = NULL,
+                        identify = FALSE, type = "p", pch = 20, asp = 1, main, xlab, ylab, xlim, ylim, ...)
 
 # x ... object of class smacof
 # plot.type ... types available: "confplot", "Shepard", "resplot"
 # sphere ... if TRUE, sphere is drawn for spherical smacof
   
 {
+  ## --- check label lists
+  if (is.null(label.conf$label)) label.conf$label <- TRUE
+  if (is.null(label.conf$pos)) label.conf$pos <- 3
+  if (is.null(label.conf$col)) label.conf$col <- 1
+  if (is.null(label.conf$cex)) label.conf$cex <- 0.8
+  
   #--------------- utility function for circle drawing -----------------
   circle <- function(x, y, r, ...) {
     ang <- seq(0, 2*pi, length = 100)
@@ -21,41 +27,35 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
   x1 <- plot.dim[1]
   y1 <- plot.dim[2]
   
-  if ((any(class(x) == "smacofSP")) && (x$alg == "dual")) {             #remove first column
-     x$obsdiss <- as.dist(as.matrix(x$obsdiss1)[,-1][-1,])
-     x$confdiss <- as.dist(as.matrix(x$confdiss)[,-1][-1,])
-  }   
-  
-  if (type == "n") label.conf$pos <- NULL
-
   #----------------- configuration plot ---------------------
   if (plot.type == "confplot") {
     
+    
+    #if (type == "n") label.conf$pos <- NULL
+      
     if (missing(main)) main <- paste("Configuration Plot") else main <- main
     if (missing(xlab)) xlab <- paste("Dimension", x1,sep = " ") else xlab <- xlab
     if (missing(ylab)) ylab <- paste("Dimension", y1,sep = " ") else ylab <- ylab
 
-    if (missing(xlim)) xlim <- range(x$conf[,x1])
-    if (missing(ylim)) ylim <- range(x$conf[,y1])
+    if (missing(xlim)) xlim <- range(x$conf[,x1])*1.1
+    if (missing(ylim)) ylim <- range(x$conf[,y1])*1.1
     
     #if (missing(type)) type <- "n" else type <- type
     #if (identify) type <- "p"
     
     plot(x$conf[,x1], x$conf[,y1], main = main, type = type, xlab = xlab, ylab = ylab, 
          xlim = xlim, ylim = ylim, pch = pch, asp = asp, col = col, ...)
-    if (label.conf[[1]]) text(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), 
+    if (label.conf$label) text(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), 
                               cex = label.conf$cex, pos = label.conf$pos, 
                               col = label.conf$col)
       
     if ((any(class(x) == "smacofSP")) && (sphere)) {
-      if (x$alg == "primal") {                     
         radius <- sqrt(x$conf[2,1]^2 + x$conf[2,2]^2)
         circle(0, 0, radius, lty = 2, border = "lightgray")
-      }
     }
     
     if (identify) {
-      identify(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), cex = label.conf$cex, pos = label.conf$cex, 
+      identify(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), cex = label.conf$cex, pos = label.conf$pos, 
                col = label.conf$col)
     }
     
@@ -64,25 +64,27 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
   #---------------- Shepard diagram ------------------
   if (plot.type == "Shepard") {
     if (missing(main)) main <- paste("Shepard Diagram") else main <- main
-    if (missing(xlab)) xlab <- "Dissimilarities" else xlab <- xlab
+    if (missing(xlab)) {
+      if (is.null(shepard.x)) xlab <- "Dissimilarities" else xlab <- "Proximities"
+    } else xlab <- xlab
+    
     if (missing(ylab)) ylab <- "Configuration Distances" else ylab <- ylab
 
-    if (missing(xlim)) xlim <- range(as.vector(x$delta))
-    if (missing(ylim)) ylim <- range(as.vector(x$confdiss))
+    if (is.null(shepard.x)) {
+      xcoor <- as.vector(x$delta) 
+    } else {
+      xcoor <- as.vector(as.dist(shepard.x))
 
-    plot(as.vector(x$delta), as.vector(x$confdiss), main = main, type = "p", pch = 20, cex = .5,
+    }  
+      if (missing(xlim)) xlim <- range(xcoor, na.rm = TRUE)
+      if (missing(ylim)) ylim <- range(as.vector(x$confdiss))
+      
+    plot(xcoor, as.vector(x$confdiss), main = main, type = "p", pch = 20, cex = .5,
          xlab = xlab, ylab = ylab, col = "darkgray", xlim = xlim, ylim = ylim, ...)
-
-    points(as.vector(x$delta[x$iord]),as.vector(x$obsdiss[x$iord]), type = "b", pch = 20, cex = .5)
+    points(xcoor[x$iord],as.vector(x$dhat[x$iord]), type = "b", pch = 20, cex = .5)
     
-#     if (x$type == "ordinal") {
-#       isofit <- isoreg(as.vector(x$delta), as.vector(x$confdiss))  #isotonic regression
-#       points(sort(isofit$x), isofit$yf, type = "b", pch = 20)
-#     } else {
-#       regfit <- lsfit(as.vector(x$delta), as.vector(x$confdiss))   #linear regression
-#       abline(regfit, lwd = 0.5)
-#     }
-  }
+    #points(as.vector(x$delta[x$iord]),as.vector(x$dhat[x$iord]), type = "b", pch = 20, cex = .5)
+ }
 
   #--------------- Residual plot --------------------
   if (plot.type == "resplot") {
@@ -90,11 +92,11 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     if (missing(xlab)) xlab <- "Normalized Dissimilarities (d-hats)" else xlab <- xlab
     if (missing(ylab)) ylab <- "Configuration Distances" else ylab <- ylab
     #resmat <- residuals(x)
-
-    if (missing(xlim)) xlim <- range(as.vector(x$obsdiss))
+ 
+    if (missing(xlim)) xlim <- range(as.vector(x$dhat))
     if (missing(ylim)) ylim <- range(as.vector(x$confdiss))
     
-    plot(as.vector(x$obsdiss), as.vector(x$confdiss), main = main, type = "p", col = "darkgray",
+    plot(as.vector(x$dhat), as.vector(x$confdiss), main = main, type = "p", col = "darkgray",
          xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim,...)
     abline(0, 1)
   }
@@ -104,18 +106,19 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     if (missing(main)) main <- paste("Stress Decomposition Chart") else main <- main
     if (missing(xlab)) xlab <- "Objects" else xlab <- xlab
     if (missing(ylab)) ylab <- "Stress Proportion (%)" else ylab <- ylab
-
-    spp.perc <- sort((x$spp/sum(x$spp)*100), decreasing = TRUE)
+ 
+    spp.perc <- sort(x$spp, decreasing = TRUE)
     xaxlab <- names(spp.perc)
 
     if (missing(xlim)) xlim1 <- c(1,length(spp.perc)) else xlim1 <- xlim
-    if (missing(ylim)) ylim1 <- range(spp.perc) else ylim1 <- ylim
+    if (missing(ylim)) ylim1 <- (range(spp.perc)*c(0.9, 1.1)) else ylim1 <- ylim
     
-    plot(1:length(spp.perc), spp.perc, xaxt = "n", type = "p",
-         xlab = xlab, ylab = ylab, main = main, xlim = xlim1, ylim = ylim1, ...)
+    op <- par(mar = c(3, 4, 4, 2))
+    plot(1:length(spp.perc), spp.perc, xaxt = "n", type = "p", xlab = " ", ylab = ylab, main = main, xlim = xlim1, ylim = ylim1, ...)
+    mtext(xlab, side = 1, padj = 2)
     text(1:length(spp.perc), spp.perc, labels = xaxlab, pos = 3, cex = 0.8)
-    for (i in 1:length(spp.perc)) lines(c(i,i), c(spp.perc[i],0), col = "lightgray", lty = 2)
-                                  
+    for (i in 1:length(spp.perc)) lines(c(i,i), c(spp.perc[i],0), col = "lightgray", lty = 2)                            
+    par(op)
   }
 
   #------------------------------ bubble plot -------------------------
@@ -129,8 +132,8 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     if (missing(xlim)) xlim <- range(x$conf[,x1])*1.1
     if (missing(ylim)) ylim <- range(x$conf[,y1])*1.1
     
-    spp.perc <- x$spp/sum(x$spp)*100
-    bubsize <- (max(spp.perc) - spp.perc + 1)/length(spp.perc)*bubscale
+    spp.perc <- x$spp
+    bubsize <- ((max(spp.perc) - spp.perc + 1)/length(spp.perc))*(bubscale + 3)
     
     plot(x$conf, cex = bubsize, main = main, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim,...)
     xylabels <- x$conf
