@@ -1,6 +1,6 @@
 ## function to compute stress values based on random dissimilarities
 
-randomstress <- function(n, ndim, nrep, type = c("ratio", "interval", "ordinal","mspline")) {
+randomstress <- function(n, ndim, nrep = 100, type = c("ratio", "interval", "ordinal","mspline")) {
 
 ## n ... number of objects
 ## ndim ... number of dimensions

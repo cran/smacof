@@ -1,14 +1,20 @@
 # plot method for all smacof objects
 
-plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), bubscale = 5, 
-                          label.conf = list(label = TRUE, pos = 1, col = 1), identify = FALSE, 
-                          type, main, xlab, ylab, xlim, ylim, ...)
+plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), bubscale = 1, col = 1, 
+                          label.conf = list(label = TRUE, pos = 3, col = 1), identify = FALSE, 
+                          type = "p", pch = 20,  asp = 1, main, xlab, ylab, xlim, ylim, ...)
 
 # x ... object of class smacofID
-# plot.type ... types available: "confplot", "Shepard", "resplot"
+# plot.type ... types available: "confplot", "bubbleplot", "stressplot"
 # Shepard plot and resplot are performed over sum of distances
   
 {
+  ## --- check label lists
+  if (is.null(label.conf$label)) label.conf$label <- TRUE
+  if (is.null(label.conf$pos)) label.conf$pos <- 3
+  if (is.null(label.conf$col)) label.conf$col <- 1
+  if (is.null(label.conf$cex)) label.conf$cex <- 0.8
+  if (identify) label.conf$label <- FALSE
   
   x1 <- plot.dim[1]
   y1 <- plot.dim[2]
@@ -19,62 +25,19 @@ plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), bubscale
     if (missing(xlab)) xlab <- paste("Dimension", x1,sep = " ") else xlab <- xlab
     if (missing(ylab)) ylab <- paste("Dimension", y1,sep = " ") else ylab <- ylab
 
-    if (missing(xlim)) xlim <- range(x$gspace[,x1])
-    if (missing(ylim)) ylim <- range(x$gspace[,y1])
+    if (missing(xlim)) xlim <- range(x$gspace[,x1])*1.1
+    if (missing(ylim)) ylim <- range(x$gspace[,y1])*1.1
+  
+        
+    plot(x$gspace[,x1], x$gspace[,y1], main = main, type = type, xlab = xlab, ylab = ylab, 
+         xlim = xlim, ylim = ylim, pch = pch, asp = asp, col = col, ...)
+    if (label.conf$label) text(x$gspace[,x1], x$gspace[,y1], labels = rownames(x$gspace), 
+                               cex = label.conf$cex, pos = label.conf$pos, 
+                               col = label.conf$col)
     
-    if (missing(type)) type <- "n" else type <- type
-    if (identify) type <- "p"
-    
-    ppos <- label.conf[[2]]
-    if (type == "n") ppos <- NULL
-
-    plot(x$gspace[,x1], x$gspace[,y1], main = main, type = type, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)
-    
-    if (!identify) {
-      if (label.conf[[1]]) text(x$gspace[,x1], x$gspace[,y1], labels = rownames(x$gspace), cex = 0.8, pos = ppos, col = label.conf[[3]])    
-    } else {
-      identify(x$gspace[,x1], x$gspace[,y1], labels = rownames(x$gspace), cex = 0.8)
+    if (identify) {
+       identify(x$gspace[,x1], x$gspace[,y1], labels = rownames(x$gspace), cex = 0.8)
     }
-  }
-
-  #---------------- Shepard diagram ------------------
-   if (plot.type == "Shepard") {
-    if (missing(main)) main <- paste("Shepard Diagram") else main <- main
-    if (missing(xlab)) xlab <- "Aggregated Observed Dissimilarities" else xlab <- xlab
-    if (missing(ylab)) ylab <- "Aggregated Configuration Distances" else ylab <- ylab
-
-    delta <- sumList(x$delta)
-    confdiss <- sumList(x$confdiss)
-    
-    if (missing(xlim)) xlim <- range(as.vector(delta))
-    if (missing(ylim)) ylim <- range(as.vector(confdiss))
-
-    plot(as.vector(delta), as.vector(confdiss), main = main, type = "p", pch = 1,
-         xlab = xlab, ylab = ylab, col = "darkgray", xlim = xlim, ylim = ylim, ...)
-
-    if (x$type == "ordinal") {
-      isofit <- isoreg(as.vector(delta), as.vector(confdiss))  #isotonic regression
-      points(sort(isofit$x), isofit$yf, type = "b", pch = 16)
-    } else {
-      regfit <- lsfit(as.vector(delta), as.vector(confdiss))   #linear regression
-      abline(regfit, lwd = 0.5)
-    }
-  }
-
-  #--------------- Residual plot -------------------- 
-  if (plot.type == "resplot") {
-    if (missing(main)) main <- paste("Residual plot") else main <- main
-    if (missing(xlab)) xlab <- "Aggregated Normalized Dissimilarities (d-hats)" else xlab <- xlab
-    if (missing(ylab)) ylab <- "Aggregated Configuration Distances" else ylab <- ylab
-    obsdiss <- sumList(x$dhat)
-    confdiss <- sumList(x$confdiss)
-
-    if (missing(xlim)) xlim <- range(as.vector(obsdiss))
-    if (missing(ylim)) ylim <- range(as.vector(confdiss))
-
-    plot(as.vector(obsdiss), as.vector(confdiss), main = main, type = "p", col = "darkgray", xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim,...)
-    abline(lsfit(as.vector(obsdiss), as.vector(confdiss)))
-
   }
 
   #----------------------- Stress decomposition -----------------
@@ -108,16 +71,13 @@ plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), bubscale
     if (missing(ylim)) ylim <- range(x$gspace[,y1])*1.1
     
     spp.perc <- x$spp/sum(x$spp)*100
-    bubsize <- (max(spp.perc) - spp.perc + 1)/length(spp.perc)*bubscale
+    bubsize <- spp.perc/length(spp.perc)*(bubscale + 3)
     
     plot(x$gspace, cex = bubsize, main = main, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim)
     xylabels <- x$gspace
     ysigns <- sign(x$gspace[,y1])
     xylabels[,2] <- (abs(x$gspace[,y1])-(x$gspace[,y1]*(bubsize/50)))*ysigns 
-    text(xylabels, rownames(x$gspace), pos = 1,cex = 0.7)
+    text(xylabels, rownames(x$gspace), pos = 3,cex = 0.7)    
   }  
 
-  
-
-  
 }

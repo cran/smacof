@@ -1,4 +1,4 @@
-permtest.smacofR <- function(object, nrep = 100, verbose = TRUE)
+permtest.smacofR <- function(object, data = NULL, method.dat = "full", nrep = 100, verbose = TRUE, ...)
 {
 ## val ... stress value  
 ## n... number of objects
@@ -6,10 +6,12 @@ permtest.smacofR <- function(object, nrep = 100, verbose = TRUE)
 ## ... additional arguments to be passed from smacofRect  
     
     #if (class(object)[1] != "smacofR") stop("Permutation test is currenlty implemented for objects of class smacofB from smacofSym() only! \n")
+    method.dat <- match.arg(method.dat, c("full", "rows"))
     
     data <- object$obsdiss
     m <- object$nobj          ## number of objects (columns)
     n <- object$nind          ## number of observations (rows)
+    nm <- n * m
     p <- object$ndim          ## number of dimensions
     val <- object$stress      ## metric stress (normalized)
     smacall <- object$call
@@ -19,14 +21,19 @@ permtest.smacofR <- function(object, nrep = 100, verbose = TRUE)
     #perms <- shuffleSet(m, nset = nper)
     
     for (irep in 1:nrep) {
-      permmat <- t(apply(data, 1, function(pp) {     ## computes permuted matrix
-        ind <- sample(1:m, m)
-        pp[ind]
-      }))
+          
+      if (method.dat == "rows") {                      ## permutation within rows
+        permmat <- t(apply(data, 1, function(pp) {     ## computes permuted matrix
+          ind <- sample(1:m, m)
+          pp[ind]
+        }))
+      } else {                                         ## full permutation
+       ind <- sample(1:nm)
+       permmat <- matrix(as.vector(data)[ind], ncol = m)
+      }
       
       smacall$delta <- permmat
       resperm <- eval(smacall) 
-      #resperm <- smacofRect(permmat, ndim = p, ...)
       stressvec[irep] <- resperm$stress
       congmat[irep, ] <- resperm$congvec
               

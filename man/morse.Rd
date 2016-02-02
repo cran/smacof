@@ -1,5 +1,6 @@
 \name{morse}
 \alias{morse}
+\alias{morse2}
 \docType{data}
 \title{Morse Code Confusion Data}
 \description{Confusion percentages between Morse code signals. The scores are derived 
@@ -14,10 +15,16 @@ the answer 'Same!' was given in each combination of row stimulus i and column st
 where either i or j was the first signal presented. The values are 1 minus the 
 symmetrized confusion rates and are thus dissimilarities.}
 
-\usage{data(morse)
+\usage{
+data(morse)
+data(morse2)
 }
 
 \format{Similarity matrix of 36 morse codes}
+
+\details{
+The first dataset (\code{morse}) contains a symmetric version, the second dataset (\code{morse2}) the original asymmetric version.
+}
 
 \references{
 Rothkopf, E. Z. (1957). A measure of stimulus similarity and errors in some 

@@ -29,7 +29,7 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, t
   
   type <- match.arg(type, c("ratio", "interval", "ordinal", "mspline"), several.ok = FALSE) 
   ties <- match.arg(ties, c("primary", "secondary", "tertiary"), several.ok = FALSE) 
-  constraint.type <- match.arg(type, c("ratio", "interval", "ordinal", "spline", "mspline"), several.ok = FALSE) 
+  constraint.type <- match.arg(constraint.type, c("ratio", "interval", "ordinal", "spline", "mspline"), several.ok = FALSE) 
   constraint.ties <- match.arg(constraint.ties, c("primary", "secondary", "tertiary"), several.ok = FALSE) 
   
   diss <- delta
@@ -46,13 +46,21 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, t
   nn <- n*(n-1)/2
   m <- length(diss)
   
-  simpcirc <- FALSE
+  
+  ## --- starting values 
+  startconf <- init
+  if (!is.null(startconf)) startconf <- as.matrix(init)   # x as matrix with starting values   
+  xstart <- startconf
   
   if (is.null(attr(diss, "Labels"))) attr(diss, "Labels") <- paste(1:n)
   
+  ## sanity check external
+  if (is.data.frame(external)) external <- as.matrix(external)
+  if (!is.list(external)) {
+    if (ncol(external) < p) stop("Number of external variables can not be smaller than the number of MDS dimensions!")
+  }
   #---- external specification -----
-  if (is.data.frame(external)) {
-    external <- as.matrix(external)
+  if (is.matrix(external)) {
     extvars <- list()
     for (s in 1:ncol(external)){
       # Prepare for optimal scaling of transformations
@@ -70,16 +78,18 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, t
       } else if(constraint.trans=="mspline"){
         constraint.trans <- "mspline"
       }
+      
       extvars[[s]] <- transPrep(external[,s]-mean(external[,s], na.rm = TRUE),
                                 trans = constraint.trans, 
                                 spline.intKnots = constraint.spline.intKnots, 
                                 spline.degree = constraint.spline.degree,
                                 missing = "multiple")
+      
       external[,s] <- extvars[[s]]$xInit - mean(extvars[[s]]$xInit)
     }
-    
-  }
+  } 
   
+  simpcirc <- FALSE
   if (is.list(external)) {                     
     if (external[[1]] == "simplex") {                           #simplex specification
       d2 <- external[[2]]
@@ -133,10 +143,6 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, t
   v <- myGenInv(w)                              #Moore-Penrose inverse
   itel <- 1
   
-  ## --- starting values 
-  startconf <- init
-  if (!is.null(startconf)) startconf <- as.matrix(init)   # x as matrix with starting values   
-  xstart <- startconf
   
   #----------- pre-specified functions for constraints -----------
   # linear constraint (de Leeuw & Heiser, 1980, p.515), X=ZC 
@@ -171,35 +177,53 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, t
     if (is.null(xstart)) stop("Starting configuration must be specified!")
   }
   
-  # update function for transformation of external variables
-  updext <- function(x,w,external,extvars,constraint){
-    m <- ncol(external)
-    # reconstruct weigh matrix C
-    if (constraint == "linear"){
-      C <- solve(crossprod(external,w%*%external),crossprod(external,w%*%x))
-    } else if (constraint == "diagonal") {
-      C <- diag(colSums(external*(w%*%x))/colSums(external*(w%*%external)))
-    }
-    # For updating external[,s] we need a value larger than the largest eigenvalue
-    # of V kronecker CC'.  
-    svdC <- svd(C)
-    v2 <- 2*max(diag(w))* svdC$d[1]^2                     # 2*max(diag(w)) is an upperbound of the largest eigenvalue of w
-    z <- external - (1/v2)*(w %*% (external %*% C - x)) %*% t(C) # Compute the unconstrained majorization update
-    external.old <- external
-    iord.prim <- list()
-    for (s in 1:ncol(external)){
-      tt <- transform(z[,s], extvars[[s]], normq = 0)     # Compute update for external variable s
-      external[,s] <- tt$res*(n/sum(tt$res^2))^.5         # Make the external variable of length n
-      iord.prim[[s]] <- tt$iord.prim                      # Retain the ordening if primary approach to ties
-    }
-    return(list(external = external, iord.prim = iord.prim))
-  }
   
   #---------- end pre-specified functions for constraints -------
   
-  
   #x <- constrfun(xstart,w,external)                    #compute X
   if (constraint %in% c("linear","diagonal") & !simpcirc){
+    # First make random weight matrices
+    ncol.ext <- ncol(external)
+    if (constraint == "linear"){
+      # Make weight matrix C from a rotation matrix out of the left singular vectors of
+      # a centering matrix
+      C <- svd(diag(ncol.ext) - 1/ncol.ext)$u[, 1:ndim]
+      #C <- matrix(runif(ncol.ext * ndim), ncol.ext, ndim)
+    } else if (constraint == "diagonal") {
+      C <- diag(ncol.ext)  # Make an initial C = I
+    }
+    # Initialize the optimally scaled external variables
+    x.unc <- xstart
+    x.con <- matrix(0, n, p)
+    for (s in 1:ncol.ext){  # Find initial constrained configuration
+      target <- x.unc %*% C[s, ]/sum(C[s, ]^2)
+      loss <- sum((x.unc - outer(external[, s], C[s, ]) )^2)
+      loss.old <- loss + 2 * eps
+      while (loss.old - loss > eps) {  
+        loss.old <- loss
+        tt.plus <- transform(target, extvars[[s]], normq = 0)     # Compute update for external variable s
+        tt.min  <- transform(-target, extvars[[s]], normq = 0)    # Compute update for external variable s
+        if (sum((tt.plus$res - target)^2) < sum(((tt.min$res + target))^2) ) {
+          external[, s] <- tt.plus$res
+        } else {
+          external[, s] <- tt.min$res
+        }
+        #x.unc <- x.unc - outer(external[, s],C[s, ])
+        if (constraint == "linear"){
+          C[s, ] <- t(external[,s, drop = FALSE]) %*% x.unc / sum((external[,s])^2)
+          target <- x.unc %*% C[s, ]/sum(C[s, ]^2)         
+        } else if (constraint == "diagonal") {
+          C[s, s] <- t(external[, s, drop = FALSE]) %*% x.unc[, s, drop = FALSE] / sum((external[,s])^2)
+          target <- x.unc[, s] / C[s, s]          
+        } 
+        loss <- sum((x.unc - outer(external[, s], C[s, ]) )^2)
+      }
+      x.unc <- x.unc - outer(external[, s], C[s, ])
+    }  
+    
+    # Set external to column sum of squares n
+    #external <- apply(external, 2, FUN = function(x){x <- x*(length(x)/sum(x^2))^.5})
+    # Do an extra round of updates to get the column length restriction fine.
     updext.result <- updext(xstart,w,external,extvars,constraint)
     external <- updext.result$external
   }
@@ -230,7 +254,7 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, t
     snon <- sum(wgths*(dhat-e)^2)/nn               # nonmetric stress
     
     if (verbose) cat("Iteration: ",formatC(itel,width=3, format="d"),
-                     " Stress (normalized): ", formatC(c(snon),digits=8,width=10,format="f"),
+                     " Stress (raw): ", formatC(c(snon),digits=8,width=10,format="f"),
                      " Difference: ", formatC(c(sold-snon),digits=8,width=10,format="f"),
                      "\n")
     
@@ -262,6 +286,7 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, t
   
   ## stress-per-point 
   spoint <- spp(dhat, confdiss, wgths)
+  rss <- sum(spoint$resmat[lower.tri(spoint$resmat)])  ## residual sum-of-squares
   
   if ((constraint == "diagonal") && (!simpcirc)) {
     if (p != ncol(y)) {
@@ -281,7 +306,7 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, t
   ## compute C
   Z <- as.matrix(external)
   X <- y
-  C <- solve(t(Z)%*%Z)%*%t(Z)%*%X 
+  C <- ginv(t(Z)%*%Z)%*%t(Z)%*%X 
   if (constraint %in% c("linear","diagonal") && !simpcirc){
     for (s in 1:ncol(external)){
       extvars[[s]]$iord.prim <- updext.result$iord.prim[[s]]
@@ -294,7 +319,7 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, t
   
   result <- list(delta = diss, dhat = dhat, confdiss = confdiss, conf = y, C = C, 
                  stress = stress, spp = spoint$spp, ndim = p, iord = dhat2$iord.prim, extvars = extvars,
-                 external = external, weightmat = wgths, resmat = spoint$resmat, model = "SMACOF constraint", 
+                 external = external, weightmat = wgths, resmat = spoint$resmat, rss = rss, init = xstart, model = "SMACOF constraint", 
                  niter = itel, nobj = n, type = type, call = match.call()) 
   class(result) <- c("smacofB","smacof")
   result 

@@ -6,7 +6,7 @@
 of each MDS fit. 
 }
 \usage{
-randomstress(n, ndim, nrep, type = c("ratio", "interval", "ordinal", "mspline"))
+randomstress(n, ndim, nrep = 100, type = c("ratio", "interval", "ordinal", "mspline"))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

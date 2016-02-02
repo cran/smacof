@@ -2,6 +2,52 @@
 \title{News for Package \pkg{smacof}}
 \encoding{UTF-8}
 
+\section{Changes in Version 1.8-10}{
+  \itemize{
+    \item Hue change in jackknife plot.
+}  
+}
+
+
+\section{Changes in Version 1.8-9}{
+  \itemize{
+    \item Some fixes in the permutation tests.
+}  
+}
+
+\section{Changes in Version 1.8-6}{
+  \itemize{
+    \item Permutation tests based on permutations of the original data matrix added.
+}  
+}
+
+\section{Changes in Version 1.8-5}{
+  \itemize{
+    \item \code{biplot} function for creating MDS biplots added.
+}  
+}
+
+\section{Changes in Version 1.8-3}{
+  \itemize{
+    \item Optimization in \code{smacofConstraint} improved (monotone regression in two directions).  
+    \item Some plot cosmetics for \code{smacofIndDiff} and \code{Procrustes} calls. 
+    \item Transformations in \code{smacofIndDiff} use C implementation (mspline can be done as well). 
+}  
+}
+
+
+\section{Changes in Version 1.8-0}{
+ \itemize{
+    \item Drift vector model added.
+    \item Datasets added. 
+    \item \code{smacofConstraint} allows now for data frame and matrices for external variables, sanity checks added.
+    \item Verbose output now says "stress (raw)".
+    \item init default argument is now \code{"torgerson"} (before it was \code{NULL} which used Torgerson scaling anyway).
+    \item Bug for optimal scaling on external variables in \code{smacofConstraint} removed. 
+    \item SPP-plot for unfolding models fixed. 
+}
+}
+
 \section{Changes in Version 1.7-0}{
  \itemize{
     \item Some datasets added. 
@@ -23,11 +69,12 @@
     \item Several wrapper functions added: \code{mds}, \code{unfolding}, \code{indscal}, \code{idioscal}. 
 }
 }
+
 \section{Changes in Version 1.5-0}{
  \itemize{
     \item Recoding of transformations:
     \itemize{
-       \item Ordinal transformations are coded in C++ and therefore much faster.
+       \item Ordinal transformations are coded in C.
        \item Added monotone spline transformations (\code{type = mspline} with number of interior knots \code{spline.intKnots} and degree of the spline \code{spline.degree = 2}.       
     }
     \item \code{smacofConstraint} allows for transformations of the external variables through \code{constraint.type} (\code{"ratio", "interval", "ordinal", "spline", "spline",} or \code{"mspline"}). Missing values (\code{NA}) are estimated by the model. Choosing the number of external variables equal to the number of dimensions together with \code{constraint.type = "ordinal", constraint.ties = "primary"} will effectively restrict the configuration to parallel regions defined by the categories of the external variables.

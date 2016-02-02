@@ -27,9 +27,8 @@ a weight matrix is created that sets cells with no co-occurences to 0, i.e. they
   \item{weightmat}{Weight matrix for subsequent smacof computation}
   \item{co.occ}{Matrix with co-occurences}
 }
-\references{Mair, P., Rusch, T. & Hornik, K. (2014). Gravity MDS on sparse document-term matrices: 
-Republican values. Research Report Series, Department of Statistics and Mathematics, WU
-Vienna, Report 127.
+\references{Mair, P., Rusch, T. & Hornik, K. (2014). The Grand Old Party - A party of values?
+SpringerPlus, 3(697), \url{http://www.springerplus.com/content/3/1/697} 
 }
 \author{Patrick Mair}
 

@@ -7,12 +7,9 @@
 }
 \usage{
 smacofSphere(delta, algorithm = c("dual", "primal"), ndim = 2, 
-             type = c("ratio", "interval", "ordinal"), weightmat = NULL, init = NULL, 
-             ties = "primary", verbose = TRUE, penalty = 100, relax = FALSE,
-             modulus = 1, itmax = 1000, eps = 1e-6)
-
-
-
+             type = c("ratio", "interval", "ordinal"), weightmat = NULL, 
+             init = "torgerson", ties = "primary", verbose = FALSE, penalty = 100, 
+             relax = FALSE, modulus = 1, itmax = 1000, eps = 1e-6)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -21,7 +18,7 @@ smacofSphere(delta, algorithm = c("dual", "primal"), ndim = 2,
   \item{penalty}{Penalty parameter for dual algorithm (larger 0)}
   \item{ndim}{Number of dimensions}
   \item{weightmat}{Optional matrix with dissimilarity weights}
-  \item{init}{Matrix with starting values for configurations (optional)}
+  \item{init}{Either \code{"torgerson"} (classical scaling starting solution), \code{"random"} (random configuration), or a user-defined matrix}
   \item{type}{MDS type: \code{"interval"}, \code{"ratio"}, or \code{"ordinal"} (nonmetric MDS)}
   \item{ties}{Tie specification for non-metric MDS only}
   \item{verbose}{If \code{TRUE}, intermediate stress is printed out}
@@ -39,13 +36,22 @@ smacofSphere(delta, algorithm = c("dual", "primal"), ndim = 2,
   \item{confdiss}{Configuration dissimilarities}
   \item{conf}{Matrix with fitted configurations}
   \item{spp}{Stress per point}
+  \item{resmat}{Matrix with squared residuals}
+  \item{rss}{Residual sum-of-squares}
   \item{stress}{Stress-1 value}
+  \item{init}{Starting configurations}
   \item{ndim}{Number of dimensions}
   \item{dummyvec}{Dummy vector of restriction matrix}
   \item{model}{Type of smacof model}
   \item{niter}{Number of iterations}
   \item{nobj}{Number of objects}
 }
+
+\details{
+For large scale problems it is suggested to use the dual algorithm. The primal algorithm gets pretty slow, especially for 
+ordinal scaling.
+}
+
 \references{De Leeuw, J. & Mair, P. (2009). Multidimensional scaling using majorization: 
 The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{http://www.jstatsoft.org/v31/i03/}}
 \author{Jan de Leeuw and Patrick Mair}

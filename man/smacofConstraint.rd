@@ -23,7 +23,7 @@ smacofConstraint(delta, constraint = "linear", external, ndim = 2,
   \item{ndim}{Number of dimensions}
   \item{type}{MDS type: \code{"interval"}, \code{"ratio"}, \code{"ordinal"} (nonmetric MDS), or \code{"mspline"}}
   \item{weightmat}{Optional matrix with dissimilarity weights}
-  \item{init}{Optional matrix with starting values for configurations} 
+  \item{init}{Optional matrix with starting values for configurations. If \code{NULL} random starts are used (see details).} 
   \item{ties}{Tie specification for non-metric MDS only: \code{"primary"}, \code{"secondary"}, or \code{"tertiary"}}
   \item{verbose}{If \code{TRUE}, intermediate stress is printed out}
   \item{modulus}{Number of smacof iterations per monotone regression call}
@@ -43,20 +43,24 @@ smacofConstraint(delta, constraint = "linear", external, ndim = 2,
                with \code{constraint.type = "spline"} or \code{"mspline"}}
   
 }
-\details{The argument \code{external} is mandatory and allows for the specification of a covariate data frame (or matrix) of dimension (n x q). Alternatively, for simplex fitting the user can specify a list of the following structure: \code{external = list("simplex", dim2)} with \code{dim2} denoting the dimension of the simplex with dim2 < n. For a circumplex fitting, the list has to be of the following form: \code{external = list("circumplex", dim2, k1, k2)} with 1 <= k1 <= k2 <= n (see also examples section). k1 and k2 denote the circumplex width.
+\details{The argument \code{external} is mandatory and allows for the specification of a covariate data frame (or matrix) of dimension (n x q). Alternatively, for simplex fitting the user can specify a list of the following structure: \code{external = list("simplex", dim2)} with \code{dim2} denoting the dimension of the simplex with dim2 < n. For a circumplex fitting, the list has to be of the following form: \code{external = list("circumplex", dim2, k1, k2)} with \eqn{1 \leq k1 \leq k2 \leq n} (see also examples section). k1 and k2 denote the circumplex width.
 
 In constraint smacof, the configuration matrix is subject of a constraint based on the external scales (predictors). This constraint can be specified using the \code{constraint} argument. We provide the following standard setting: 
 
-For \code{constraint = "linear"} the configurations X are decomposed linearly, i.e. X = ZC where Z is the known predictor matrix specified using \code{external}. 
+For \code{constraint = "linear"} the configurations \eqn{X} are decomposed linearly, i.e. \eqn{X = ZC} where \eqn{Z} is the known predictor matrix specified using \code{external}. 
 
-The same for \code{constraint = "diagonal"} where X needs to be of dimension  (n x q) where q is the number of columns of the external scale matrix (and thus number of dimensions). Here, C is restricted to be diagonal. 
+The same for \code{constraint = "diagonal"} where \eqn{X} needs to be of dimension \eqn{(n \times q)} where \eqn{q} is the number of columns of the external scale matrix (and thus number of dimensions). Here, \eqn{C} is restricted to be diagonal. 
 
-For \code{constraint = "linear"} or \code{"diagonal"}, the external covariates Z can be optimally transformed as specified by \code{constraint.type}. Choosing the number of covariates equal to the number of dimensions together with \code{constraint.type = "ordinal"}, \code{constraint.ties = "primary"} will effectively restrict the configuration to parallel regions defined by the categories of the covariates. Note that missing values of the covariates are estimated by the model.
+For \code{constraint = "linear"} or \code{"diagonal"}, the external covariates \eqn{Z} can be optimally transformed as specified by \code{constraint.type}. Choosing the number of covariates equal to the number of dimensions together with \code{constraint.type = "ordinal"}, \code{constraint.ties = "primary"} will effectively restrict the configuration to parallel regions defined by the categories of the covariates. Note that missing values of the covariates are estimated by the model.
 
-For \code{constraint = "unique"} we get the Bentler-Weeks uniqueness model. Hence X is of dimension (n x (n + p)). This implies that we fit a certain number of dimensions p and, in addition we extract n additional dimensions where each object is scored on a separate dimension. More technical details can be found in the corresponding JSS article (reference see below).
+For \code{constraint = "unique"} we get the Bentler-Weeks uniqueness model. Hence \eqn{X} is of dimension \eqn{(n x (n + p))}. This implies that we fit a certain number of dimensions p and, in addition we extract n additional dimensions where each object is scored on a separate dimension. More technical details can be found in the corresponding JSS article (reference see below).
 
-In addition, the user can specify his own constraint function with the following arguments: configuration matrix with starting values (\code{init}) (mandatory in this case), matrix V (\code{weightmat}; based on the weight matrix, see package vignette), external scale matrix (\code{external}). The function must return a matrix of resulting configurations. 
+In addition, the user can specify his own constraint function with the following arguments: configuration matrix with starting values (\code{init}) (mandatory in this case), matrix \eqn{V} (\code{weightmat}; based on the weight matrix, see package vignette), external scale matrix (\code{external}). The function must return a matrix of resulting configurations. 
 
+If no starting configuration is provided, a random starting solution is used. In most applications, this is not a good idea in order 
+to find a good fitting model. The user can fit an exploratory MDS using \code{mds()} first and use the resulting configurations 
+as starting configuration for \code{smacofConstraint()}. Alternatively, if the user has starting configurations determined by 
+some underlying theory, they can be used as well. 
 
 }
 \value{
@@ -67,16 +71,21 @@ In addition, the user can specify his own constraint function with the following
   \item{C}{Matrix with restrictions}
   \item{stress}{Stress-1 value}
   \item{spp}{Stress per point}
+  \item{resmat}{Matrix with squared residuals}
+  \item{rss}{Residual sum-of-squares}
+  \item{weightmat}{Weight matrix}
   \item{ndim}{Number of dimensions}
   \item{extvars}{List for each external covariate with a list of class \code{"optscal"}}
+  \item{init}{Starting configuration}
   \item{model}{Type of smacof model}
   \item{niter}{Number of iterations}
   \item{nobj}{Number of objects}
 }
-\references{de Leeuw, J. & Mair, P. (2009). Multidimensional scaling using majorization: 
+\references{
+De Leeuw, J. & Mair, P. (2009). Multidimensional scaling using majorization: 
 The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{http://www.jstatsoft.org/v31/i03/} 
 
-de Leeuw, J., & Heiser, W. (1980). Multidimensional scaling with restrictions on the configurations. In P. R. Krishnaiah (eds.), Multivariate Analysis V, pp. 501-522. North-Holland. 
+De Leeuw, J., & Heiser, W. (1980). Multidimensional scaling with restrictions on the configurations. In P. R. Krishnaiah (eds.), Multivariate Analysis V, pp. 501-522. North-Holland. 
 }
 \author{Jan de Leeuw and Patrick Mair}
 
@@ -93,20 +102,21 @@ X <- res.lin1$conf                ## resulting configurations X
 Z <- as.matrix(kinshipscales) 
 C <- res.lin1$C
 C
-Z\%*\%C                             ## check: should be equal to X   
+Z\%*\%C                           ## check: should be equal to X   
 
 ## SMACOF with diagonal constraints
 res.diag <- smacofConstraint(kinshipdelta, constraint = "diagonal", 
-external = kinshipscales, ndim = 3)
+                             external = kinshipscales, ndim = 3)
 
-## linear constraints, no optimal scaling
+## linear constraints, no optimal scaling (starting configurations from unrestricted MDS fit)
+res.mds <- mds(morse, type = "ordinal")        ## unrestricted MDS fit
 res.lin <- smacofConstraint(morse, type = "ordinal", ties = "primary", 
-                            constraint = "linear", 
+                            constraint = "linear", init = res.mds$conf,
                             external = morsescales[,2:3])                       
                                
 ## linear constraints, optimal scaling (regional MDS)                               
 res.parreg <- smacofConstraint(morse, type = "ordinal", ties = "primary", 
-                               constraint = "linear", 
+                               constraint = "linear", init = res.mds$conf,
                                external = morsescales[,2:3], 
                                constraint.type = "ordinal")
 plot(res.parreg)

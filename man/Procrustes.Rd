@@ -87,12 +87,19 @@ fit.proc <- Procrustes(fit.east$conf, fit.west$conf)
 fit.proc
 
 ## Configuration plots; Procrustes plots.
-op <- par(mfrow = c(2,2))
-plot(fit.east, main = "MDS East Germany")
-plot(fit.west, main = "MDS West Germany")
-plot(fit.proc)     ## X (blue) and Yhat (red) 
-plot(fit.proc, plot.type = "transplot", length = 0.05)  ## Y (gray) and Yhat (red)
-par(op)
+plot(fit.east, main = "MDS East Germany")   ## MDS plot East Germany
+plot(fit.west, main = "MDS West Germany")   ## MDS plot West Germany
+
+## Procrustes configurations (X and Yhat)
+plot(fit.proc, ylim = c(-1, 1))     
+legend("topleft", legend = c("East Germany", "West Germany"), 
+       col = c("cadetblue", "coral1"), pch = 19)
+
+## Procrustes transformations (Y and Yhat)
+plot(fit.proc, plot.type = "transplot", length = 0.05, ylim = c(-1,1))  
+legend("topleft", legend = c("West Germany (untransformed)", "West Germany (transformed)"), 
+       col = c("gray", "coral1"), pch = 19)
+
 }
 
 \keyword{models}

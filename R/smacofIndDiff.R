@@ -1,16 +1,17 @@
 #SMACOF for individual differences (list of dissimilarity matrices)
 
-smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordinal"), 
+smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordinal", "mspline"), 
                           constraint = c("indscal", "idioscal", "identity"),
-                          weightmat = NULL, init = NULL, ties = "primary", 
-                          verbose = FALSE, modulus = 1, itmax = 1000, eps = 1e-6)
+                          weightmat = NULL, init = "torgerson", ties = "primary", 
+                          verbose = FALSE, modulus = 1, itmax = 1000, eps = 1e-6,
+                          spline.degree = 2, spline.intKnots = 2)
   
 # delta ... list of input objects: either of class dist() or a symmetric matrix
 # contstraint ... either NULL, "identity", "diagonal", "idioscal"
 # ties ... primary, secondary, tertiary
 {
   
-  type <- match.arg(type, c("ratio", "interval", "ordinal"), several.ok = FALSE)
+  type <- match.arg(type, c("ratio", "interval", "ordinal", "mspline"), several.ok = FALSE)
   constraint <- match.arg(constraint, c("indscal", "idioscal", "identity"), several.ok = FALSE)
   
   diss <- delta
@@ -28,6 +29,25 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
     if (length(wgths) != length(diss)) wgths <- sapply(diss, function(wwr) return(wgths))
   }
   if ((is.matrix(wgths[[1]])) || (is.data.frame(wgths[[1]]))) wgths <- lapply(wgths, strucprep)  
+  
+  ## --- Prepare for optimal scaling
+  trans <- type
+  if (trans=="ratio"){
+    trans <- "none"
+  } else if (trans=="ordinal" & ties=="primary"){
+    trans <- "ordinalp"
+  } else if(trans=="ordinal" & ties=="secondary"){
+    trans <- "ordinals"
+  } else if(trans=="ordinal" & ties=="tertiary"){
+    trans <- "ordinalt"
+  } else if(trans=="spline"){
+    trans <- "mspline"
+  }
+  disobj <- list()
+  for (i in 1:length(diss)) {
+      disobj[[i]] <- transPrep(diss[[i]],trans = trans, spline.intKnots = spline.intKnots, spline.degree = spline.degree)
+  }
+  ## --- end optimal scaling prep
   
   
   n <- attr(diss[[1]],"Size")
@@ -145,44 +165,52 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
 		    er <- appendList(er,dist(yr[[j]]))
 		    scon <- scon+sum(wgths[[j]]*(dh[[j]]-er[[j]])^2) #constraint stress computation
       }
-
     }
     #-------- end constraints -----------
     
-    snon <- scon                                
-
+    snon <- scon   
+    
+    #dhat2 <- transform(e, disobj, w = wgths, normq = nn)  ## dhat update
+    #dh <- dhat2$res
+    snon<-0
+    dh <- list()
+    for (j in 1:m) {
+      do <- transform(er[[j]], disobj[[j]], w = wgths[[j]], normq = nn)$res
+      dh <- appendList(dh, do)
+      snon <- snon+sum(wgths[[j]]*(dh[[j]]-er[[j]])^2)
+    }
     #-------- nonmetric MDS ----------
-    if (type == "ordinal") {
-	    if ((itel%%modulus) == 0) {
-        snon<-0
-        dh<-list()
-	       for(j in 1:m) {
-		            ds <- diss[[j]]
-                es <- er[[j]]
-                ws <- wgths[[j]]
-	            	if (ties=="primary") do <- monregP(ds,es,ws)
-	            	if (ties=="secondary") do <- monregS(ds,es,ws)
-	            	if (ties=="tertiary") do <- monregT(ds,es,ws)
-		            dh <- appendList(dh,normDissN(do,ws,1))
-		            snon <- snon+sum(ws*(dh[[j]]-es)^2)
-	       }
-      }
-    }
-    
-    if (type == "interval") {
-      snon<-0
-      dh<-list()
-      for(j in 1:m) {
-        ds <- diss[[j]]
-        es <- er[[j]]
-        ws <- wgths[[j]]
-        Amat <- cbind(1, as.vector(ds), as.vector(ds)^2) 
-        do <- nnlsPred(Amat, as.vector(es), as.vector(ws))$pred
-        dh <- appendList(dh,normDissN(do,ws,1))
-        snon <- snon+sum(ws*(dh[[j]]-es)^2)
-      }
-    }
-    
+#     if (type == "ordinal") {
+# 	    if ((itel%%modulus) == 0) {
+#         snon<-0
+#         dh<-list()
+# 	       for(j in 1:m) {
+# 		            ds <- diss[[j]]
+#                 es <- er[[j]]
+#                 ws <- wgths[[j]]
+# 	            	if (ties=="primary") do <- monregP(ds,es,ws)
+# 	            	if (ties=="secondary") do <- monregS(ds,es,ws)
+# 	            	if (ties=="tertiary") do <- monregT(ds,es,ws)
+# 		            dh <- appendList(dh,normDissN(do,ws,1))
+# 		            snon <- snon+sum(ws*(dh[[j]]-es)^2)
+# 	       }
+#       }
+#     }
+#     
+#     if (type == "interval") {
+#       snon<-0
+#       dh<-list()
+#       for(j in 1:m) {
+#         ds <- diss[[j]]
+#         es <- er[[j]]
+#         ws <- wgths[[j]]
+#         Amat <- cbind(1, as.vector(ds), as.vector(ds)^2) 
+#         do <- nnlsPred(Amat, as.vector(es), as.vector(ws))$pred
+#         dh <- appendList(dh,normDissN(do,ws,1))
+#         snon <- snon+sum(ws*(dh[[j]]-es)^2)
+#       }
+#     }
+#     
     if (verbose) cat("Iteration: ",formatC(itel,width=3, format="d")," Stress (not normalized): ", formatC(c(snon),digits=8,width=12,format="f"),"\n")
 
     if (((sold-snon)<eps) || (itel == itmax)) break()         #convergence
@@ -207,7 +235,8 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
   
   
   colnames(aconf) <- cnames
-  rownames(aconf) <- labels(diss[[1]])
+  rnames <- rownames(as.matrix(delta[[1]]))
+  rownames(aconf) <- rnames
   names(bconf) <- names(dh)
   
   snon <- (snon/m)/nn                   #stress normalization  nn <- n*(n-1)/2, m number lists
@@ -219,17 +248,26 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
 	 confdiss[[j]] <- normDissN(er[[j]], wgths[[j]], 1)
   }
 
+    
   ## stress-per-point 
-  spoint <- spp(dh, confdiss, wgths)
+  spoint <- list()
+  sps <- matrix(0, m, n)
+  rss <- NULL
+  for (j in 1:m) {
+     spointj <- spp(dh[[j]], confdiss[[j]], wgths[[j]])    
+     sps[j,] <- spointj$spp                                   ## SPP per subject
+     rss[j] <- sum(spointj$resmat[lower.tri(spointj$resmat)]) ## RSS per subject    
+  }   
+  colnames(sps) <- rnames
+  rownames(sps) <- names(delta)
+  spp <- colMeans(sps)                                      ## SPP
+  rss <- sum(rss)                                           ## total RSS
   
-  reslist <- mapply(function(ldh, lcd) {(as.matrix(ldh) - as.matrix(lcd))^2}, dh, confdiss, SIMPLIFY = FALSE) 
-  sps <- sapply(reslist, mean)
-
   if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!")
   
   #return configurations, configuration distances, normalized observed distances 
   result <- list(delta = diss, dhat = dh, confdiss = confdiss, conf = yr, gspace = aconf, cweights = bconf,
-                 stress = stress, spp = spoint$spp, weightmat = wgths, resmat = spoint$resmat, sps = sps, ndim = p, 
+                 stress = stress, spp = spp, weightmat = wgths, resmat = spoint$resmat, rss = rss, sps = sps, ndim = p, 
                  model = "Three-way SMACOF", niter = itel, nobj = n, type = type, call = match.call()) 
   class(result) <- "smacofID"
   result 

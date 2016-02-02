@@ -8,12 +8,12 @@ Multidimensional scaling on a symmetric dissimilarity matrix using SMACOF.
 }
 \usage{
 smacofSym(delta, ndim = 2, type = c("ratio", "interval", "ordinal", "mspline"), 
-          weightmat = NULL, init = NULL, ties = "primary", verbose = FALSE, 
+          weightmat = NULL, init = "torgerson", ties = "primary", verbose = FALSE, 
           relax = FALSE, modulus = 1, itmax = 1000, eps = 1e-06, 
           spline.degree = 2, spline.intKnots = 2)
 
 mds(delta, ndim = 2, type = c("ratio", "interval", "ordinal", "mspline"), 
-    weightmat = NULL, init = NULL, ties = "primary", verbose = FALSE, 
+    weightmat = NULL, init = "torgerson", ties = "primary", verbose = FALSE, 
     relax = FALSE, modulus = 1, itmax = 1000, eps = 1e-06, 
     spline.degree = 2, spline.intKnots = 2)
 }
@@ -22,9 +22,9 @@ mds(delta, ndim = 2, type = c("ratio", "interval", "ordinal", "mspline"),
   \item{delta}{Either a symmetric dissimilarity matrix or an object of class \code{"dist"}}
   \item{ndim}{Number of dimensions}
   \item{weightmat}{Optional matrix with dissimilarity weights}
-  \item{init}{Matrix with starting values for configurations (optional)}
+  \item{init}{Either \code{"torgerson"} (classical scaling starting solution), \code{"random"} (random configuration), or a user-defined matrix}
   \item{type}{MDS type: \code{"interval"}, \code{"ratio"}, \code{"ordinal"} (nonmetric MDS), or \code{"mspline"}}
-  \item{ties}{Tie specification for ordinal MDS only: \code{"primary"}, \code{"secondary"}, or \code{"tertiary"}}
+  \item{ties}{Tie specification (ordinal MDS only): \code{"primary"}, \code{"secondary"}, or \code{"tertiary"}}
   \item{verbose}{If \code{TRUE}, intermediate stress is printed out}
   \item{relax}{If \code{TRUE}, block relaxation is used for majorization}
   \item{modulus}{Number of smacof iterations per monotone regression call}
@@ -46,9 +46,11 @@ This function allows for fitting three basic types of MDS: ratio MDS (default), 
   \item{conf}{Matrix of fitted configurations}
   \item{stress}{Stress-1 value}
   \item{spp}{Stress per point (stress contribution in percentages)}
-  \item{resmat}{Matrix with squared residuals.}
-  \item{weightmat}{Weight matrix.}
+  \item{resmat}{Matrix with squared residuals}
+  \item{rss}{Residual sum-of-squares}
+  \item{weightmat}{Weight matrix}
   \item{ndim}{Number of dimensions}
+  \item{init}{Starting configuration}
   \item{model}{Name of smacof model}
   \item{niter}{Number of iterations}
   \item{nobj}{Number of objects}
@@ -73,11 +75,11 @@ summary(res)
 plot(res)
 plot(res, type = "p", label.conf = list(label = TRUE, col = "darkgray"), pch = 25, col = "red")
 
-## interval MDS
-res <- smacofSym(kinshipdelta, type = "interval")
+## interval MDS, random starts
+res <- smacofSym(kinshipdelta, type = "interval", init = "random")
 res
 
-## 3D nonmetric SMACOF solution for trading data (secondary approach to ties)
+## 3D ordinal SMACOF solution for trading data (secondary approach to ties)
 data(trading)
 res <- smacofSym(trading, ndim = 3, type = "ordinal", ties = "secondary")
 res

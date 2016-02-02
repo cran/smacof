@@ -1,5 +1,5 @@
 smacofSphere <- function(delta, algorithm = c("dual", "primal"), ndim = 2, type = c("ratio", "interval", "ordinal"),
-                         weightmat = NULL, init = NULL,  ties = "primary", verbose = TRUE,
+                         weightmat = NULL, init = "torgerson",  ties = "primary", verbose = FALSE,
                          penalty = 100, relax = FALSE, modulus = 1, itmax = 1000, eps = 1e-6)
 {
   # penalty ... penalty term kappa >0, 100 is reasonable
@@ -32,6 +32,7 @@ smacofSphere <- function(delta, algorithm = c("dual", "primal"), ndim = 2, type 
   
   ## --- starting values
   x <- initConf(init, diss, n, p)
+  xstart <- x
   
   if (relax) relax <- 2 else relax <- 1 
   
@@ -115,6 +116,7 @@ smacofSphere <- function(delta, algorithm = c("dual", "primal"), ndim = 2, type 
   # point stress 
   dhat <- as.dist(as.matrix(dhat1)[-1,-1])
   spoint <- spp(dhat, confdiss, wgths)
+  rss <- sum(spoint$resmat[lower.tri(spoint$resmat)])  ## residual sum-of-squares
   
   ss <- y[1,]
   y <- t(apply(y, 1, function(xx) xx - ss)[,-1] )  ## correct the configurations for plotting
@@ -145,6 +147,7 @@ smacofSphere <- function(delta, algorithm = c("dual", "primal"), ndim = 2, type 
  
   ## --- starting values
   x <- initConf(init, diss, n, p)
+  xstart <- x
   
   w <- vmat(wgths)
   v <- myGenInv(w)
@@ -211,6 +214,7 @@ smacofSphere <- function(delta, algorithm = c("dual", "primal"), ndim = 2, type 
   
   # point stress 
   spoint <- spp(dhat, confdiss, wgths)
+  rss <- sum(spoint$resmat[lower.tri(spoint$resmat)])  ## residual sum-of-squares
   
   dummyvec <- NA
   if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!")
@@ -218,7 +222,8 @@ smacofSphere <- function(delta, algorithm = c("dual", "primal"), ndim = 2, type 
   
   
 result <- list(delta = diss, dhat = dhat, confdiss = confdiss, conf = y, 
-               stress = stress, spp = spoint$spp, ndim = p, weightmat = wgths, resmat = spoint$resmat, dummyvec = dummyvec, 
+               stress = stress, spp = spoint$spp, ndim = p, weightmat = wgths, resmat = spoint$resmat, rss = rss, 
+               dummyvec = dummyvec, init = xstart, 
                model = "Spherical SMACOF", niter = itel, nobj = n, type = type, 
                algorithm = alg, call = match.call())
 

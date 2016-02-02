@@ -13,7 +13,7 @@ data(kinshipscales)
 
 \format{Dissimilarity matrix of 15 kinship terms and data frame with the following external scales:
 
-Gender (1 = male, 2 = female, 9 = missing)
+Gender (1 = male, 2 = female)
 
 Generation (-2 = two back, -1 = one back, 0 = same generation, 1 = one ahead, 2 = two ahead)
 

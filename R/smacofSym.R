@@ -1,5 +1,5 @@
-`smacofSym` <- function(delta, ndim = 2, type = c("ratio", "interval", "ordinal","mspline"), 
-                        weightmat = NULL, init = NULL, ties = "primary",	verbose = FALSE, 
+smacofSym <- function(delta, ndim = 2, type = c("ratio", "interval", "ordinal","mspline"), 
+                        weightmat = NULL, init = "torgerson", ties = "primary",	verbose = FALSE, 
                         relax = FALSE, modulus = 1, itmax = 1000, eps = 1e-6, 
                         spline.degree = 2, spline.intKnots = 2)  {
   # delta ... dissimilarity matrix 
@@ -43,6 +43,7 @@
   
   ## --- starting values
   x <- initConf(init, diss, n, p)
+  xstart <- x
   
   ## --- Prepare for optimal scaling
   trans <- type
@@ -91,7 +92,7 @@
     
     #print out intermediate stress
     if (verbose) cat("Iteration: ",formatC(itel,width=3, format="d"),
-                     " Stress (normalized):", formatC(c(snon),digits=8,width=12,format="f"),
+                     " Stress (raw):", formatC(c(snon),digits=8,width=12,format="f"),
                      " Difference: ", formatC(sold-snon,digits=8,width=12,format="f"),"\n")
     
     if (((sold-snon)<eps) || (itel == itmax)) break()
@@ -115,12 +116,13 @@
   
   ## stress-per-point 
   spoint <- spp(dhat, confdiss, wgths)
+  rss <- sum(spoint$resmat[lower.tri(spoint$resmat)])  ## residual sum-of-squares
   
   if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!") 
   
   #return configurations, configuration distances, normalized observed distances 
   result <- list(delta = diss, dhat = dhat, confdiss = confdiss, iord = dhat2$iord.prim, conf = y, stress = stress, 
-                 spp = spoint$spp, ndim = p, weightmat = wgths, resmat = spoint$resmat, model = "Symmetric SMACOF", niter = itel, nobj = n, 
+                 spp = spoint$spp, ndim = p, weightmat = wgths, resmat = spoint$resmat, rss = rss, init = xstart, model = "Symmetric SMACOF", niter = itel, nobj = n, 
                  type = type, call = match.call()) 
   class(result) <- c("smacofB","smacof")
   result 

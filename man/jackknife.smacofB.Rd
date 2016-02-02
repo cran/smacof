@@ -11,7 +11,7 @@
 \usage{
 \method{jackknife}{smacofB}(object, eps = 1e-6, itmax = 100, verbose = FALSE)
 
-\method{plot}{smacofJK}(x, plot.dim = c(1,2), hclpar = list(start = 30, end = 200), 
+\method{plot}{smacofJK}(x, plot.dim = c(1,2), hclpar = list(c = 50, l = 70), 
 plot.lines = TRUE, main, xlab, ylab, xlim, ylim, ...)
 
 }
@@ -24,7 +24,7 @@ plot.lines = TRUE, main, xlab, ylab, xlim, ylim, ...)
  
   \item{x}{Object of class \code{"smacofJK"}}
   \item{plot.dim}{Vector with dimensions to be plotted.}
-  \item{hclpar}{Parameters to be used for HCL colors (further details see \code{\link{rainbow_hcl}})}
+  \item{hclpar}{Chroma and luminance to be used for HCL colors (further details see \code{\link{rainbow_hcl}})}
   \item{plot.lines}{If \code{TRUE}, the Jackknife configurations are plotted are connected with their centroid}
   \item{main}{Plot title.}
   \item{xlab}{Label of x-axis.}
@@ -66,8 +66,8 @@ res.jk <- jackknife(res.smacof)
 res.jk
 
 plot(res.jk)
-plot(res.jk, hclpar = list(10, 500))
-plot(res.jk, hclpar = list(10, 300), plot.lines = FALSE)
+plot(res.jk, hclpar = list(c = 80, l = 40))
+plot(res.jk, hclpar = list(c = 80, l = 40), plot.lines = FALSE)
 
 }
 

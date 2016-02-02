@@ -14,6 +14,7 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
   if (is.null(label.conf$pos)) label.conf$pos <- 3
   if (is.null(label.conf$col)) label.conf$col <- 1
   if (is.null(label.conf$cex)) label.conf$cex <- 0.8
+  if (identify) label.conf$label <- FALSE
   
   #--------------- utility function for circle drawing -----------------
   circle <- function(x, y, r, ...) {
@@ -133,13 +134,14 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     if (missing(ylim)) ylim <- range(x$conf[,y1])*1.1
     
     spp.perc <- x$spp
-    bubsize <- ((max(spp.perc) - spp.perc + 1)/length(spp.perc))*(bubscale + 3)
+    bubsize <- spp.perc/length(spp.perc)*(bubscale + 3)
+    
     
     plot(x$conf, cex = bubsize, main = main, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim,...)
     xylabels <- x$conf
     ysigns <- sign(x$conf[,y1])
     xylabels[,2] <- (abs(x$conf[,y1])-(x$conf[,y1]*(bubsize/50)))*ysigns 
-    text(xylabels, rownames(x$conf), pos = 1,cex = 0.7)
+    text(xylabels, rownames(x$conf), pos = 3,cex = 0.7)
   }  
 
 }

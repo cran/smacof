@@ -19,12 +19,13 @@
                        label.conf.rows = list(label = TRUE, pos = 3, 
                        col = hcl(0, l = 50), cex = 0.8), 
                        label.conf.columns = list(label = TRUE, pos = 3, 
-                       col = hcl(240, l = 50), cex = 0.8), type = "p", pch = 20, main, 
-                       xlab, ylab, xlim, ylim, ...)
+                       col = hcl(240, l = 50), cex = 0.8), type = "p", pch = 20, 
+                       asp = 1, main, xlab, ylab, xlim, ylim, ...)
 
-\method{plot}{smacofID}(x, plot.type = "confplot", plot.dim = c(1,2), bubscale = 5, 
-                        label.conf = list(label = TRUE, pos = 1, col = 1), 
-                        identify = FALSE, type, main, xlab, ylab, xlim, ylim, ...)
+\method{plot}{smacofID}(x, plot.type = "confplot", plot.dim = c(1,2), bubscale = 1, 
+                        col = 1, label.conf = list(label = TRUE, pos = 3, col = 1), 
+                        identify = FALSE, type = "p", pch = 20,  asp = 1, 
+                        main, xlab, ylab, xlim, ylim, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -70,7 +71,7 @@ the fitted distances.
 - Stress decomposition plot (\code{plot.type = "stressplot"}): Plots the stress contribution in of each observation. Note that it rescales the stress-per-point (SPP) from the corresponding 
 smacof function to percentages (sum is 100). The higher the contribution, the worse the fit. 
 
-- Bubble plot (\code{plot.type = "bubbleplot"}, not available for rectangular SMACOF): Combines the configuration plot with the point stress contribution. The larger the bubbles, the better the fit. 
+- Bubble plot (\code{plot.type = "bubbleplot"}, not available for rectangular SMACOF): Combines the configuration plot with the point stress contribution. The larger the bubbles, the worse the fit. 
 
 For \code{smacofIndDiff()} the residual plot, Shepard diagram, and stress plot are based on the sum of the residuals across individuals/ways. The configuration plot represents the group stimulus space (i.e., joint configurations).
 
