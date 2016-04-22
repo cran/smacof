@@ -2,10 +2,11 @@
 
 plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, bubscale = 1, 
                         col = 1, label.conf = list(label = TRUE, pos = 3, col = 1, cex = 0.8), shepard.x = NULL,
-                        identify = FALSE, type = "p", pch = 20, asp = 1, main, xlab, ylab, xlim, ylim, ...)
+                        identify = FALSE, type = "p", pch = 20, asp = 1, main, xlab, ylab, xlim, ylim, 
+                        col.hist = NULL, ...)
 
 # x ... object of class smacof
-# plot.type ... types available: "confplot", "Shepard", "resplot"
+# plot.type ... types available: "confplot", "Shepard", "resplot", "histogram"
 # sphere ... if TRUE, sphere is drawn for spherical smacof
   
 {
@@ -70,19 +71,21 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     } else xlab <- xlab
     
     if (missing(ylab)) ylab <- "Configuration Distances" else ylab <- ylab
-
+    
+    notmiss <- as.vector(x$weightmat > 0)
     if (is.null(shepard.x)) {
-      xcoor <- as.vector(x$delta) 
+      xcoor <- as.vector(x$delta)
     } else {
       xcoor <- as.vector(as.dist(shepard.x))
 
     }  
-      if (missing(xlim)) xlim <- range(xcoor, na.rm = TRUE)
-      if (missing(ylim)) ylim <- range(as.vector(x$confdiss))
+      if (missing(xlim)) xlim <- range(xcoor[notmiss], na.rm = TRUE)
+      if (missing(ylim)) ylim <- range(as.vector(x$confdiss)[notmiss])
       
-    plot(xcoor, as.vector(x$confdiss), main = main, type = "p", pch = 20, cex = .5,
+    plot(xcoor[notmiss], as.vector(x$confdiss)[notmiss], main = main, type = "p", pch = 20, cex = .5,
          xlab = xlab, ylab = ylab, col = "darkgray", xlim = xlim, ylim = ylim, ...)
-    points(xcoor[x$iord],as.vector(x$dhat[x$iord]), type = "b", pch = 20, cex = .5)
+    notmiss.iord <- notmiss[x$iord]
+    points((xcoor[x$iord])[notmiss.iord], (as.vector(x$dhat[x$iord]))[notmiss.iord], type = "b", pch = 20, cex = .5)
     
     #points(as.vector(x$delta[x$iord]),as.vector(x$dhat[x$iord]), type = "b", pch = 20, cex = .5)
  }
@@ -137,11 +140,22 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     bubsize <- spp.perc/length(spp.perc)*(bubscale + 3)
     
     
-    plot(x$conf, cex = bubsize, main = main, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim,...)
+    plot(x$conf, cex = bubsize, main = main, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, asp = asp, ...)
     xylabels <- x$conf
     ysigns <- sign(x$conf[,y1])
     xylabels[,2] <- (abs(x$conf[,y1])-(x$conf[,y1]*(bubsize/50)))*ysigns 
     text(xylabels, rownames(x$conf), pos = 3,cex = 0.7)
   }  
+  
+  #------------------------------ histogram plot -------------------------
+  if (plot.type == "histogram")
+  {
+    if (missing(main)) main <- paste("Weighted histogram") else main <- main
+    if (missing(xlab)) xlab <- paste("Dissimilarity") else xlab <- xlab
+    if (missing(ylab)) ylab <- paste("Frequency") else ylab <- ylab
 
+    #if (missing(xlim)) xlim <- range(breaks)
+    
+    wtd.hist(x$delta, weight = x$weightmat, main = main, xlab = xlab, ylab = ylab, col = col.hist, ...) 
+  }
 }

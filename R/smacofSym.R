@@ -80,7 +80,7 @@ smacofSym <- function(delta, ndim = 2, type = c("ratio", "interval", "ordinal","
   #--------------- begin majorization --------------------
   repeat {                                #majorization loop             
     b <- bmat(dhat,wgths,d)            
-    y <- v%*%b%*%x                    #apply Guttman transform denoted as \bar(Y) in the paper
+    y <- v%*%(b%*%x)                    #apply Guttman transform denoted as \bar(Y) in the paper
     y <- x+relax*(y-x)                #n \times p matrix of Guttman transformed distances x's
     e <- dist(y)                      #new distance matrix for Y
     ssma <- sum(wgths*(dhat-e)^2)     ## stress 

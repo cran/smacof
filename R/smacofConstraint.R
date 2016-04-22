@@ -238,7 +238,7 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, t
   #------- begin majorization -----------
   repeat {                                         #majorization iterations
     b <- bmat(dhat,wgths,d)                        # B matrix
-    y <- v%*%b%*%x                                 # Y computation
+    y <- v %*% (b %*% x)                           # Y computation
     if (constraint %in% c("linear","diagonal") & !simpcirc){   # Update transformation of external variables
       updext.result <- updext(x,w,external,extvars,constraint)
       external <- updext.result$external

@@ -12,7 +12,7 @@
                       bubscale = 1, col = 1, label.conf = list(label = TRUE, pos = 3, 
                       col = 1, cex = 0.8), shepard.x = NULL, identify = FALSE, 
                       type = "p", pch = 20, asp = 1, main, xlab, ylab, 
-                      xlim, ylim, ...)
+                      xlim, ylim, col.hist = NULL, ...)
 
 \method{plot}{smacofR}(x, plot.type = "confplot", joint = TRUE, plot.dim = c(1,2), 
                        col.rows = hcl(0), col.columns = hcl(240), 
@@ -31,7 +31,7 @@
 \arguments{
   \item{x}{Object of class \code{"smacof"}, \code{"smacofR"}, and \code{"smacofID"} (see details)}
   \item{plot.type}{String indicating which type of plot to be produced: \code{"confplot"}, \code{"resplot"} 
-  \code{"Shepard"}, \code{"stressplot"}, \code{"bubbleplot"} (see details)}
+  \code{"Shepard"}, \code{"stressplot"}, \code{"bubbleplot"} \code{"histogram"} (see details)}
   \item{plot.dim}{Vector with dimensions to be plotted.}
   \item{main}{Plot title.}
   \item{xlab}{Label of x-axis.}
@@ -52,6 +52,7 @@
   \item{col.columns}{Column colors in rectangular configuration plot.} 
   \item{label.conf.rows}{List with arguments for plotting the labels of the row configurations in a rectangular configuration plot (logical value whether to plot labels or not, label position, label color).} 
   \item{label.conf.columns}{List with arguments for plotting the labels of the columns configurations in a rectangular configuration plot (logical value whether to plot labels or not, label position, label color).}
+  \item{col.hist}{Color of the borders of the histogram.}
   \item{\dots}{Further plot arguments passed: see \code{\link[graphics]{plot}} for detailed information.}
 }
 
@@ -72,6 +73,8 @@ the fitted distances.
 smacof function to percentages (sum is 100). The higher the contribution, the worse the fit. 
 
 - Bubble plot (\code{plot.type = "bubbleplot"}, not available for rectangular SMACOF): Combines the configuration plot with the point stress contribution. The larger the bubbles, the worse the fit. 
+
+- Histogram (\code{plot.type = "histogram"}: gives a weighted histogram of the dissimilarities. For optional arguments, see \code{\link[weights]{wtd.hist}}.
 
 For \code{smacofIndDiff()} the residual plot, Shepard diagram, and stress plot are based on the sum of the residuals across individuals/ways. The configuration plot represents the group stimulus space (i.e., joint configurations).
 

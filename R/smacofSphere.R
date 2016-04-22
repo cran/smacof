@@ -58,7 +58,7 @@ smacofSphere <- function(delta, algorithm = c("dual", "primal"), ndim = 2, type 
   repeat
   {
     b <- bmat(dhat1,wgths1,d)+penalty*bmat(dhat2,wgths2,d)
-    y <- v%*%b%*%x
+    y <- v %*% (b %*% x)
     y <- x+relax*(y-x)
     e <- dist(y)
     ssma1 <- sum(wgths1*(dhat1-e)^2)                       #stress for delta

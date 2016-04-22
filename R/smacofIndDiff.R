@@ -104,7 +104,7 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
     sunc <- 0
     for (j in 1:m) {                          #compute B, Y, 
     	br <- appendList(br,bmat(dh[[j]],wgths[[j]],dr[[j]]))
-	    yr <- appendList(yr,vr[[j]]%*%br[[j]]%*%xr[[j]])
+	    yr <- appendList(yr, vr[[j]] %*% (br[[j]] %*% xr[[j]]))
 	    er <- appendList(er,dist(yr[[j]]))
 	    sunc <- sunc + sum(wgths[[j]]*(dh[[j]]-er[[j]])^2)
     }

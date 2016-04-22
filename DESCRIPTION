@@ -1,8 +1,8 @@
 Package: smacof
 Type: Package
 Title: Multidimensional Scaling
-Version: 1.8-10
-Date: 2016-01-29
+Version: 1.8-13
+Date: 2016-04-20
 Authors@R: c(person("Patrick", "Mair", role = c("aut", "cre"), email = "mair@fas.harvard.edu"), person("Jan", "De Leeuw", role = "aut"), person("Ingwer", "Borg", role = "ctb"), person("Patrick J. F.", "Groenen", role = "ctb"))
 Author: Patrick Mair [aut, cre], Jan De Leeuw [aut], Ingwer Borg [ctb], Patrick  J. F. Groenen [ctb]
 Maintainer: Patrick Mair <mair@fas.harvard.edu>
@@ -10,7 +10,7 @@ Description: Provides the following approaches for multidimensional scaling (MDS
     MDS with external constraints on the configuration, individual difference scaling (idioscal, indscal, and friends), MDS with spherical restrictions, and unfolding. The MDS type can be ratio, interval, ordinal, and monotone splines. 
     Various tools and extensions like jackknife MDS, permutation tests, gravity models, inverse MDS, unidimensional scaling, classical scaling, and Procrustes. 
 Imports: graphics, stats, polynom, Hmisc, colorspace, nnls, grDevices,
-        MASS
+        MASS, weights
 Depends: R (>= 3.0.2)
 License: GPL-3
 Suggests: knitr, RgoogleMaps, plotrix
@@ -19,6 +19,6 @@ LazyData: yes
 LazyLoad: yes
 ByteCompile: yes
 NeedsCompilation: yes
-Packaged: 2016-02-01 18:26:27 UTC; root
+Packaged: 2016-04-21 13:01:59 UTC; patrick
 Repository: CRAN
-Date/Publication: 2016-02-02 15:55:12
+Date/Publication: 2016-04-22 13:10:09

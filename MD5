@@ -1,5 +1,5 @@
-2849df1f85380f40370ebdd3145c3f6d *DESCRIPTION
-11329cdda222cbc35d41e727f2645652 *NAMESPACE
+7494906871bff9f1f25edc9f22a93d47 *DESCRIPTION
+6209da6f71124d41d0402fbd2a7c5331 *NAMESPACE
 0e06def8284961a3b8ec2d37bb5bfa7c *R/Procrustes.R
 7a8c9431d364652b9f3659365100fd24 *R/appendList.R
 3a429bced73e712e59a10b4821a641b7 *R/biplotmds.R
@@ -7,6 +7,7 @@
 ddc76d6ac4ba94ad6cd28f9c73b7b07f *R/bmat.R
 e70ee0a922ebe8c2fbd3c3eb4a804095 *R/checkdiss.R
 3295c3fe86e3aea8173f55744aa85468 *R/deleteOne.R
+293e44514c3f547f6bf1fa504d735311 *R/dissWeights.R
 39598296d9a6a5f420547b8dd8e30a95 *R/distRect.R
 f35ec95181ff5cb03f1528f475eea245 *R/driftVectors.R
 1e210fbe9252215fb141db0e8a45239e *R/fitCircle.R
@@ -35,7 +36,7 @@ f8607d01871c0fecb246fbc1a90eb5fc *R/permtest.smacofR.R
 2974d3041acd113f2218ee2dc30b283d *R/plot.driftvec.R
 3e3b6b10954415e1e6f1edc5881d4125 *R/plot.mdsbi.R
 0a1175f2aaafc1b95b91646c46c29180 *R/plot.procr.R
-cb1569b1583eecbcb78d136bc0611cef *R/plot.smacof.R
+89ec654144676a773c59ba3def4e570c *R/plot.smacof.R
 57514ca2a4d25484c3f6df6d189eab2b *R/plot.smacofID.r
 d37ca0c2dfaee06c55a2d26ca1159a4b *R/plot.smacofJK.R
 094ffcf264a37e77c57a697d2865d926 *R/plot.smacofPerm.R
@@ -58,11 +59,11 @@ dada1556873cb7263c16070cecdc85be *R/residuals.smacof.R
 fcbb18bb5ca44f0d167d01f3ca70c982 *R/residuals.smacofID.R
 7ac2a31eeae948101262525c13384e2c *R/residuals.smacofR.R
 4160ed96e1ba9633f9fb3641b0a1b5bf *R/sim2diss.R
-2e373ab25a4cca465d36a93fc48aa438 *R/smacofConstraint.R
-56fa9ba442f518c5494d76be9c3f17eb *R/smacofIndDiff.R
+ed0eafbe3200460faea4fe64f37799e5 *R/smacofConstraint.R
+8ea31ea2d6dbb7c408a8dfd644256cfc *R/smacofIndDiff.R
 19518fbec2cb6b47764fe28fd767ab3d *R/smacofRect.R
-799cfe62d879b97592e1ea45be9b6d66 *R/smacofSphere.R
-d83af0f8df3bedccfcff33392f0781da *R/smacofSym.R
+9caf92a7ebfbabf67ced64c6f42e4933 *R/smacofSphere.R
+14344bcfbaad930ea8d4798673c280c6 *R/smacofSym.R
 34aa3316866a797a5cd47c0e94b1b7e6 *R/sphereProj.R
 231ac6470272f8b817bbe9d1ff1dcdfb *R/splineSetUp.R
 4374210e0e39d63f7189e7f73fbf13ab *R/spp.R
@@ -81,7 +82,7 @@ b19f8b30a153bdf1b8e9c980c40eeada *R/symdecomp.R
 8a8caf099d9b71f00d59b8002a9381e1 *R/updext.R
 c119da19b73d3c9734c7b5097d821386 *R/vecAsDist.R
 a36998982a9bc551c1e147791357fc55 *R/vmat.R
-3e9312a57cccf48788d760d42d54db22 *build/vignette.rds
+698754cd5daffbf1723b6d0c484f1cfd *build/vignette.rds
 4fa81a819fdeff36f2e23261a6085b81 *data/Duration.rda
 21cea083d2d3c0af9c318e72298972b4 *data/DurationRaw.rda
 0303e6f3dce3e666c8b8da1d28a84baf *data/EW_eng.rda
@@ -115,11 +116,11 @@ c7cc9e41719bdfae358db103cbc8d143 *data/winedat.rda
 eac9235285190bf53acc56155c680383 *data/wish.rda
 67748cf9dca123336e63449799169296 *data/wish_ger.rda
 152a6b8191e1d4e61a3e4bb443fe6ef6 *inst/CITATION
-0de6224cf19c1c3932b77202c9e9aeaf *inst/NEWS.Rd
+71d26a3b467686338c80339fd698b306 *inst/NEWS.Rd
 ba694118e592bfafbc8a9894c173a24d *inst/NEWSRd2txt.R
 c71fd21174087d9735ab6fe2bfeec66a *inst/doc/smacof.R
 ad0582904f030ebfa93fb13eb872a38f *inst/doc/smacof.Rnw
-69e6d207d486c22dceb960cc4beaf42a *inst/doc/smacof.pdf
+54973d797eaf587637d07dbc05b32dae *inst/doc/smacof.pdf
 221c94e2df36b0bac0be5bb2affb824b *man/Duration.Rd
 c97f9dc56929cd22773b4fd47ae3c6d5 *man/EW_ger.Rd
 f29148ac8a8b2a354721e296c8ccd355 *man/GOPdtm.Rd
@@ -134,6 +135,7 @@ b72140addfde3e5798c58c7f6478f174 *man/Procrustes.Rd
 859f5b88e04a932f88146442704f59b6 *man/bread.rd
 624282c846adde3421e311c1b692f0dd *man/breakfast.Rd
 f8e7817a092ce1a09c978f4df861f5aa *man/csrranking.rd
+286afd20995fbd459a3708648f41cb00 *man/dissWeights.Rd
 46c8b118b757b9a8b3e6771b3dcfa7da *man/driftVectors.Rd
 31c5ac45d9ebc6c2e28fa80fc097435a *man/ekman.Rd
 320d8eff9a715de838090b4b31b77348 *man/fitCircle.Rd
@@ -149,7 +151,7 @@ c7f4d317f68d08674d005f6c57c51182 *man/inverseMDS.Rd
 1768f525713c792c32a9f8489ba55e75 *man/partypref.Rd
 7416dc11fe8be811998742efa3d331d6 *man/perception.Rd
 aa44aac0b2d2f1aa5f893aac811b3b57 *man/permtest.smacof.Rd
-c8fdd2458fa55931ed3e457c1180b20a *man/plot.smacof.rd
+63139741af5863a9e8ff17c299bd5712 *man/plot.smacof.rd
 f7a73e62b5cea6e2842e59a3ca72239c *man/randomstress.Rd
 38aa20f32c0f8d36389043c4a7720fd6 *man/rectangles.Rd
 de4350cd696e8a8bb4ed33a411173153 *man/residuals.smacof.Rd
