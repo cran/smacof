@@ -52,7 +52,7 @@ similarity is provided, it is converted internally into a dissimilarity using \c
 
 \author{Patrick Mair and Ingwer Borg}
 
-\seealso{\code{\link{jackknife.smacofB}}}
+\seealso{\code{\link{jackknife.smacofB}}, \code{\link{bootmds}}}
 
 \examples{
 

@@ -41,4 +41,4 @@ fit.uni
 plot(fit.uni)
 }
 
-\keyword{models}
+\keyword{multivariate}

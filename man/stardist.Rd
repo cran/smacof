@@ -11,7 +11,7 @@
 
 \note{Thanks to Paul Eigenthaler, Department of Astronomy, University of Vienna for calculating the distances.}
 \examples{
-data(stardist)
+stardist
 
 }
 \keyword{datasets}

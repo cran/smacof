@@ -1,12 +1,17 @@
-#performs sphere projection for smacofSphere.primal() and smacofSphere.dual()
+#performs sphere projection for smacofSphere.primal()
 
-sphereProj <- function(y, v, init = FALSE, immediate = FALSE, ktmax = 100,
-                       itmax = 5, oeps = 1e-10, ieps = 1e-6, iverbose = FALSE,
+# sphereProj <- function(y, v, init = FALSE, immediate = FALSE, ktmax = 100,
+#                        itmax = 5, oeps = 1e-10, ieps = 1e-6, iverbose = TRUE,
+#                        overbose = FALSE)
+
+sphereProj <- function(y, v, init = FALSE, immediate = FALSE, ktmax = 10,
+                       itmax = 5, oeps = 1e-6, ieps = 1e-4, iverbose = FALSE,
                        overbose = FALSE) 
 {
   n <- nrow(y)
   nn <- 1:n
   itel <- 1
+  otel <- 1
 	
   u <- v%*%y                                       #matrix U = VY
   syy <- sum(y*u)
@@ -19,10 +24,10 @@ sphereProj <- function(y, v, init = FALSE, immediate = FALSE, ktmax = 100,
     szz <- sum(z*vz)
     rho <- (szy^2)/szz                             #rho(Z) for each single column
     
-		if (overbose) cat("Iteration: ",formatC(itel,digits=3,width=3),
+		if (overbose) cat("Iteration: ",formatC(otel,digits=3,width=3),
 							"Rho: ",formatC(rho,digits=6,width=10,format="f"),
 							"\n")
-		kmax<-1
+    kmax<-1
 		
     #--------- establish and solve polynomial --> (z-vector)
     repeat {		
@@ -50,22 +55,25 @@ sphereProj <- function(y, v, init = FALSE, immediate = FALSE, ktmax = 100,
           p3 <- 2*tti
           p4<--1
 					pol<-polynomial(c(p0,p1,p2,p3,p4))          #quartic equation
-          the<-max(Re(solve(pol)))                    #solve polynomial --> theta
-					zi<-(hi/the)-((1/the)+(1/(tti-the)))*(sum(ui*hi)/tti)*ui
+					
+          the<-max(Re(solve(pol)))                    #solve polynomial --> theta --> extremely slow!
+					
+          zi<-(hi/the)-((1/the)+(1/(tti-the)))*(sum(ui*hi)/tti)*ui
           z[i,]<-zi                                   #compute z-value [i]
 					
           snew <- (sum(ui*zi)^2)+2*sum(hi*zi)         #new eta block relaxation
 					if (iverbose) cat("Iteration: ",formatC(itel,digits=3,width=3),
-										"sol: ",formatC(sold,digits=6,width=10,format="f"),
-										"sne: ",formatC(snew,digits=6,width=10,format="f"),
+										"sol: ",formatC(sold,digits=10,width=10,format="f"),
+										"sne: ",formatC(snew,digits=10,width=10,format="f"),
 										"\n")
+          itel <- itel + 1
 						
 			}			#end for
-			if ((kmax == ktmax) || (ieps<0)) break()
+			if ((kmax == ktmax) || (ieps<ieps)) break()
 			kmax<-kmax+1
 		} #------------ end polynomial loop 
 		
-    if ((itel == itmax) || (oeps<0)) return((szy/szz)*z)    #return rho(Z,Z)
-		itel <- itel+1
-	}
+    if ((itel == itmax) || (oeps<ieps)) return((szy/szz)*z)    #return rho(Z,Z)
+		otel <- otel+1
+	}   ## end outer repeat
 }

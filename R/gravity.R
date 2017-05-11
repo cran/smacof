@@ -9,7 +9,7 @@ gravity <- function(X, lambda = 1)
   vec.disty <- grav.disty[lower.tri(grav.disty)][which(grav.disty[lower.tri(grav.disty)] != Inf)]
   W <- matrix(1, ncol = ncol(grav.disty), nrow = nrow(grav.disty))
   W[grav.disty1 == Inf] <- 0               #blank out Inf distances in SMACOF
-  grav.disty[grav.disty1 == Inf] <- 1000   #replace Inf by any number (no matter which, they will be blanked out anyway)
+  grav.disty[grav.disty1 == Inf] <- NA  #replace Inf by NA (they will be blanked out anyway)
   
   result <- list(gravdiss = grav.disty^lambda, weightmat = as.dist(W), co.occ = co.maty)
   result         

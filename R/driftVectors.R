@@ -7,6 +7,7 @@ driftVectors <- function(data, type = c("ratio", "interval", "ordinal","mspline"
   
 ## data ... asymmetric dissimilarity matrix
   
+  type <- match.arg(type, c("ratio", "interval", "ordinal","mspline"), several.ok = FALSE)
   symres <- symdecomp(data)   ## decompose data into symmetric and skew-symmetric portion
   M <- symres$M               ## symmetric matrix
   N <- symres$N               ## skew-symmetric matrix

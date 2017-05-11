@@ -17,8 +17,7 @@
 }
 
 \examples{
-data(kinshipdelta)
-res <- smacofSym(kinshipdelta)
+res <- mds(kinshipdelta)
 residuals(res)
 
 }

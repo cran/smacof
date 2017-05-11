@@ -42,7 +42,6 @@ cornmuff: corn muffin and butter
 \references{Green, P. E. \& Rao, V. (1972). Applied multidimensional scaling. Hinsdale, IL: Dryden.
 }
 \examples{
-data(breakfast)
-
+breakfast
 }
 \keyword{datasets}

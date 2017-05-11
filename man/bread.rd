@@ -12,13 +12,10 @@ which have a different salt content, was presented twice for rating.
 \format{A list of length 8 with elements of class \code{"dist"}. The attributes are 
 bread odor, yeast odor, off-flavor, color, moisture, dough, salt taste, sweet taste, yeast taste, 
 other taste, and total taste. 
-
 }
 
-\references{Bro, R. (1998). Multi-way Analysis in the Food Industry: Models, Algorithms, and Applications. Ph.D. thesis, University of Amsterdam (NL) \& Royal Veterinary and Agricultural
-University (DK).}
+\references{Bro, R. (1998). Multi-way Analysis in the Food Industry: Models, Algorithms, and Applications. Ph.D. thesis, University of Amsterdam (NL) \& Royal Veterinary and Agricultural University (DK).}
 \examples{
-data(bread)
-
+bread
 }
 \keyword{datasets}

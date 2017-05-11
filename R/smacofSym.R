@@ -118,10 +118,10 @@ smacofSym <- function(delta, ndim = 2, type = c("ratio", "interval", "ordinal","
   spoint <- spp(dhat, confdiss, wgths)
   rss <- sum(spoint$resmat[lower.tri(spoint$resmat)])  ## residual sum-of-squares
   
-  if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!") 
+  if (itel == itmax) warning("Iteration limit reached! You may want to increase the itmax argument!") 
   
   #return configurations, configuration distances, normalized observed distances 
-  result <- list(delta = diss, dhat = dhat, confdiss = confdiss, iord = dhat2$iord.prim, conf = y, stress = stress, 
+  result <- list(delta = diss, dhat = dhat, confdist = dist(y), iord = dhat2$iord.prim, conf = y, stress = stress, 
                  spp = spoint$spp, ndim = p, weightmat = wgths, resmat = spoint$resmat, rss = rss, init = xstart, model = "Symmetric SMACOF", niter = itel, nobj = n, 
                  type = type, call = match.call()) 
   class(result) <- c("smacofB","smacof")

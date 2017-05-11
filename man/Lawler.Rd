@@ -16,6 +16,6 @@ Methods: M1 = Rating by superior, M2 = Peer rating, M3 = Self-rating.
 Evaluation of executive performance.  Princeton, New Jersey.  Educational Testing Service. 
 }
 \examples{
-data(Lawler)
+Lawler
 }
 \keyword{datasets}

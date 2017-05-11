@@ -68,7 +68,6 @@ plot(X[,1], X[,2], xlim = c(-3, 3), ylim = c(-2, 3.5), asp = 1, xlab = "", ylab 
 rect(-1, -2, 1, 2)
 points(Y[,1], Y[,2], xlim = c(-3, 3), col = "gray")
 polygon(Y[,1], Y[,2], border = "gray")
-
 fitp <- Procrustes(X, Y)
 plot(fitp$Yhat[,1], fitp$Yhat[,2], col = "red", xlim = c(-3, 3), ylim = c(-2, 3.5), 
      asp = 1, xlab = "", ylab = "")
@@ -102,5 +101,5 @@ legend("topleft", legend = c("West Germany (untransformed)", "West Germany (tran
 
 }
 
-\keyword{models}
- 
+\keyword{multivariate}
+\keyword{hplot} 

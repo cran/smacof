@@ -2,7 +2,7 @@
 \alias{helm}
 \docType{data}
 \title{Helm's color data}
-\description{This dataset contains dissimilarity data for individual difference scaling from an experiment carried out by Helm (1959). 
+\description{Contains dissimilarity data for individual difference scaling from an experiment carried out by Helm (1959). 
 }
 \usage{data(helm)}
 \format{List containing objects of class \code{dist}
@@ -17,8 +17,6 @@ The authors thank Michael Friendly and Phil Spector for data preparation.
 Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling: Theory and Applications (2nd edition). New York: Springer. 
 }
 \examples{
-data(helm)
-length(helm)
 helm
 }
 \keyword{datasets}

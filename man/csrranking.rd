@@ -10,7 +10,7 @@
 }
 
 \examples{
-data(csrranking)
+csrranking
 
 }
 \keyword{datasets}

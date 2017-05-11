@@ -23,7 +23,7 @@ are fixed to a value of 1.
 }
 
 \references{
-De Leeuw J., Groenen P.J.F. (1997). Inverse multidimensional scaling. Journal of Classification, 12, 3-21.
+De Leeuw J., & Groenen P. J. F. (1997). Inverse multidimensional scaling. Journal of Classification, 12, 3-21.
 
 De Leeuw, J. (2012). On inverse multidimensional scaling. Statistics preprint series, UCLA. \url{gifi.stat.ucla.edu/janspubs/2012/
 notes/deleeuw_U_12b.pdf}.

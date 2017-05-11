@@ -16,6 +16,6 @@ Borg, I., Groenen, P. J. F., & Mair, P. (2010). Multidimensionale Skalierung. Mu
 
 }
 \examples{
-data(partypref)
+partypref
 }
 \keyword{datasets}

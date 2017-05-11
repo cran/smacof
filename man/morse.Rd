@@ -32,7 +32,7 @@ paired-associate learning. Journal of Experimental Psychology, 53, 94-101.
 }
 
 \examples{
-data(morse)
-
+morse
+morse2
 }
 \keyword{datasets}

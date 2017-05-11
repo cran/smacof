@@ -24,9 +24,8 @@ Degree (1 = first, 2 = second, 3 = third, 4 = fourth)
 }
 
 \examples{
-
-data(kinshipdelta)
-data(kinshipscales)
+kinshipdelta
+kinshipscales
 
 }
 \keyword{datasets}

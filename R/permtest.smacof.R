@@ -21,6 +21,8 @@ permtest.smacof <- function(object, data,  method.dat = "pearson", nrep = 100, v
     m <- n*(n-1)/2            ## number of lower triangular elements
     irep <- 1
     str <- rep(0, nrep)      ## vector for stress values
+    spp <- matrix(0, nrow = nrep, ncol = n)
+    colnames(spp) <- attr(object$delta, "Labels")
 
     if (missing(data)) {                      ## permutations based on dissimilarit matrix
       repeat 
@@ -43,8 +45,8 @@ permtest.smacof <- function(object, data,  method.dat = "pearson", nrep = 100, v
         
         smacall$delta <- delta
         smRes <- eval(smacall)
-        #smRes <- smacofSym(delta, ndim = p, ...)        
         str[irep] <- smRes$stress                               ## store stress of no-structure matrix 
+        spp[irep, ] <- smRes$spp
         if (verbose) cat("Permutation: ", formatC (irep, digits=3, width=3), "Stress: ", formatC (str[irep], digits=10, width=15, format="f"), "\n")
         if (irep == nrep) break()
         irep <- irep + 1  
@@ -70,15 +72,16 @@ permtest.smacof <- function(object, data,  method.dat = "pearson", nrep = 100, v
         smacall$delta <- dissmat
         smRes <- eval(smacall)  
         str[irep] <- smRes$stress                      ## MDS fit
+        spp[irep, ] <- smRes$spp
         if (verbose) cat("Permutation: ", formatC (irep, digits=3, width=3), "Stress: ", formatC (str[irep], digits=10, width=15, format="f"), "\n")
         
       }
     }
     
+    
     pval <- length(which(str < val))/nrep
-      
-    result <- list(stressvec = str, stress.obs = val, pval = pval, nobj = n, nrep = nrep, 
-                   call = match.call())
+   
+    result <- list(stressvec = str, stress.obs = val, pval = pval, nobj = n, nrep = nrep, call = match.call())
     class(result) <- "smacofPerm"
     result
-}
+} 

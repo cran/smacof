@@ -3,7 +3,9 @@
 \alias{rect_constr}
 \docType{data}
 \title{Rectangles}
-\description{These data are based on an experiment by Borg and Leutner (1983). They constructed rectangles based on a specific grid structure. The size of the rectangles is given in the constraints matrix. In total, we have 16 rectangles. 21 subjects had to rate twice the similarity of each pair of rectangles on a scale from 0 (identical) to 9 (very different). The dist object contains the average ratings which are dissimilarities. 
+\description{These data are based on an experiment by Borg and Leutner (1983). They constructed rectangles on the basis of the grid design (see \code{rect_constr}). Each point in this grid defines a rectangle. Rectangle 16, for example, had a width of 4.25 cm and a height of
+1.25 cm; rectangle 4 was 3.00 cm wide and 2.75 cm tall. A total of 21 persons rated (twice) the similarity of each pair of these 16 rectangles. 
+on a 10-point scale ranging from from 0 = equal/identical to 9 = very different. The means of these ratings over persons and replications are given in \code{rectangles}. 
 }
 
 \usage{data(rectangles)
@@ -16,11 +18,11 @@ data(rect_constr)
 \references{
 Borg, I., & Leutner, D. (1983). Dimensional models for the perception of rectangles. Perception and Psychophysics, 34, 257-269.
 
-Borg, I., Groenen, P. J. F., & Mair, P. (2010). Multidimensionale Skalierung. Muenchen: Hampp Verlag.
+Borg, I., Groenen, P. J. F., & Mair, P. (2017). Applied Multidimensional Scaling and Unfolding. New York, Springer.
 
 }
 \examples{
-data(rectangles)
-data(rect_constr)
+rectangles
+rect_constr
 }
 \keyword{datasets}

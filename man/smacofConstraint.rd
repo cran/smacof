@@ -66,7 +66,7 @@ some underlying theory, they can be used as well.
 \value{
   \item{delta}{Observed dissimilarities}
   \item{obsdiss}{Observed dissimilarities, normalized}
-  \item{confdiss}{Configuration dissimilarities}
+  \item{confdist}{Configuration dissimilarities}
   \item{conf}{Matrix of final configurations}
   \item{C}{Matrix with restrictions}
   \item{stress}{Stress-1 value}
@@ -82,10 +82,11 @@ some underlying theory, they can be used as well.
   \item{nobj}{Number of objects}
 }
 \references{
-De Leeuw, J. & Mair, P. (2009). Multidimensional scaling using majorization: 
-The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{http://www.jstatsoft.org/v31/i03/} 
+De Leeuw, J. & Mair, P. (2009). Multidimensional scaling using majorization: The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{http://www.jstatsoft.org/v31/i03/} 
 
 De Leeuw, J., & Heiser, W. (1980). Multidimensional scaling with restrictions on the configurations. In P. R. Krishnaiah (eds.), Multivariate Analysis V, pp. 501-522. North-Holland. 
+
+Borg, I., & Lingoes, J. C. (1980). A model and algorithm for multidimensional scaling with external constraints on the distances. Psychometrika, 45, 25-38.
 }
 \author{Jan de Leeuw and Patrick Mair}
 
@@ -138,4 +139,4 @@ res.circ <- smacofConstraint(kinshipdelta, constraint = "diagonal",
 plot(res.circ)
 }
 
-\keyword{models}
+\keyword{multivariate}

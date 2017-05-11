@@ -2,6 +2,90 @@
 \title{News for Package \pkg{smacof}}
 \encoding{UTF-8}
 
+\section{Changes in Version 1.9-6}{
+  \itemize{
+    \item Registration for C function calls fixed.
+}
+}
+
+\section{Changes in Version 1.9-5}{
+  \itemize{
+    \item Plot option for summed distances for \code{smacofIndDiff} models added. 
+}
+}
+
+\section{Changes in Version 1.9-4}{
+  \itemize{
+    \item Fast optimal scaling in \code{smacofSphere} including msplines. 
+    \item Primal algorithm in \code{smacofSphere} accelerated.
+    \item Bug for smacofSP Shepard plots fixed. 
+    \item \code{cex} argument for unfolding configuration plot activated.
+    \item Thigmophobe label option in \code{plot.mdsbi} added. 
+    \item Multiple panels for \code{plot.smacofID} improved (thanks to Lew Harvey for the fix). 
+}
+}
+
+
+\section{Changes in Version 1.9-3}{
+  \itemize{
+    \item \code{type = "ratio"} for all models restored.
+}
+}
+
+\section{Changes in Version 1.9-2}{
+  \itemize{
+    \item Shepard plots for IndDiff-models and unfolding fixed. For IndDiff, a Shepard plot for each individual is produced.
+    \item New \code{scale} argument added for scaling the arrow endpoints (coefficients) in \code{plot.mdsbi}.
+}
+}
+
+\section{Changes in Version 1.9-1}{
+  \itemize{
+    \item Canadian newspaper dataset added (word co-occurrences). 
+    \item \code{stress0()} function added to compute stress for a particular (starting) configuration.
+    \item Bug in \code{smacofIndDiff} with missing input dissimilarities fixed. 
+    \item \code{icExplore()} function incl. print/plot S3 added for initial configuration exploration.
+    \item \code{KIPT} dataset added.
+}
+}
+
+\section{Changes in Version 1.9-0}{
+  \itemize{
+    \item Crime dataset added. 
+    \item \code{smacofConstraint()} updated to allow for regional restrictions (diagonal case). 
+    \item \code{type = "interval"} as new default in \code{mds()}. 
+    \item \code{confdist} instead of \code{confdiss} as output value in \code{mds()}.
+    \item Labels in \code{plot.smacof()} are now positioned using \code{thigmophobe.labels()}. 
+    \item Rectangle data corrected, help file updated. 
+    \item Convex hull option added to \code{plot.smacof}.
+    \item Age and gender added as attributes to \code{PVQ40} dataset.
+    \item New \code{what} argument in \code{plot.smacofR} for row/column/joint plots added. 
+    \item \code{bootmds()} incl. plot and print S3 added for bootstrapping MDS solutions.
+    \item Help file for \code{perception} data updated.
+}  
+}
+
+
+
+\section{Changes in Version 1.8-16}{
+  \itemize{
+    \item Bug in \code{smacofConstraint()} removed: now returns proper  matrix \code{C} when \code{constraint = "diagonal"}. 
+}  
+}
+
+
+\section{Changes in Version 1.8-15}{
+  \itemize{
+    \item \code{plot.smacofJK()} improved. 
+}  
+}
+
+\section{Changes in Version 1.8-14}{
+  \itemize{
+    \item Bug fix in \code{plot.smacofID()}. 
+}  
+}
+
 \section{Changes in Version 1.8-13}{
   \itemize{
     \item Aspect ratio 1 added as default for the bubble plot option in \code{plot.smacof()}. 

@@ -2,7 +2,7 @@
 \alias{Guerry}
 \docType{data}
 \title{Map Dataset France 1830}
-\description{Airline distances (in km) between French Departments in 1830.
+\description{Distances (in km) among French Departments in 1830.
 }
 \usage{data(Guerry)}
 \format{Symmetric matrix with distances. 
@@ -12,6 +12,6 @@
 Statistical Science, 2007, 22(3), 368-399. 
 }
 \examples{
-data(Guerry)
+Guerry
 }
 \keyword{datasets}

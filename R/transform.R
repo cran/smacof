@@ -37,7 +37,7 @@ transform <- function (Target, x, w = rep(1,length(x$x)), normq = 0){
   y  <- rep(0,nties_act)   
   w2 <- rep(0,nties_act)
   Temp <-                       # Make y as the weighted mean (in order of x$iord)
-    .C("weightedMean",
+    .C(weightedMean,
        as.numeric(y), 
        as.numeric(w2), 
        as.numeric(Target), 
@@ -88,14 +88,14 @@ transform <- function (Target, x, w = rep(1,length(x$x)), normq = 0){
     } else {
       iord3_nonmis <- iord3
     }
-    Temp  <- .C("wmonreg", as.numeric(Target[iord3_nonmis]), 
+    Temp  <- .C(wmonreg, as.numeric(Target[iord3_nonmis]), 
                            as.numeric(w[iord3_nonmis]), 
                            as.integer(x$n_nonmis))
     Result[iord3_nonmis] <- Temp[[1]]
   } else if (x$trans %in% c("ordinals","ordinalt","ordinal")) {
     # ordinal transformation secondary approach to ties (keep ties tied)
     #--------
-    Temp <- .C("wmonreg", as.numeric(y), 
+    Temp <- .C(wmonreg, as.numeric(y), 
                           as.numeric(w2), 
                           as.integer(x$nties_nonmis)) 
     ycon   <- Temp[[1]]

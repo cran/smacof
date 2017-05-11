@@ -1,0 +1,1 @@
+bootmds <- function(object, data,  method.dat = "pearson", nrep = 100, alpha = 0.05, verbose = TRUE, ...)UseMethod("bootmds")

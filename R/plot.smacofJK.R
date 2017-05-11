@@ -1,11 +1,16 @@
 # plot method for Jackknife smacof
 
-plot.smacofJK <- function(x, plot.dim = c(1,2), hclpar = list(c = 50, l = 70), plot.lines = TRUE, main, xlab, ylab, xlim, ylim, ...)
+plot.smacofJK <- function(x, plot.dim = c(1,2), hclpar = list(c = 50, l = 70), col.p, col.l, plot.lines = TRUE, main, xlab, ylab, xlim, ylim, asp = 1, ...)
 {
 # x ... object of class smacofJK
   n <- x$nobj
-  hclcolors <- rainbow_hcl(n, c = hclpar[[1]], l = hclpar[[2]])
-  hclcolors1 <- rainbow_hcl(n, c = hclpar[[1]], l = hclpar[[2]]+20)
+  if (missing(col.p)) {
+    hclcolors <- rainbow_hcl(n, c = hclpar[[1]], l = hclpar[[2]])
+    hclcolors1 <- rainbow_hcl(n, c = hclpar[[1]], l = hclpar[[2]]+20)
+  } else {
+    hclcolors <- col.p
+    hclcolors1 <- rep(col.l, n)
+  }
 
   x1 <- plot.dim[1]
   y1 <- plot.dim[2]
@@ -24,7 +29,7 @@ plot.smacofJK <- function(x, plot.dim = c(1,2), hclpar = list(c = 50, l = 70), p
   if (missing(xlim)) xlim <- range(xcoor)
   if (missing(ylim)) ylim <- range(ycoor)
   
-  plot(x0[, 1:2], type = "n", xlab = xlab, ylab = ylab, main = main, col = hclcolors, xlim = xlim, ylim = ylim, ...)
+  plot(x0[, 1:2], type = "n", xlab = xlab, ylab = ylab, main = main, col = hclcolors, xlim = xlim, ylim = ylim, asp = asp,...)
   points(y0[, 1:2], col = hclcolors1, cex = 0.6, pch = 16)
 	
   if (plot.lines) {

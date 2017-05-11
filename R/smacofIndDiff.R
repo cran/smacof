@@ -30,6 +30,11 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
   }
   if ((is.matrix(wgths[[1]])) || (is.data.frame(wgths[[1]]))) wgths <- lapply(wgths, strucprep)  
   
+  ## --- replace missings by 0 
+  diss <- lapply(diss, function(mm) {
+                         mm[is.na(mm)] <- 0
+                         return(mm)})
+  
   ## --- Prepare for optimal scaling
   trans <- type
   if (trans=="ratio"){
@@ -54,7 +59,7 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
   if (p > (n - 1)) stop("Maximum number of dimensions is n-1!")
   
   nn <- n*(n-1)/2
-  m <- length(diss)
+  m <- length(diss)  ## number of diss matrices
   itel <- 1
   
   if (is.null(attr(diss[[1]], "Labels"))) {
@@ -82,8 +87,8 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
   for (j in 1:m) {                             
     xr[[j]] <- aconf%*%bconf[[j]]  #same starting values for all ways
     dr[[j]] <- dist(xr[[j]])                          #configuration distances
-    sf1 <- sf1 + sum(wgths[[j]]*dr[[j]]*dh[[j]])
-    sf2 <- sf2 + sum(wgths[[j]]*dr[[j]]^2)
+    sf1 <- sf1 + sum(wgths[[j]]*dr[[j]]*dh[[j]], na.rm = TRUE)
+    sf2 <- sf2 + sum(wgths[[j]]*dr[[j]]^2, na.rm = TRUE)
   }
   
   lb <- sf1/sf2                           #normalization constant
@@ -92,7 +97,7 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
     #aconf <- lb*aconf                     
   	xr[[j]] <- lb*xr[[j]]
     dr[[j]] <- lb*dr[[j]]
-	  sold <- sold + sum(wgths[[j]]*(dh[[j]]-dr[[j]])^2)
+	  sold <- sold + sum(wgths[[j]]*(dh[[j]]-dr[[j]])^2, na.rm = TRUE)
   }
 
   #--------------- begin majorization ------------------
@@ -106,7 +111,7 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
     	br <- appendList(br,bmat(dh[[j]],wgths[[j]],dr[[j]]))
 	    yr <- appendList(yr, vr[[j]] %*% (br[[j]] %*% xr[[j]]))
 	    er <- appendList(er,dist(yr[[j]]))
-	    sunc <- sunc + sum(wgths[[j]]*(dh[[j]]-er[[j]])^2)
+	    sunc <- sunc + sum(wgths[[j]]*(dh[[j]]-er[[j]])^2, na.rm = TRUE)
     }
     scon<-sunc
 
@@ -163,15 +168,13 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
 
       for (j in 1:m) {
 		    er <- appendList(er,dist(yr[[j]]))
-		    scon <- scon+sum(wgths[[j]]*(dh[[j]]-er[[j]])^2) #constraint stress computation
+		    scon <- scon+sum(wgths[[j]]*(dh[[j]]-er[[j]])^2, na.rm = TRUE) #constraint stress computation
       }
     }
     #-------- end constraints -----------
     
     snon <- scon   
     
-    #dhat2 <- transform(e, disobj, w = wgths, normq = nn)  ## dhat update
-    #dh <- dhat2$res
     snon<-0
     dh <- list()
     for (j in 1:m) {
@@ -179,38 +182,8 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
       dh <- appendList(dh, do)
       snon <- snon+sum(wgths[[j]]*(dh[[j]]-er[[j]])^2)
     }
-    #-------- nonmetric MDS ----------
-#     if (type == "ordinal") {
-# 	    if ((itel%%modulus) == 0) {
-#         snon<-0
-#         dh<-list()
-# 	       for(j in 1:m) {
-# 		            ds <- diss[[j]]
-#                 es <- er[[j]]
-#                 ws <- wgths[[j]]
-# 	            	if (ties=="primary") do <- monregP(ds,es,ws)
-# 	            	if (ties=="secondary") do <- monregS(ds,es,ws)
-# 	            	if (ties=="tertiary") do <- monregT(ds,es,ws)
-# 		            dh <- appendList(dh,normDissN(do,ws,1))
-# 		            snon <- snon+sum(ws*(dh[[j]]-es)^2)
-# 	       }
-#       }
-#     }
-#     
-#     if (type == "interval") {
-#       snon<-0
-#       dh<-list()
-#       for(j in 1:m) {
-#         ds <- diss[[j]]
-#         es <- er[[j]]
-#         ws <- wgths[[j]]
-#         Amat <- cbind(1, as.vector(ds), as.vector(ds)^2) 
-#         do <- nnlsPred(Amat, as.vector(es), as.vector(ws))$pred
-#         dh <- appendList(dh,normDissN(do,ws,1))
-#         snon <- snon+sum(ws*(dh[[j]]-es)^2)
-#       }
-#     }
-#     
+ 
+     
     if (verbose) cat("Iteration: ",formatC(itel,width=3, format="d")," Stress (not normalized): ", formatC(c(snon),digits=8,width=12,format="f"),"\n")
 
     if (((sold-snon)<eps) || (itel == itmax)) break()         #convergence
@@ -242,7 +215,6 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
   snon <- (snon/m)/nn                   #stress normalization  nn <- n*(n-1)/2, m number lists
   stress <- sqrt(snon)
   
-  
   confdiss <- rep(list(NULL), m)
   for (j in 1:m) {                              #initialize weights, V, norm d as lists
 	 confdiss[[j]] <- normDissN(er[[j]], wgths[[j]], 1)
@@ -251,23 +223,31 @@ smacofIndDiff <- function(delta, ndim = 2, type = c("ratio", "interval", "ordina
     
   ## stress-per-point 
   spoint <- list()
-  sps <- matrix(0, m, n)
+  spps <- matrix(0, m, n)
   rss <- NULL
   for (j in 1:m) {
      spointj <- spp(dh[[j]], confdiss[[j]], wgths[[j]])    
-     sps[j,] <- spointj$spp                                   ## SPP per subject
+     spps[j,] <- spointj$spp                                   ## SPP per subject
      rss[j] <- sum(spointj$resmat[lower.tri(spointj$resmat)]) ## RSS per subject    
   }   
-  colnames(sps) <- rnames
-  rownames(sps) <- names(delta)
-  spp <- colMeans(sps)                                      ## SPP
-  rss <- sum(rss)                                           ## total RSS
+  colnames(spps) <- rnames
+  rownames(spps) <- names(delta)
+  spp <- colMeans(spps)                                      ## SPP
+  rss <- sum(rss)                                           ## total RSS (raw stress)
+  
+  ## stress per subject
+  sps <- NULL
+  for (j in 1:m) {
+    sps[j] <- sum(wgths[[j]]*(dh[[j]]-er[[j]])^2)
+  }
+  sps <- sps/sum(sps)*100
+  names(sps) <- rownames(spps)
   
   if (itel == itmax) warning("Iteration limit reached! Increase itmax argument!")
   
   #return configurations, configuration distances, normalized observed distances 
-  result <- list(delta = diss, dhat = dh, confdiss = confdiss, conf = yr, gspace = aconf, cweights = bconf,
-                 stress = stress, spp = spp, weightmat = wgths, resmat = spoint$resmat, rss = rss, sps = sps, ndim = p, 
+  result <- list(delta = diss, dhat = dh, confdist = confdiss, conf = yr, gspace = aconf, cweights = bconf,
+                 stress = stress, spp = spp, weightmat = wgths, resmat = spointj$resmat, rss = rss, spps = spps, sps = sps, ndim = p, 
                  model = "Three-way SMACOF", niter = itel, nobj = n, type = type, call = match.call()) 
   class(result) <- "smacofID"
   result 

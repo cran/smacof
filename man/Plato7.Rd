@@ -15,6 +15,6 @@ as long or short which gives 32 types. Consequently, we obtain a percentage dist
 \references{Cox, D. R. & Brandwood, L. (1959). On a discriminatory problem connected with the work of Plato. Journal of the Royal Statistical Society (Series B), 21, 195-200.
 }
 \examples{
-data(Plato7)
+Plato7
 }
 \keyword{datasets}

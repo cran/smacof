@@ -28,8 +28,8 @@ nonmetric multidimensional scaling. Multivariate Behavioral Research, 8, 511-517
 }
 
 \examples{
-## 9 objects, 2 dimensions, interval MDS (100 replications)
-stressvec <- randomstress(n = 8, ndim = 2, nrep = 100, type = "interval")
+## 8 objects, 2 dimensions, interval MDS (50 replications)
+stressvec <- randomstress(n = 8, ndim = 2, nrep = 50, type = "interval")
 mean(stressvec)
 }
 

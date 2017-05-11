@@ -1,24 +1,27 @@
 Package: smacof
 Type: Package
 Title: Multidimensional Scaling
-Version: 1.8-13
-Date: 2016-04-20
+Version: 1.9-6
+Date: 2017-05-10
 Authors@R: c(person("Patrick", "Mair", role = c("aut", "cre"), email = "mair@fas.harvard.edu"), person("Jan", "De Leeuw", role = "aut"), person("Ingwer", "Borg", role = "ctb"), person("Patrick J. F.", "Groenen", role = "ctb"))
-Author: Patrick Mair [aut, cre], Jan De Leeuw [aut], Ingwer Borg [ctb], Patrick  J. F. Groenen [ctb]
-Maintainer: Patrick Mair <mair@fas.harvard.edu>
-Description: Provides the following approaches for multidimensional scaling (MDS) based on stress minimization by means of majorization (smacof): basic MDS on symmetric dissimilarity matrices,
-    MDS with external constraints on the configuration, individual difference scaling (idioscal, indscal, and friends), MDS with spherical restrictions, and unfolding. The MDS type can be ratio, interval, ordinal, and monotone splines. 
-    Various tools and extensions like jackknife MDS, permutation tests, gravity models, inverse MDS, unidimensional scaling, classical scaling, and Procrustes. 
+Description: Provides the following approaches for multidimensional scaling (MDS) based on stress minimization using majorization (smacof): basic MDS on symmetric dissimilarity matrices,
+    MDS with external constraints on the configuration, individual differences scaling (idioscal, indscal, and friends), MDS with spherical restrictions, and unfolding. The MDS type can be ratio, interval, ordinal, and monotone splines. 
+    Various tools and extensions like jackknife MDS, bootstrap MDS, permutation tests, MDS biplots, gravity models, inverse MDS, unidimensional scaling, drift vectors (asymmetric MDS), classical scaling, and Procrustes are implemented as well.  
 Imports: graphics, stats, polynom, Hmisc, colorspace, nnls, grDevices,
-        MASS, weights
-Depends: R (>= 3.0.2)
+        MASS, weights, ellipse, wordcloud, candisc
+Depends: R (>= 3.2.0), plotrix
 License: GPL-3
-Suggests: knitr, RgoogleMaps, plotrix
+Suggests: knitr, RgoogleMaps
 VignetteBuilder: knitr
 LazyData: yes
 LazyLoad: yes
 ByteCompile: yes
 NeedsCompilation: yes
-Packaged: 2016-04-21 13:01:59 UTC; patrick
+Packaged: 2017-05-10 17:15:28 UTC; root
+Author: Patrick Mair [aut, cre],
+  Jan De Leeuw [aut],
+  Ingwer Borg [ctb],
+  Patrick J. F. Groenen [ctb]
+Maintainer: Patrick Mair <mair@fas.harvard.edu>
 Repository: CRAN
-Date/Publication: 2016-04-22 13:10:09
+Date/Publication: 2017-05-11 17:06:57 UTC

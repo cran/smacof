@@ -44,6 +44,6 @@ paired-associate learning. Journal of Experimental Psychology, 53, 94-101.
 }
 
 \examples{
-data(morsescales)
+morsescales
 }
 \keyword{datasets}

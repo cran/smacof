@@ -31,4 +31,4 @@ P <- matrix(c(92,5,4,8,4,84,38,62,6,37,87,17,13,31,17,88), ncol = 4)
 symdecomp(P)
 }
 
-\keyword{models}
+\keyword{utilities}

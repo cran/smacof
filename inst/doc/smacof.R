@@ -1,4 +1,4 @@
-## ----echo=FALSE, hide=TRUE-----------------------------------------------
+## ----echo=FALSE, message=FALSE, results='hide'---------------------------
 require(smacof)
 require(RgoogleMaps)
 

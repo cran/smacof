@@ -3,5 +3,5 @@
 residuals.smacof <- function(object, ...)
 {
   # object of class smacof
-  return(as.matrix(object$dhat - object$confdiss))
+  return(as.matrix(object$dhat - object$confdist))
 }

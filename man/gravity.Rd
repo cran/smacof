@@ -2,8 +2,7 @@
 \alias{gravity}
 
 \title{Gravity dissimilarities}
-\description{Computes the dissimilarities using a gravity model based on co-occurences
-}
+\description{Computes the dissimilarities using a gravity model based on co-occurrences.}
 
 \usage{
 gravity(X, lambda = 1)
@@ -19,7 +18,7 @@ binarized data matrix \eqn{Y} we compute \eqn{Y'Y} which leads to the co-occuren
 We then use the gravity model to compute the gravity dissimilarities. 
 In order to give more (or less) structure to the MDS solution, the tuning parameter (which 
 defines a power transformation) can be increased (or decreased with lower bound 0). In addition, 
-a weight matrix is created that sets cells with no co-occurences to 0, i.e. they are blanked out in a subsequent smacof fit (in the \code{gravdiss} output they are fixed to a value of 1000.
+a weight matrix is created that sets cells with no co-occurences to 0, i.e. they are blanked out in a subsequent smacof fit (in the \code{gravdiss} output they are set to \code{NA}). The corresponding weight matrix for blanking out these cells is established automatically in \code{mds()}. 
 }
 
 \value{
@@ -32,12 +31,13 @@ SpringerPlus, 3(697), \url{http://www.springerplus.com/content/3/1/697}
 }
 \author{Patrick Mair}
 
-\seealso{\code{\link{smacofSym}}}
+\seealso{\code{\link{mds}}}
 
 \examples{
 data(GOPdtm)
 gravD <- gravity(GOPdtm, lambda = 2)
-res <- smacofSym(gravD$gravdiss, weightmat = gravD$weightmat)
+res <- mds(gravD$gravdiss)  
+res$weightmat  ## NA's were blanked out when fitting the model
 plot(res)
 }
 

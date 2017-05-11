@@ -25,4 +25,4 @@ torgerson(delta, p)
 fit <- torgerson(Guerry)
 }
 
-\keyword{models}
+\keyword{multivariate}

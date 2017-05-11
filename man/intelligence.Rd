@@ -33,6 +33,5 @@ R1-R8: restrictions
 idiss <- sim2diss(intelligence[,paste0("T", 1:8)])
 fit <- mds(idiss)
 plot(fit)
-
 }
 \keyword{datasets}

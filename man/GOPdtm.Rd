@@ -12,8 +12,7 @@ GOP website. They were asked to complete the sentence "I am a Republican because
 selected the 37 most frequent words and created a document-term matrix.
 }
 
-\references{Mair, P., Rusch, T. & Hornik, K. (2014). Gravity MDS on sparse document-term matrices: Republican values. Research Report Series, Department of Statistics and Mathematics, WU
-Vienna, Report 127.
+\references{air, P., Rusch, T. & Hornik, K. (2014). The Grand Old Party - A party of values? SpringerPlus, 3(697), \url{http://www.springerplus.com/content/3/1/697} 
 }
 
 \examples{

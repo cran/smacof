@@ -77,4 +77,4 @@ fit.drift <- driftVectors(morse2, type = "ordinal")
 fit.drift
 plot(fit.drift)
 }
-\keyword{models}
+\keyword{multivariate}

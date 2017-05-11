@@ -68,21 +68,28 @@ Borg, I., Groenen, P. J. F., & Mair, P. (2013). Applied Multidimensional Scaling
 \seealso{\code{\link{smacofConstraint}}, \code{\link{smacofRect}}, \code{\link{smacofIndDiff}}, \code{\link{smacofSphere}}, \code{\link{plot.smacof}}}
 \examples{
 
-## simple SMACOF solution for kinship data
-res <- mds(kinshipdelta)
+## simple SMACOF solution (interval MDS) for kinship data
+res <- mds(kinshipdelta, type = "interval")
 res
 summary(res)
 plot(res)
 plot(res, type = "p", label.conf = list(label = TRUE, col = "darkgray"), pch = 25, col = "red")
 
-## interval MDS, random starts
-res <- smacofSym(kinshipdelta, type = "interval", init = "random")
+## ratio MDS, random starts
+set.seed(123)
+res <- mds(kinshipdelta, init = "random")
 res
 
 ## 3D ordinal SMACOF solution for trading data (secondary approach to ties)
 data(trading)
-res <- smacofSym(trading, ndim = 3, type = "ordinal", ties = "secondary")
+res <- mds(trading, ndim = 3, type = "ordinal", ties = "secondary")
 res
+
+## spline MDS 
+delta <- sim2diss(cor(PVQ40agg))
+res <- mds(delta, type = "mspline", spline.degree = 3, spline.intKnots = 4)
+res
+plot(res, "Shepard")
 }
 
-\keyword{models}
+\keyword{multivariate}

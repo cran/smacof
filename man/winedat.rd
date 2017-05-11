@@ -9,7 +9,7 @@
 }
 
 \examples{
-data(winedat)
+winedat
 
 }
 \keyword{datasets}

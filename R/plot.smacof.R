@@ -1,21 +1,32 @@
 # plot method for all smacof objects
 
 plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, bubscale = 1, 
-                        col = 1, label.conf = list(label = TRUE, pos = 3, col = 1, cex = 0.8), shepard.x = NULL,
-                        identify = FALSE, type = "p", pch = 20, asp = 1, main, xlab, ylab, xlim, ylim, 
-                        col.hist = NULL, ...)
+                        col = 1, label.conf = list(label = TRUE, pos = 3, col = 1, cex = 0.8), 
+                        hull.conf = list(hull = FALSE, col = 1, lwd = 1, ind = NULL),
+                        shepard.x = NULL, identify = FALSE, type = "p", pch = 20, cex = 0.5, asp = 1, 
+                        main, xlab, ylab, xlim, ylim, col.hist = NULL, ...)
 
 # x ... object of class smacof
 # plot.type ... types available: "confplot", "Shepard", "resplot", "histogram"
 # sphere ... if TRUE, sphere is drawn for spherical smacof
   
 {
+  ## --- check type args:
+  plot.type <- match.arg(plot.type, c("confplot", "Shepard", "resplot","bubbleplot", "stressplot", "histogram"), several.ok = FALSE)
+  
   ## --- check label lists
   if (is.null(label.conf$label)) label.conf$label <- TRUE
   if (is.null(label.conf$pos)) label.conf$pos <- 3
   if (is.null(label.conf$col)) label.conf$col <- 1
   if (is.null(label.conf$cex)) label.conf$cex <- 0.8
   if (identify) label.conf$label <- FALSE
+  
+  ## --- check hull list
+  if (is.null(hull.conf$hull)) hull.conf$hull <- FALSE
+  if (is.null(hull.conf$col)) hull.conf$col <- 1
+  if (is.null(hull.conf$lwd)) hull.conf$lwd <- 1
+  if (is.null(hull.conf$ind)) hull.conf$ind <- NULL
+  if (hull.conf$hull && is.null(hull.conf$ind)) stop("Index vector for hulls needs to be specified!")
   
   #--------------- utility function for circle drawing -----------------
   circle <- function(x, y, r, ...) {
@@ -47,10 +58,19 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     
     plot(x$conf[,x1], x$conf[,y1], main = main, type = type, xlab = xlab, ylab = ylab, 
          xlim = xlim, ylim = ylim, pch = pch, asp = asp, col = col, ...)
-    if (label.conf$label) text(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), 
-                              cex = label.conf$cex, pos = label.conf$pos, 
-                              col = label.conf$col)
-      
+    if (label.conf$label) {
+      if (label.conf$pos == 5) {
+        thigmophobe.labels(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), 
+                           cex = label.conf$cex, text.pos = NULL, 
+                           col = label.conf$col)  
+      } else {
+        text(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), 
+            cex = label.conf$cex, pos = label.conf$pos, 
+            col = label.conf$col)
+    
+      }
+    }
+    
     if ((any(class(x) == "smacofSP")) && (sphere)) {
         radius <- sqrt(x$conf[2,1]^2 + x$conf[2,2]^2)
         circle(0, 0, radius, lty = 2, border = "lightgray")
@@ -59,6 +79,31 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     if (identify) {
       identify(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), cex = label.conf$cex, pos = label.conf$pos, 
                col = label.conf$col)
+    }
+    
+    if (hull.conf$hull) {
+      ind <- hull.conf$ind
+      n <- dim(x$conf)[1]
+      M <- as.data.frame(x$conf)
+      XX <- cbind(M, ind) 
+      X.sort <- XX[order(ind), ]
+      xx <- yy <- NULL
+      k <- 0
+      for (i in 1:n) { 
+        v <- X.sort$ind[i+1]
+        if (i==n) v="$"
+        if (X.sort$ind[i] == v ) { 
+          k<-k+1 
+        } else { 
+          von <- i-k 
+          xx <- X.sort[von:i, 1] 
+          yy <- X.sort[von:i, 2]
+          hpts <- chull(x = xx, y = yy)
+          hpts <- c(hpts, hpts[1])
+          lines(xx[hpts], yy[hpts], col = hull.conf$col, lwd = hull.conf$lwd) 
+          k<-0 
+        } 
+      } 
     }
     
   }
@@ -77,15 +122,15 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
       xcoor <- as.vector(x$delta)
     } else {
       xcoor <- as.vector(as.dist(shepard.x))
-
     }  
-      if (missing(xlim)) xlim <- range(xcoor[notmiss], na.rm = TRUE)
-      if (missing(ylim)) ylim <- range(as.vector(x$confdiss)[notmiss])
-      
-    plot(xcoor[notmiss], as.vector(x$confdiss)[notmiss], main = main, type = "p", pch = 20, cex = .5,
+    
+    if (missing(xlim)) xlim <- range(xcoor[notmiss], na.rm = TRUE)
+    if (missing(ylim)) ylim <- range(as.vector(x$confdist)[notmiss])
+    
+    plot(xcoor[notmiss], as.vector(x$confdist)[notmiss], main = main, type = "p", pch = pch, cex = cex,
          xlab = xlab, ylab = ylab, col = "darkgray", xlim = xlim, ylim = ylim, ...)
     notmiss.iord <- notmiss[x$iord]
-    points((xcoor[x$iord])[notmiss.iord], (as.vector(x$dhat[x$iord]))[notmiss.iord], type = "b", pch = 20, cex = .5)
+    points((xcoor[x$iord])[notmiss.iord], (as.vector(x$dhat[x$iord]))[notmiss.iord], type = "b", pch = pch, cex = cex)
     
     #points(as.vector(x$delta[x$iord]),as.vector(x$dhat[x$iord]), type = "b", pch = 20, cex = .5)
  }
@@ -98,9 +143,9 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     #resmat <- residuals(x)
  
     if (missing(xlim)) xlim <- range(as.vector(x$dhat))
-    if (missing(ylim)) ylim <- range(as.vector(x$confdiss))
+    if (missing(ylim)) ylim <- range(as.vector(x$confdist))
     
-    plot(as.vector(x$dhat), as.vector(x$confdiss), main = main, type = "p", col = "darkgray",
+    plot(as.vector(x$dhat), as.vector(x$confdist), main = main, type = "p", col = "darkgray",
          xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim,...)
     abline(0, 1)
   }
@@ -158,4 +203,5 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     
     wtd.hist(x$delta, weight = x$weightmat, main = main, xlab = xlab, ylab = ylab, col = col.hist, ...) 
   }
+
 }

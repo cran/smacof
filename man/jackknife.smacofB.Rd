@@ -12,7 +12,7 @@
 \method{jackknife}{smacofB}(object, eps = 1e-6, itmax = 100, verbose = FALSE)
 
 \method{plot}{smacofJK}(x, plot.dim = c(1,2), hclpar = list(c = 50, l = 70), 
-plot.lines = TRUE, main, xlab, ylab, xlim, ylim, ...)
+col.p, col.l, plot.lines = TRUE, main, xlab, ylab, xlim, ylim, asp = 1, ...)
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -25,12 +25,15 @@ plot.lines = TRUE, main, xlab, ylab, xlim, ylim, ...)
   \item{x}{Object of class \code{"smacofJK"}}
   \item{plot.dim}{Vector with dimensions to be plotted.}
   \item{hclpar}{Chroma and luminance to be used for HCL colors (further details see \code{\link{rainbow_hcl}})}
+  \item{col.p}{Point color. If omitted, hcl colors will be used; if specified, the corresponding (single) color will be used for plotting.}
+  \item{col.l}{Line color. If omitted, hcl colors will be used; if specified, the corresponding (single) color will be used for plotting.}
   \item{plot.lines}{If \code{TRUE}, the Jackknife configurations are plotted are connected with their centroid}
   \item{main}{Plot title.}
   \item{xlab}{Label of x-axis.}
   \item{ylab}{Label of y-axis.}
   \item{xlim}{Scale x-axis.}
   \item{ylim}{Scale y-axis.}
+  \item{asp}{Aspect ratio.}
   \item{\dots}{Further plot arguments passed: see \code{\link[graphics]{plot}} for detailed information.}
 }
 
@@ -55,20 +58,21 @@ plot.lines = TRUE, main, xlab, ylab, xlim, ylim, ...)
 }
 \author{Jan de Leeuw and Patrick Mair}
 
-\seealso{\code{\link{smacofSym}}, \code{\link{smacofConstraint}}, \code{\link{plot.smacof}}}
+\seealso{\code{\link{bootmds}}}
 
 \examples{
 
 ## symmetric smacof
-data(kinshipdelta)
-res.smacof <- smacofSym(kinshipdelta)
-res.jk <- jackknife(res.smacof)
-res.jk
+data <- na.omit(PVQ40[,1:5])
+diss <- dist(t(data))   ## Euclidean distances 
+fit <- mds(diss) 
+res.jk <- jackknife(fit)
 
-plot(res.jk)
+plot(res.jk, col.p = "black", col.l = "gray")
 plot(res.jk, hclpar = list(c = 80, l = 40))
 plot(res.jk, hclpar = list(c = 80, l = 40), plot.lines = FALSE)
 
 }
 
+\keyword{ models }
 \keyword{ hplot }

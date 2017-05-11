@@ -2,10 +2,10 @@
 function(object, ...)
 {
   cat("\n")
-  cat("Subjects configurations (rows):\n")
+  cat("Subject configuration (rows):\n")
   print(round(object$conf.row,4))
   cat("\n")
-  cat("Objects configurations (columns):\n")
+  cat("Object configuration (columns):\n")
   print(round(object$conf.col,4))
 
   cat("\n\n")
