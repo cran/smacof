@@ -258,7 +258,7 @@ smacofSphere <- function(delta, ndim = 2, type = c("ratio", "interval", "ordinal
   confdiss <- normDissN(e, wgths, 1)        #final normalization to n(n-1)/2
   
   # point stress 
-  spoint <- spp(dhat, confdiss, wgths)
+  spoint <- spp(dhat, dist(y), wgths)
   rss <- sum(spoint$resmat[lower.tri(spoint$resmat)])  ## residual sum-of-squares
   
   dummyvec <- NA

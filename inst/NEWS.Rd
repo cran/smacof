@@ -2,6 +2,60 @@
 \title{News for Package \pkg{smacof}}
 \encoding{UTF-8}
 
+\section{Changes in Version 1.10-4}{
+  \itemize{
+    \item verbose output in uniscale(). 
+    \item transform() exported. 
+    }
+}
+
+
+
+\section{Changes in Version 1.10-3}{
+  \itemize{
+    \item plot.smacofboot() updated.
+    }
+}
+
+\section{Changes in Version 1.10-2}{
+  \itemize{
+    \item unfolding() updated with relaxed update that often reduces the iterations by a factor 2).
+    \item unfolding() updated with an overal rescaling to the coordinates, distances, and d-hats.
+    }
+}
+
+
+\section{Changes in Version 1.10-1}{
+  \itemize{
+    \item smacofRect() updated to do nonlinear unfolding added matrix and row conditional).
+    \item prefscal() is an alias for unfolding() and smacofRect()
+    \item plot.smacofR() updated to show row transformations by smacofR and show column labels.
+    \item mspline transformation in mds() and smacofSym() now includes an intercept.
+    }
+}
+
+\section{Changes in Version 1.10-0}{
+  \itemize{
+    \item smacofRect updated for nonlinear unfolding added (only matrix conditional).
+    \item plot.smacofR updated to show transformations by smacofR.
+}
+}
+
+
+\section{Changes in Version 1.9-7}{
+  \itemize{
+    \item Procrustes help file updated.
+    \item Bug in SPP fixed. 
+}
+}
+
+
+\section{Changes in Version 1.9-7}{
+  \itemize{
+    \item Some help files fixed.
+}
+}
+
 \section{Changes in Version 1.9-6}{
   \itemize{
     \item Registration for C function calls fixed.

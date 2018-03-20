@@ -20,13 +20,14 @@
                        label.conf.rows = list(label = TRUE, pos = 3, 
                        col = hcl(0, l = 50), cex = 0.8), 
                        label.conf.columns = list(label = TRUE, pos = 3, 
-                       col = hcl(240, l = 50), cex = 0.8), type = "p", pch = 20, 
+                       col = hcl(240, l = 50), cex = 0.8),  
+                       shepard.x = NULL, col.dhat = NULL, type = "p", pch = 20,
                        cex = 0.5, asp = 1, main, xlab, ylab, xlim, ylim, ...)
 
 \method{plot}{smacofID}(x, plot.type = "confplot", plot.dim = c(1,2), bubscale = 1, 
-                        col = 1, label.conf = list(label = TRUE, pos = 3, col = 1), 
-                        identify = FALSE, type = "p", pch = 20,  cex = 0.5, asp = 1, 
-                        plot.array, main, xlab, ylab, xlim, ylim, ...)
+                        col = 1, label.conf = list(label = TRUE, pos = 3, col = 1, 
+                        cex = 0.8), identify = FALSE, type = "p", pch = 20,  cex = 0.5, 
+                        asp = 1, plot.array, main, xlab, ylab, xlim, ylim, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -53,6 +54,7 @@
   \item{what}{For unfolding only: Whether row coordinates, column coordinates, or both should be plotted.}
   \item{col.rows}{Row colors in unfolding configuration plot.} 
   \item{col.columns}{Column colors in unfolding configuration plot.} 
+  \item{col.dhat}{Shepard plot only: color specification of the dhats. For row conditional transformations in unfolding a vector of the length of the number of rows should be specified.}
   \item{label.conf.rows}{List with arguments for plotting the labels of the row configurations in an unfolding configuration plot (logical value whether to plot labels or not, label position, label color).} 
   \item{label.conf.columns}{List with arguments for plotting the labels of the columns configurations in an unfolding configuration plot (logical value whether to plot labels or not, label position, label color).}
   \item{col.hist}{Color of the borders of the histogram.}
@@ -60,8 +62,7 @@
   \item{\dots}{Further plot arguments passed: see \code{\link[graphics]{plot}} for detailed information.}
 }
 
-\details{\code{smacofSym()} creates object of class \code{"smacof"}, whereas \code{smacofRect()} produces 
-\code{"smacofR"} and \code{smacofIndDiff()} generates \code{"smacofID"}.
+\details{\code{mds()} and \code{smacofSym()} create an object of class \code{"smacof"}, \code{unfolding()}, \code{prefscal()}, and \code{smacofRect()} produce \code{"smacofR"}, and \code{smacofIndDiff()} generates \code{"smacofID"}.
 
 Plot description:
  

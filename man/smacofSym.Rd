@@ -42,7 +42,7 @@ This function allows for fitting three basic types of MDS: ratio MDS (default), 
 \value{
   \item{delta}{Observed dissimilarities, not normalized}
   \item{dhat}{Disparities (transformed proximities, approximated distances, d-hats)}
-  \item{confdiss}{Configuration distances}
+  \item{confdist}{Configuration distances}
   \item{conf}{Matrix of fitted configurations}
   \item{stress}{Stress-1 value}
   \item{spp}{Stress per point (stress contribution in percentages)}

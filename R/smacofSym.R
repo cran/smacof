@@ -59,6 +59,8 @@ smacofSym <- function(delta, ndim = 2, type = c("ratio", "interval", "ordinal","
     trans <- "mspline"
   }
   disobj <- transPrep(diss,trans = trans, spline.intKnots = spline.intKnots, spline.degree = spline.degree)
+  ## Add an intercept to the spline base transformation
+  if (trans == "mspline") disobj$base <- cbind(rep(1, nrow(disobj$base)), disobj$base)
   
   ## dhats and missings
   dhat <- normDissN(diss, wgths, 1)        ## normalize to n(n-1)/2
@@ -115,7 +117,7 @@ smacofSym <- function(delta, ndim = 2, type = c("ratio", "interval", "ordinal","
   confdiss <- normDissN(e, wgths, 1)        #final normalization to n(n-1)/2
   
   ## stress-per-point 
-  spoint <- spp(dhat, confdiss, wgths)
+  spoint <- spp(dhat, dist(y), wgths)
   rss <- sum(spoint$resmat[lower.tri(spoint$resmat)])  ## residual sum-of-squares
   
   if (itel == itmax) warning("Iteration limit reached! You may want to increase the itmax argument!") 

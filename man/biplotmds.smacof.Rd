@@ -85,8 +85,9 @@ HCL <- slot(HCL, "coords")
 fit <- biplotmds(res, cbind(RGB, HCL))
 fit
 plot(fit, vecscale = 0.5, cex = 6, col = colors,
-	   label.conf=list(cex = 1, pos = ifelse(wavelengths < 490, 4, 3)),
-	   vec.conf = list(cex = 1.2), main = "Ekman configuration and color properties" )
+    label.conf=list(cex = 1, pos = ifelse(wavelengths < 560, 2, 4)),
+    vec.conf = list(cex = 1.2), main = "Ekman configuration and color properties" )
+
 }
 
 \keyword{hplot}

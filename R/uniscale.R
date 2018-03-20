@@ -2,14 +2,14 @@
 ## It returns the configuration based on the stress minimum. 
 
 
-uniscale <- function(delta, weightmat = NULL) {
+uniscale <- function(delta, weightmat = NULL, verbose = TRUE) {
   delta <- as.matrix(delta)
   if (is.null(weightmat)) {
     w <- 1-diag(dim(delta)[1])
   } else {
     w <- as.matrix(weightmat)
   }
-  n <- dim(delta)[1]
+  n <- dim(delta)[1]            ## number of objects
   nn <- n*(n-1)/2
   
   diss <- delta
@@ -24,6 +24,7 @@ uniscale <- function(delta, weightmat = NULL) {
   
   repeat{
     k <- k+1
+    if (verbose) cat("Permutation", k, "of", factorial(n), "\r")
  	  s <- sign(outer(x,x,"-"))
 	  t <- as.vector(v%*%rowSums(delta*w*s))
 	  if (are.monotone(x,t)) {
@@ -43,7 +44,7 @@ uniscale <- function(delta, weightmat = NULL) {
   stress <- sqrt(fmin)         ## stress-1 normalization (/2 because of full matrix instead of dist in loop)
   names(xmin) <- colnames(diss)
   
-  res <- list(delta = as.dist(diss), conf = xmin, confdiss = as.dist(confdiss), stress = stress, weightmat = as.dist(w), npermtot = k, 
+  res <- list(delta = as.dist(diss), conf = xmin, confdist = as.dist(confdiss), stress = stress, weightmat = as.dist(w), npermtot = k, 
               npermscale = m, nobj = n, call = match.call())
   class(res) <- "uniscale"
   return(res)

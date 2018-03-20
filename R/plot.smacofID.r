@@ -1,7 +1,7 @@
 # plot method for all smacof objects
 
 plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), bubscale = 1, col = 1, 
-                          label.conf = list(label = TRUE, pos = 3, col = 1), identify = FALSE, 
+                          label.conf = list(label = TRUE, pos = 3, col = 1, cex = 0.8), identify = FALSE, 
                           type = "p", pch = 20,  cex = 0.5, asp = 1, plot.array,
                           main, xlab, ylab, xlim, ylim, ...)
 
@@ -35,7 +35,7 @@ plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), bubscale
   
         
     plot(x$gspace[,x1], x$gspace[,y1], main = main, type = type, xlab = xlab, ylab = ylab, 
-         xlim = xlim, ylim = ylim, pch = pch, asp = asp, col = col, ...)
+         xlim = xlim, ylim = ylim, pch = pch, asp = asp, col = col, cex = cex, ...)
     if (label.conf$label) text(x$gspace[,x1], x$gspace[,y1], labels = rownames(x$gspace), 
                                cex = label.conf$cex, pos = label.conf$pos, 
                                col = label.conf$col)
@@ -84,7 +84,7 @@ plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), bubscale
         main <- paste("Shepard Diagram", namevec[i])
         notmiss <- as.vector(x$weightmat[[i]] > 0)
         xcoor <- (as.vector(x$delta)[[i]])[notmiss]
-        ycoor <- (as.vector(x$confdiss)[[i]])[notmiss]
+        ycoor <- (as.vector(x$confdist)[[i]])[notmiss]
         xlim <- range(xcoor)
         ylim <- range(ycoor)
         plot(xcoor, ycoor, main = main, type = "p", pch = pch, cex = cex,
@@ -131,7 +131,7 @@ plot.smacofID <- function(x, plot.type = "confplot", plot.dim = c(1,2), bubscale
       if (missing(xlim)) xlim <- range(as.vector(obsdiss))
       if (missing(ylim)) ylim <- range(as.vector(confdist))
       
-      plot(as.vector(obsdiss), as.vector(confdist), main = main, type = "p", col = "darkgray", xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim,...)
+      plot(as.vector(obsdiss), as.vector(confdist), main = main, type = "p", col = "darkgray", xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, cex = cex, ...)
       abline(lsfit(as.vector(obsdiss), as.vector(confdist)))
       
   }

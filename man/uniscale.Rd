@@ -8,17 +8,18 @@
 Simple implementation where all dissimilarity permutations are subject to a 1D MDS fit and the one which leads to a minimal stress values is returned.
 }
 \usage{
-uniscale(delta, weightmat = NULL)
+uniscale(delta, weightmat = NULL, verbose = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{delta}{Either a symmetric dissimilarity matrix or an object of class \code{"dist"}}
   \item{weightmat}{Optional matrix with dissimilarity weights}
+  \item{verbose}{Permutation printout}
 }
 
 \value{
   \item{delta}{Observed dissimilarities, not normalized}
-  \item{confdiss}{Configuration distances}
+  \item{confdist}{Configuration distances}
   \item{conf}{Vector with fitted configurations}
   \item{stress}{Stress-1 value}
   \item{weightmat}{Weight matrix}

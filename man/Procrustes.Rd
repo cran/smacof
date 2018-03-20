@@ -10,8 +10,8 @@
 Procrustes(X, Y)
 
 \method{plot}{procr}(x, plot.type = "jointplot", plot.dim = c(1,2), main, xlab, ylab, 
-                     xlim, ylim, asp = 1, pch = 20, col.X = "cadetblue", col.Y = "gray", 
-                     col.Yhat = "coral1", 
+                     xlim, ylim, asp = 1, pch = 20, col.X = "cadetblue", 
+                     col.Y = "gray", col.Yhat = "coral1", 
                      label.conf = list(label = TRUE, pos = 3, cex = 0.8), 
                      arrows = TRUE, length = 0.10, ...)
 }
@@ -30,7 +30,7 @@ Procrustes(X, Y)
   \item{pch}{Plot symbol.}
   \item{asp}{Aspect ratio.}
   \item{col.X}{Color target configuration.}
-  \item{col.Y}{Color testess configuration.}
+  \item{col.Y}{Color testee configuration.}
   \item{col.Yhat}{Color transformed configuration.}
   \item{label.conf}{List with arguments for plotting the labels of the configurations in a configuration plot (logical value whether to plot labels or not, label position, label color).}
   \item{length}{length of the edges of the arrow head (in inches).}

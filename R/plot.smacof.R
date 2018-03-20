@@ -57,7 +57,7 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     #if (identify) type <- "p"
     
     plot(x$conf[,x1], x$conf[,y1], main = main, type = type, xlab = xlab, ylab = ylab, 
-         xlim = xlim, ylim = ylim, pch = pch, asp = asp, col = col, ...)
+         xlim = xlim, ylim = ylim, pch = pch, asp = asp, col = col, cex = cex, ...)
     if (label.conf$label) {
       if (label.conf$pos == 5) {
         thigmophobe.labels(x$conf[,x1], x$conf[,y1], labels = rownames(x$conf), 
@@ -125,7 +125,10 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     }  
     
     if (missing(xlim)) xlim <- range(xcoor[notmiss], na.rm = TRUE)
-    if (missing(ylim)) ylim <- range(as.vector(x$confdist)[notmiss])
+    if (missing(ylim)) {
+      ylim <- range(as.vector(x$confdist)[notmiss])
+      ylim[1] <- 0
+    }
     
     plot(xcoor[notmiss], as.vector(x$confdist)[notmiss], main = main, type = "p", pch = pch, cex = cex,
          xlab = xlab, ylab = ylab, col = "darkgray", xlim = xlim, ylim = ylim, ...)
@@ -142,8 +145,8 @@ plot.smacof <- function(x, plot.type = "confplot", plot.dim = c(1,2), sphere = T
     if (missing(ylab)) ylab <- "Configuration Distances" else ylab <- ylab
     #resmat <- residuals(x)
  
-    if (missing(xlim)) xlim <- range(as.vector(x$dhat))
-    if (missing(ylim)) ylim <- range(as.vector(x$confdist))
+    if (missing(xlim)) xlim <- range(c(0, as.vector(x$dhat)))
+    if (missing(ylim)) ylim <- range(c(0, as.vector(x$confdist)))
     
     plot(as.vector(x$dhat), as.vector(x$confdist), main = main, type = "p", col = "darkgray",
          xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim,...)
