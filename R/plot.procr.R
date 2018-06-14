@@ -2,13 +2,18 @@
 
 plot.procr <- function(x, plot.type = "jointplot", plot.dim = c(1,2), main, xlab, ylab, xlim, ylim, asp = 1, pch = 20, 
                        col.X = "cadetblue", col.Y = "gray", col.Yhat = "coral1", 
-                       label.conf = list(label = TRUE, pos = 3, cex = 0.8), arrows = TRUE, length = 0.10, ...) 
+                       label.conf = list(label = TRUE, pos = 3, cex = 0.8), arrows = TRUE, length = 0.10, 
+                       legend = list(plot = TRUE, labels = c("Target", "Testee"), pos = "bottomright"), ...) 
 {
   
   if (is.null(label.conf$label)) label.conf$label <- TRUE
   if (is.null(label.conf$pos)) label.conf$pos <- 3
   if (is.null(label.conf$col)) label.conf$col <- 1
   if (is.null(label.conf$cex)) label.conf$cex <- 0.8
+  
+  if (is.null(legend$plot)) legend$plot <- TRUE
+  if (is.null(legend$pos)) legend$pos <- "bottomright"
+  
   
   x1 <- plot.dim[1]
   y1 <- plot.dim[2]
@@ -17,6 +22,8 @@ plot.procr <- function(x, plot.type = "jointplot", plot.dim = c(1,2), main, xlab
   labels <- rownames(x$X)
   
   if (plot.type == "jointplot") {
+    if (is.null(legend$labels)) legend$labels <- c("Target", "Testee")
+    
     if (missing(main)) main <- paste("Procrustes Configuration Plot") else main <- main    
     if (missing(xlim)) xlim <- range(c(x$X[,x1], x$Y[,x1]))*1.1
     if (missing(ylim)) ylim <- range(c(x$X[,y1], x$Y[,y1]))*1.1
@@ -25,18 +32,25 @@ plot.procr <- function(x, plot.type = "jointplot", plot.dim = c(1,2), main, xlab
     points(x$Yhat[,x1], x$Yhat[,y1], col = col.Yhat, pch = pch)
     if (label.conf$label) text(x$X[,x1], x$X[,y1], labels = labels, cex = label.conf$cex, pos = label.conf$pos, col = col.X)
     if (label.conf$label) text(x$Yhat[,x1], x$Yhat[,y1], labels = labels, cex = label.conf$cex, pos = label.conf$pos, col = col.Yhat)  
+    
+    if (legend$plot) legend(legend$pos, pch = pch, col = c(col.X, col.Yhat), legend = legend$labels)
   }
   if (plot.type == "transplot") {
     if (missing(main)) main <- paste("Procrustes Transformation Plot") else main <- main    
     if (missing(xlim)) xlim <- range(c(x$Yhat[,x1], x$Y[,x1]))*1.1
     if (missing(ylim)) ylim <- range(c(x$Yhat[,y1], x$Y[,y1]))*1.1
 
+    if (is.null(legend$labels)) legend$labels <- c("Original", "Transformed")
+    
+    
     plot(x$Y[,x1], x$Y[,y1], main = main, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, pch = pch, asp = asp, col = col.Y)#, ...)
     points(x$Yhat[,x1], x$Yhat[,y1], col = col.Yhat, pch = pch)
     if (label.conf$label) text(x$Y[,x1], x$Y[,y1], labels = labels, cex = label.conf$cex, pos = label.conf$pos, col = col.Y)
     if (label.conf$label) text(x$Yhat[,x1], x$Yhat[,y1], labels = labels, cex = label.conf$cex, pos = label.conf$pos, col = col.Yhat)  
     
     if (arrows) arrows(x$Y[,1], x$Y[,2], x$Yhat[,1], x$Yhat[,2], length = length, col = col.Y, lwd = 0.8)
+    
+    if (legend$plot) legend(legend$pos, pch = pch, col = c(col.Y, col.Yhat), legend = legend$labels)
   }
 }
 

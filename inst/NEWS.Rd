@@ -2,13 +2,45 @@
 \title{News for Package \pkg{smacof}}
 \encoding{UTF-8}
 
+\section{Changes in Version 1.10-8}{
+  \itemize{
+    \item variable names in morsescales corrected.
+    \item adjust argument in plot.driftvec added.
+    }
+}
+
+\section{Changes in Version 1.10-7}{
+  \itemize{
+    \item sanity check in smacofConstraint for diagonal C. 
+    \item stability coefficient for bootstrap added. 
+    }
+}
+
+\section{Changes in Version 1.10-6}{
+  \itemize{
+    \item print.imds() for inverseMDS() added.  
+    \item Gravity computation slightly modified.
+    \item Vaziri-Xu dataset added. 
+    \item Facial expression data added.  
+    \item Legend arguments for Procrustes plots added.
+    }
+}
+
+
+\section{Changes in Version 1.10-5}{
+  \itemize{
+    \item some fixes in the output structure of inverseMDS().  
+    \item biplotmds() and plot.mdsbi() fixed for single covariate vectors.
+    \item Additional conversion options added to sim2diss().
+    }
+}
+
 \section{Changes in Version 1.10-4}{
   \itemize{
     \item verbose output in uniscale(). 
     \item transform() exported. 
     }
 }
-
 
 
 \section{Changes in Version 1.10-3}{

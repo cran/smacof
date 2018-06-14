@@ -20,7 +20,7 @@ data(morse)
 data(morse2)
 }
 
-\format{Similarity matrix of 36 morse codes}
+\format{Symmetric and asymmetric dissimilarity matrices of 36 morse codes}
 
 \details{
 The first dataset (\code{morse}) contains a symmetric version, the second dataset (\code{morse2}) the original asymmetric version.

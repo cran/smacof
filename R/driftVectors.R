@@ -21,7 +21,7 @@ driftVectors <- function(data, type = c("ratio", "interval", "ordinal","mspline"
   indmat <- ind[-which(ind[,1] == ind[,2]),]
 
   Amat <- t(apply(indmat, 1, function(ij) x[ij[2],] - x[ij[1],]))  ## conf difference
-  Bmat <- t(apply(Amat, 1, function(ab) ab/sqrt((t(ab) %*% ab))))  ## unit length
+  Bmat <- t(apply(Amat, 1, function(ab) ab/c(sqrt((t(ab) %*% ab)))))  ## unit length
   diag(N) <- NA
   nij <- as.vector(na.omit(c(N)))
   Cmat <- Bmat * nij

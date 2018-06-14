@@ -93,50 +93,34 @@ Borg, I., & Lingoes, J. C. (1980). A model and algorithm for multidimensional sc
 \seealso{\code{\link{smacofSym}}, \code{\link{smacofRect}}, \code{\link{smacofIndDiff}}, \code{\link{smacofSphere}}}
 \examples{
 
-## SMACOF with linear configuration constraints
-data(kinshipdelta)
-data(kinshipscales)
-res.lin1 <- smacofConstraint(kinshipdelta, constraint = "linear", external = kinshipscales)
 
-## X = ZC decomposition
-X <- res.lin1$conf                ## resulting configurations X
-Z <- as.matrix(kinshipscales) 
-C <- res.lin1$C
-C
-Z\%*\%C                           ## check: should be equal to X   
+## theoretical grid restrictions (rectangles; keep covariate ties tied)
+fit.rect1 <- mds(rectangles, type = "ordinal", init = rect_constr) 
+fit.rect2 <- smacofConstraint(rectangles, type = "ordinal", ties = "secondary",
+                        constraint="diagonal", init = fit.rect1$conf, 
+                        external = rect_constr, constraint.type = "ordinal")
+plot(fit.rect2)
 
-## SMACOF with diagonal constraints
-res.diag <- smacofConstraint(kinshipdelta, constraint = "diagonal", 
-                             external = kinshipscales, ndim = 3)
 
-## linear constraints, no optimal scaling (starting configurations from unrestricted MDS fit)
-res.mds <- mds(morse, type = "ordinal")        ## unrestricted MDS fit
-res.lin <- smacofConstraint(morse, type = "ordinal", ties = "primary", 
-                            constraint = "linear", init = res.mds$conf,
-                            external = morsescales[,2:3])                       
-                               
-## linear constraints, optimal scaling (regional MDS)                               
-res.parreg <- smacofConstraint(morse, type = "ordinal", ties = "primary", 
-                               constraint = "linear", init = res.mds$conf,
-                               external = morsescales[,2:3], 
-                               constraint.type = "ordinal")
-plot(res.parreg)
+## regional restrictions morse code data (signal length, strength)
+fitMorse1 <- mds(morse, type = "ordinal")
+fitMorse1
+fitMorse2 <- smacofConstraint(morse, type = "ordinal", constraint = "linear",
+                              external = morsescales[,2:3], 
+                              constraint.type = "ordinal", 
+                              init = fitMorse1$conf)
+fitMorse2
+plot(fitMorse2)
 
-## SMACOF with unique constraints (Bentler-Weeks model)
-res.unique <- smacofConstraint(kinshipdelta, constraint = "unique", 
-                               external = kinshipscales)
-plot(res.unique)                               
-                               
-
-## Fitting a simplex with q = 4 (i.e., n-1), diagonal constraints
-res.simp <- smacofConstraint(kinshipdelta, constraint = "diagonal", 
-                             external = list("simplex", 4), ndim = 3)
-plot(res.simp)
-
-## Fitting a circumplex with q = 3, k1 = 1, k2 = 2, diagonal constraints
-res.circ <- smacofConstraint(kinshipdelta, constraint = "diagonal", 
-                             external = list("circumplex", 3, 1, 2), ndim = 3)
-plot(res.circ)
+## regional restrictions OCP data
+ocpD <- sim2diss(OCP[,1:54])
+fit.ocp1 <- mds(ocpD, type = "ordinal")    ## unrestricted fit (for starting solution)
+Z <- OCP[,56:57]
+fit.ocp2 <- smacofConstraint(ocpD, type = "ordinal",
+                             constraint = "diagonal", init = fit.ocp1$conf,
+                             external = Z, constraint.type = "ordinal")
+fit.ocp2
+plot(fit.ocp2)
 }
 
 \keyword{multivariate}

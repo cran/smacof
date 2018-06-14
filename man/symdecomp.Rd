@@ -10,7 +10,7 @@ symdecomp(P)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{P}{Square matrix}
+  \item{P}{Square proximity matrix}
 }
 
 \details{

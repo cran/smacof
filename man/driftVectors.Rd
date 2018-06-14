@@ -14,8 +14,9 @@ driftVectors(data, type = c("ratio", "interval", "ordinal","mspline"),
              relax = FALSE, modulus = 1, itmax = 1000, eps = 1e-6, 
              spline.degree = 2, spline.intKnots = 2)
              
-\method{plot}{driftvec}(x, main, xlim, ylim, xlab = "Dimension 1", ylab = "Dimension 2", 
-                        pch = 20, asp = 1, col.conf = "black", col.drift = "lightgray", 
+\method{plot}{driftvec}(x, adjust = 1, main, xlim, ylim, 
+                        xlab = "Dimension 1", ylab = "Dimension 2", pch = 20, asp = 1, 
+                        col.conf = "black", col.drift = "lightgray", 
                         label.conf = list(label = TRUE, pos = 3, col = "black", 
                         cex = 0.8), ...) 
 
@@ -36,6 +37,7 @@ driftVectors(data, type = c("ratio", "interval", "ordinal","mspline"),
   \item{spline.intKnots}{Number of interior knots of the spline for \code{"mspline"} MDS type}
     
   \item{x}{Object of class \code{"driftvec"}}
+  \item{adjust}{Scaling factor for drift vectors (value larger than 1 reduces the length)}
   \item{main}{Plot title}
   \item{xlab}{Label of x-axis}
   \item{ylab}{Label of y-axis}
@@ -73,6 +75,17 @@ Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.).
 }
 
 \examples{
+## simple example
+P <- matrix(c(0,  4,  6, 13, 
+              5,  0, 37, 21, 
+              4, 38,  0, 16, 
+              8, 31, 18,  0), nrow = 4, ncol = 4, byrow = TRUE) 
+D <- sim2diss(P, method = 40) 
+res <- driftVectors(D, type = "interval")
+plot(res)
+plot(res, 4)    ## shorten drift vectors 
+
+## Morse code data
 fit.drift <- driftVectors(morse2, type = "ordinal")
 fit.drift
 plot(fit.drift)

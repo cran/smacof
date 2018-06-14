@@ -50,6 +50,7 @@ type = "p", pch = 20, ...)
   \item{bootconf}{Configurations bootstrap samples}
   \item{stressvec}{Bootstrap stress values}
   \item{bootci}{Stress bootstrap percentile confidence interval}
+  \item{stab}{Stability coefficient}
 }
 
 \references{Jacoby, W. G., & Armstrong, D. A. (2014). Bootstrap confidence regions for multidimensional scaling solutions. American Journal of Political Science, 58, 264-278. 

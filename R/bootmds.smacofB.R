@@ -49,7 +49,13 @@ bootmds.smacofB <- function(object, data,  method.dat = "pearson", nrep = 100, a
   names(M) <- attr(object$confdist, "Labels")
   bootci <- quantile(stressvec, probs = c(alpha/2, (1-alpha/2)))
   
-	result <- list(cov = M, conf = object$conf, bootconf = coord, stressvec = stressvec, nrep = nrep, nobj = n, alpha = alpha, bootci = bootci, call = match.call())
+  ## stability measure
+  y0 <- Reduce("+", coord)/length(coord)
+  stab.num <- sum(sapply(coord, function(yy) (norm(yy-y0))^2))
+  stab.denom <- sum(sapply(coord, function(yy) (norm(yy))^2))
+  stab <- 1 - stab.num/stab.denom
+  
+	result <- list(cov = M, conf = object$conf, bootconf = coord, stressvec = stressvec, nrep = nrep, nobj = n, alpha = alpha, bootci = bootci, stab = stab, call = match.call())
   class(result) <- "smacofboot"
   result
 }

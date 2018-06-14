@@ -58,7 +58,8 @@ similarity is provided, it is converted internally into a dissimilarity using \c
 
 ## permuting the dissimilarity matrix (full)
 data(kinshipdelta)
-fitkin <- mds(kinshipdelta, ndim = 1, type = "interval")
+fitkin <- mds(kinshipdelta, ndim = 2, type = "interval")
+set.seed(222)
 res.perm <- permtest(fitkin)
 res.perm
 plot(res.perm)
@@ -68,20 +69,21 @@ GOPdtm[GOPdtm > 1] <- 1     ## use binary version
 diss1 <- dist(t(GOPdtm[,1:10]), method = "binary")  ## Jaccard distance
 fitgop1 <- mds(diss1, type = "ordinal")
 fitgop1
+set.seed(123)
 permtest(fitgop1, GOPdtm[,1:10], nrep = 10, method.dat = "binary")
 
 rmat <- cor(GOPdtm[,1:10], method = "kendall")  ## Kendall correlation
 diss2 <- sim2diss(rmat, method = 1)
 fitgop2 <- mds(diss2, type = "ordinal")
 fitgop2
+set.seed(123)
 permtest(fitgop2, GOPdtm[,1:10], nrep = 10, method.dat = "kendall", method = 1)
 
-## unfolding
+## unfolding permutation
 data(breakfast)
-res.unfolding <- unfolding(breakfast, itmax = 5000, ndim = 2)
-res.perm <- permtest(res.unfolding, nrep = 10, method.dat = "rows")
-res.perm
-plot(res.perm)
+res.unfolding <- unfolding(breakfast, ndim = 2)
+set.seed(123)
+permtest(res.unfolding, nrep = 20, method.dat = "rows")
 }
 
 \keyword{models}

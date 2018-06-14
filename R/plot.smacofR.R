@@ -110,10 +110,10 @@ plot.smacofR <- function(x, plot.type = "confplot", what = c("both", "columns", 
     
     if ("smacofR" %in% class(x)){
       if (length(x$iord) == 1) { ## Matrix conditional
-        points(xcoor[notmiss], ycoor[notmiss], pch = pch, cex = cex, col = col.dhat[1])
+        points(xcoor[notmiss], ycoor[notmiss], pch = pch, cex = cex, col = "gray")
         notmiss.iord <- notmiss[x$iord[[1]]]
         points((x$obsdiss[x$iord[[1]]])[notmiss.iord], (as.vector(x$dhat[x$iord[[1]]]))[notmiss.iord], 
-               type = "l", pch = pch, cex = cex, col = col.dhat[1])
+               type = "b", pch = pch, cex = cex, col = 1)
       } else { ## Row conditional
         for (i in 1:length(x$iord)){
           notmiss.iord <- notmiss[x$iord[[i]]]
@@ -130,32 +130,9 @@ plot.smacofR <- function(x, plot.type = "confplot", what = c("both", "columns", 
           }
         }
       }
-    } else {  # Class is "smacofR"
-      # yax <- ycoor[notmiss]
-      # xax <- xcoor[notmiss]
-      # fitlm <- lm(yax ~ -1 + xax)       ## ratio unfolding
-      # xvals <- unique(sort(xax))
-      # preds <- predict(fitlm, newdata = data.frame(xax = xvals))
-      # points(xvals, preds, type = "b", pch = pch, cex = cex)
-    }
+    } 
   }
   
-  
-  #--------------- Residual plot --------------------
-  #   if (plot.type == "resplot") {
-  #     if (missing(main)) main <- paste("Residual plot") else main <- main
-  #     if (missing(xlab)) xlab <- "Configuration Distances" else xlab <- xlab
-  #     if (missing(ylab)) ylab <- "Residuals" else ylab <- ylab
-  #     resmat <- residuals(x)
-  # 
-  #     fullres <- c(as.vector(x$confdiss), as.vector(resmat)) 
-  #     if (missing(xlim)) xlim <- range(fullres)
-  #     if (missing(ylim)) ylim <- range(fullres)
-  #     
-  #     plot(as.vector(x$confdiss), as.vector(resmat), main = main, type = "p",
-  #          xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)
-  #     abline(h = 0, col = "darkgray", lty = 2)  
-  #   }
   
   #----------------------- Stress decomposition -----------------
   if (plot.type == "stressplot") {

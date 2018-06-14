@@ -30,6 +30,7 @@ plot.mdsbi <- function(x, vecscale = NULL, plot.dim = c(1,2), sphere = TRUE, col
   
   x$conf <- x$model$X           ## configurations
   
+  if (is.null(vecscale) && ncol(x$coef) == 1) vecscale <- 1
   if (is.null(vecscale)) vecscale <- vecscale(x$coef)  ## scale
   x$coef <- vecscale * x$coef
   

@@ -31,6 +31,9 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, t
   ties <- match.arg(ties, c("primary", "secondary", "tertiary"), several.ok = FALSE) 
   constraint.type <- match.arg(constraint.type, c("ratio", "interval", "ordinal", "spline", "mspline"), several.ok = FALSE) 
   constraint.ties <- match.arg(constraint.ties, c("primary", "secondary", "tertiary"), several.ok = FALSE) 
+  constraint <- match.arg(constraint, c("linear", "unique", "diagonal"))
+  if ((constraint == "diagonal") && (ncol(external) != ndim)) stop("For C diagonal the number of dimensions needs to match the number of covariates!")
+  
   
   diss <- delta
   if ((is.matrix(diss)) || (is.data.frame(diss))) {

@@ -13,7 +13,9 @@ Procrustes(X, Y)
                      xlim, ylim, asp = 1, pch = 20, col.X = "cadetblue", 
                      col.Y = "gray", col.Yhat = "coral1", 
                      label.conf = list(label = TRUE, pos = 3, cex = 0.8), 
-                     arrows = TRUE, length = 0.10, ...)
+                     arrows = TRUE, length = 0.10, 
+                     legend = list(plot = TRUE, labels = c("Target", "Testee"), 
+                                   pos = "bottomright"), ...) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -34,7 +36,8 @@ Procrustes(X, Y)
   \item{col.Yhat}{Color transformed configuration.}
   \item{label.conf}{List with arguments for plotting the labels of the configurations in a configuration plot (logical value whether to plot labels or not, label position, label color).}
   \item{length}{length of the edges of the arrow head (in inches).}
-  \item{arrows}{For \code{"transplot"} only, whether arrows should be plotted or not}
+  \item{arrows}{For \code{"transplot"} only, whether arrows should be plotted or not.}
+  \item{legend}{List with arguments for plotting the legend.}
   \item{...}{Additional plot arguments.}
 }
 
@@ -90,15 +93,13 @@ plot(fit.east, main = "MDS East Germany")   ## MDS plot East Germany
 plot(fit.west, main = "MDS West Germany")   ## MDS plot West Germany
 
 ## Procrustes configurations (X and Yhat)
-plot(fit.proc, ylim = c(-1, 1))     
-legend("topleft", legend = c("East Germany", "West Germany"), 
-       col = c("cadetblue", "coral1"), pch = 19)
-
+plot(fit.proc, ylim = c(-1, 1),  col.X = "cadetblue", col.Yhat = "brown", pch = 19, 
+    legend = list(pos = "topleft", labels = c("East Germany", "West Germany"))) 
+    
 ## Procrustes transformations (Y and Yhat)
-plot(fit.proc, plot.type = "transplot", length = 0.05, ylim = c(-1,1))  
-legend("topleft", legend = c("West Germany (untransformed)", "West Germany (transformed)"), 
-       col = c("gray", "coral1"), pch = 19)
-
+plot(fit.proc, plot.type = "transplot", length = 0.05, ylim = c(-1,1), 
+     legend = list(pos = "bottomright", 
+     labels = c("West Germany (untransformed)", "West Germany (transformed)")))
 }
 
 \keyword{multivariate}

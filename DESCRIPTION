@@ -1,27 +1,27 @@
 Package: smacof
 Type: Package
 Title: Multidimensional Scaling
-Version: 1.10-5
-Date: 2018-03-19
+Version: 1.10-8
+Date: 2018-06-13
 Authors@R: c(person("Patrick", "Mair", role = c("aut", "cre"), email = "mair@fas.harvard.edu"), person("Jan", "De Leeuw", role = "aut"), person("Ingwer", "Borg", role = "ctb"), person("Patrick J. F.", "Groenen", role = "ctb"))
-Description: Provides the following approaches for multidimensional scaling (MDS) based on stress minimization using majorization (smacof): basic MDS on symmetric dissimilarity matrices,
-    MDS with external constraints on the configuration, individual differences scaling (idioscal, indscal, and friends), MDS with spherical restrictions, and unfolding. The MDS type can be ratio, interval, ordinal, and monotone splines. 
-    Various tools and extensions like jackknife MDS, bootstrap MDS, permutation tests, MDS biplots, gravity models, inverse MDS, unidimensional scaling, drift vectors (asymmetric MDS), classical scaling, and Procrustes are implemented as well.  
+Description: Implements the following approaches for multidimensional scaling (MDS) based on stress minimization using majorization (smacof): ratio/interval/ordinal/spline MDS on symmetric dissimilarity matrices, MDS with external constraints on the configuration, individual differences scaling (idioscal, indscal), MDS with spherical restrictions, and ratio/interval/ordinal/spline unfolding (circular restrictions, row-conditional). Various tools and extensions like jackknife MDS, bootstrap MDS, permutation tests, MDS biplots, gravity models, inverse MDS, unidimensional scaling, drift vectors (asymmetric MDS), classical scaling, and Procrustes are implemented as well.  
 Imports: graphics, stats, polynom, Hmisc, colorspace, nnls, grDevices,
         MASS, weights, ellipse, wordcloud, candisc
 Depends: R (>= 3.2.0), plotrix
 License: GPL-3
-Suggests: knitr, RgoogleMaps
-VignetteBuilder: knitr
+Suggests: knitr
 LazyData: yes
 LazyLoad: yes
 ByteCompile: yes
 NeedsCompilation: yes
-Packaged: 2018-03-19 23:41:19 UTC; root
 Author: Patrick Mair [aut, cre],
   Jan De Leeuw [aut],
   Ingwer Borg [ctb],
   Patrick J. F. Groenen [ctb]
 Maintainer: Patrick Mair <mair@fas.harvard.edu>
 Repository: CRAN
-Date/Publication: 2018-03-20 10:02:12 UTC
+Repository/R-Forge/Project: psychor
+Repository/R-Forge/Revision: 321
+Repository/R-Forge/DateTimeStamp: 2018-06-14 04:12:08
+Date/Publication: 2018-06-14 18:06:50 UTC
+Packaged: 2018-06-14 05:05:09 UTC; rforge

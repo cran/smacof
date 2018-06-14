@@ -3,7 +3,7 @@
 
 \title{Inverse MDS}
 \description{
-Performs inverse MDS. That is, given a configuration matrix, it computes a dissimilarity matrix.
+Inverse MDS finds the set of all dissimilarity matrices, whose MDS solution is given as input configuration. 
 }
 \usage{
 inverseMDS(x)
@@ -14,38 +14,27 @@ inverseMDS(x)
 }
 
 \value{
-Returns a list with dissimilarity matrices. 
+  \item{confdist}{Euclidean distance matrix}
+  \item{dissmat}{List of dissimilarity matrices}
 }
 
+
 \details{
-Note that this is a very basic implementation. It can be that some dissimilarities are negative. Also, the weights 
-are fixed to a value of 1. 
+One solution to inverse MDS is simply the Euclidean distances between the points in the low-dimensional space. There will typically be many additional solutions, i.e., many high-dimensional dissimilarity arrangements optimally represented by a given low-dimensional configuration. 
 }
 
 \references{
-De Leeuw J., & Groenen P. J. F. (1997). Inverse multidimensional scaling. Journal of Classification, 12, 3-21.
+De Leeuw, J., & Groenen P. J. F. (1997). Inverse multidimensional scaling. Journal of Classification, 12, 3-21.
 
-De Leeuw, J. (2012). On inverse multidimensional scaling. Statistics preprint series, UCLA. \url{gifi.stat.ucla.edu/janspubs/2012/
-notes/deleeuw_U_12b.pdf}.
+De Leeuw, J., Groenen P. J. F., & Mair, P. (2016). On Inverse Multidimensional Scaling. \url{http://rpubs.com/deleeuw/148292}.
 }
 
 \seealso{\code{\link{mds}}}
 
 \examples{
-## MDS and inverse MDS on kinship data subset
-D <- as.matrix(kinshipdelta)[1:6, 1:6]
-fit <- mds(D)                       ## MDS D --> conf
-ifit <- inverseMDS(fit$conf)        ## inverse MDS conf --> D
-
-## MDS fit on dissimilarity matrix obtained by inverse MDS
-op <- par(mfrow = c(3,3))           
-plot(fit, main = "Original MDS")
-for (i in 1:length(ifit)) {
-  fit.i <- mds(ifit[[i]])             
-  plot(fit.i, main = paste0("Inverse MDS (",i, ")"))
-}
-par(op)
-
+## Inverse MDS on theoretical rectangle configuration
+ifit <- inverseMDS(rect_constr)   
+str(ifit)
 }
 
 \keyword{models}

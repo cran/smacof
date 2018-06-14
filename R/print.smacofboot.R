@@ -10,6 +10,7 @@ print.smacofboot <- function(x,...)
   cat("Mean bootstrap stress: ", round(mean(x$stressvec), 4), "\n")
   cat("Stress percentile CI:\n")
   print(round(x$bootci, 4))
+  cat("\nStability coefficient:", round(x$stab, 4), "\n")
   cat("\n")
 }
 

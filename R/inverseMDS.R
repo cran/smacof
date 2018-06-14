@@ -19,16 +19,17 @@ inverseMDS <- function (x) {
       k <- k + 1
     }
   }
-  base <- cbind(lower_triangle(dd), base)
   baselist <- list()
   
   for (i in 1:ncol(base)) {
     dmat <- matrix(NA, n, n)
-    dmat[lower.tri(dmat)] <- base[,1]
+    dmat[lower.tri(dmat)] <- base[,i]
     baselist[[i]] <- as.dist(dmat)
     attr(baselist[[i]], "Labels") <- rownames(x)
   }  
-  return (base = baselist)
+  result <- list(confdist = dist(x), dissmat = baselist, call = match.call())
+  class(result) <- "imds"
+  return(result)
 }
 
 

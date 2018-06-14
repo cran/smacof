@@ -17,7 +17,8 @@ biplotmds.smacof <- function(object, extvar, scale = TRUE) {
   rownames(regfit$coefficients) <- colnames(X)
   regsum <- summary(regfit)
   if (ncol(ext) == 1) R2vec <- regsum$r.squared else R2vec <- sapply(regsum, `[[`, "r.squared")
-  names(R2vec) <- gsub("Response ", "", names(R2vec))
+  #names(R2vec) <- gsub("Response ", "", names(R2vec))
+  names(R2vec) <- colnames(ext)
   regfit$R2vec <- R2vec
   class(regfit) <- c("mdsbi", "mlm", "lm")
   return(regfit)
