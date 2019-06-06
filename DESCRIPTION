@@ -1,27 +1,26 @@
 Package: smacof
 Type: Package
 Title: Multidimensional Scaling
-Version: 1.10-8
-Date: 2018-06-13
-Authors@R: c(person("Patrick", "Mair", role = c("aut", "cre"), email = "mair@fas.harvard.edu"), person("Jan", "De Leeuw", role = "aut"), person("Ingwer", "Borg", role = "ctb"), person("Patrick J. F.", "Groenen", role = "ctb"))
-Description: Implements the following approaches for multidimensional scaling (MDS) based on stress minimization using majorization (smacof): ratio/interval/ordinal/spline MDS on symmetric dissimilarity matrices, MDS with external constraints on the configuration, individual differences scaling (idioscal, indscal), MDS with spherical restrictions, and ratio/interval/ordinal/spline unfolding (circular restrictions, row-conditional). Various tools and extensions like jackknife MDS, bootstrap MDS, permutation tests, MDS biplots, gravity models, inverse MDS, unidimensional scaling, drift vectors (asymmetric MDS), classical scaling, and Procrustes are implemented as well.  
+Version: 2.0-0
+Date: 2019-06-05
+Authors@R: c(person("Patrick", "Mair", role = c("aut", "cre"), email = "mair@fas.harvard.edu"), person("Jan", "De Leeuw", role = "aut"), person("Patrick J. F.", "Groenen", role = "aut"), person("Ingwer", "Borg", role = "ctb"))
+Description: Implements the following approaches for multidimensional scaling (MDS) based on stress minimization using majorization (smacof): ratio/interval/ordinal/spline MDS on symmetric dissimilarity matrices, MDS with external constraints on the configuration, individual differences scaling (idioscal, indscal), MDS with spherical restrictions, and ratio/interval/ordinal/spline unfolding (circular restrictions, row-conditional). Various tools and extensions like jackknife MDS, bootstrap MDS, permutation tests, MDS biplots, gravity models, unidimensional scaling, drift vectors (asymmetric MDS), classical scaling, and Procrustes are implemented as well.  
 Imports: graphics, stats, polynom, Hmisc, colorspace, nnls, grDevices,
-        MASS, weights, ellipse, wordcloud, candisc
+        MASS, weights, ellipse, wordcloud, candisc, parallel, foreach,
+        doParallel
 Depends: R (>= 3.2.0), plotrix
 License: GPL-3
-Suggests: knitr
+Suggests: knitr, prefmod, MPsychoR, calibrate
+VignetteBuilder: knitr
 LazyData: yes
 LazyLoad: yes
 ByteCompile: yes
 NeedsCompilation: yes
+Packaged: 2019-06-05 23:33:34 UTC; root
 Author: Patrick Mair [aut, cre],
   Jan De Leeuw [aut],
-  Ingwer Borg [ctb],
-  Patrick J. F. Groenen [ctb]
+  Patrick J. F. Groenen [aut],
+  Ingwer Borg [ctb]
 Maintainer: Patrick Mair <mair@fas.harvard.edu>
 Repository: CRAN
-Repository/R-Forge/Project: psychor
-Repository/R-Forge/Revision: 321
-Repository/R-Forge/DateTimeStamp: 2018-06-14 04:12:08
-Date/Publication: 2018-06-14 18:06:50 UTC
-Packaged: 2018-06-14 05:05:09 UTC; rforge
+Date/Publication: 2019-06-06 10:19:29 UTC

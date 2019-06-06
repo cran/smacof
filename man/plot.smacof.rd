@@ -58,7 +58,7 @@
   \item{label.conf.rows}{List with arguments for plotting the labels of the row configurations in an unfolding configuration plot (logical value whether to plot labels or not, label position, label color).} 
   \item{label.conf.columns}{List with arguments for plotting the labels of the columns configurations in an unfolding configuration plot (logical value whether to plot labels or not, label position, label color).}
   \item{col.hist}{Color of the borders of the histogram.}
-  \item{plot.array}{Array arrangements of plots for IndDiff models (see details).}
+  \item{plot.array}{Array arrangements of plots for individual difference models (see details).}
   \item{\dots}{Further plot arguments passed: see \code{\link[graphics]{plot}} for detailed information.}
 }
 
@@ -68,21 +68,18 @@ Plot description:
  
 - Configuration plot (\code{plot.type = "confplot"}): Plots the MDS configuration.
 
-- Residual plot (\code{plot.type = "resplot"}): Plots the normalized dissimilarities (d-hats) distances against  
+- Residual plot (\code{plot.type = "resplot"}): Plots the disparities (d-hats) distances against  
 the fitted distances. 
 
-- Shepard diagram (\code{plot.type = "Shepard"}): Diagram with the observed dissimilarities against the fitted distances including
-(isotonic) regression line.
+- Shepard diagram (\code{plot.type = "Shepard"}): Diagram with the observed dissimilarities against the fitted distances including (isotonic) regression line.
 
-- Stress decomposition plot (\code{plot.type = "stressplot"}): Plots the stress contribution in of each observation. Note that it rescales the stress-per-point (SPP) from the corresponding 
-smacof function to percentages (sum is 100). The higher the contribution, the worse the fit. 
+- Stress decomposition plot (\code{plot.type = "stressplot"}): Plots the stress contribution in of each observation. Note that it rescales the stress-per-point (SPP) from the corresponding smacof function to percentages (sum is 100). The higher the contribution, the worse the fit. 
 
 - Bubble plot (\code{plot.type = "bubbleplot"}, not available for rectangular SMACOF): Combines the configuration plot with the point stress contribution. The larger the bubbles, the worse the fit. 
 
 - Histogram (\code{plot.type = "histogram"}: gives a weighted histogram of the dissimilarities. For optional arguments, see \code{\link[weights]{wtd.hist}}.
 
-For \code{smacofIndDiff()} the residual plot, Shepard diagram, and stress plot are based on the sum of the residuals across individuals/ways. The configuration plot represents the group stimulus space (i.e., joint configuration).
-If \code{plot.array} is not specified, it produces a Shepard plot of the distances summed across subjects, if \code{plot.array = 0} it produces a sqrt(nsubjects) times sqrt(nsubjects) array of graph panels, if \code{plot.array = 3} it produces 3x3 arrays of graph panels, if \code{plot.array = c(2, 3)} it produces 2x3 arrays of graph panels, and if \code{plot.array = c(3, 2, 5)} produces 3x2 arrays of panels (only the first two values are used).
+For \code{smacofIndDiff()} the residual plot, Shepard diagram, and stress plot are based on the sum of the residuals across individuals/ways. The configuration plot represents the group stimulus space (i.e., joint configuration). If \code{plot.array} is not specified, it produces a Shepard plot of the distances summed across subjects, if \code{plot.array = 0} it produces a sqrt(nsubjects) times sqrt(nsubjects) array of graph panels, if \code{plot.array = 3} it produces 3x3 arrays of graph panels, if \code{plot.array = c(2, 3)} it produces 2x3 arrays of graph panels, and if \code{plot.array = c(3, 2, 5)} produces 3x2 arrays of panels (only the first two values are used).
 }
 
 \seealso{\code{\link{plot.procr}}}
@@ -92,6 +89,7 @@ If \code{plot.array} is not specified, it produces a Shepard plot of the distanc
 data(trading)
 res <- mds(trading)
 plot(res, plot.type = "confplot")
+plot(res, plot.type = "confplot", label.conf = list(pos = 5)) ## avoid overlapping labels
 plot(res, plot.type = "Shepard")
 plot(res, plot.type = "stressplot")
 plot(res, plot.type = "resplot")

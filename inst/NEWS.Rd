@@ -2,6 +2,51 @@
 \title{News for Package \pkg{smacof}}
 \encoding{UTF-8}
 
+\section{Changes in Version 2.0-0}{
+  \itemize{
+    \item Color shading added to plot.icexplore().
+    \item Fixed column coordinates version of vmu() implemented. 
+    \item Vignette added.
+    \item Help files for indvalues and PVQ40 data updated.
+    \item method.dat = "rows" as default in permtest.smacofR(). 
+    }
+}
+
+\section{Changes in Version 1.13-1}{
+  \itemize{
+    \item Slight acceleration in unfolding when using transformations.
+    }
+}
+
+\section{Changes in Version 1.13-0}{
+  \itemize{
+    \item Pseudo-confidence ellipses added via confEllipse().
+    \item Inverse MDS removed because it was buggy. Will be added later on again. 
+    }
+}
+
+\section{Changes in Version 1.12-1}{
+  \itemize{
+    \item Extra sanity check added for fixed coordinates in unfolding added.
+    \item Parallelization is added for rowconditional unfolding.
+    }
+}
+
+
+\section{Changes in Version 1.12-0}{
+  \itemize{
+    \item External unfolding added.
+    \item In case of NA's, proper weight matrix is created in unfolding.
+    \item Vector unfolding model added. 
+    }
+}
+
+\section{Changes in Version 1.11-0}{
+  \itemize{
+    \item Circular unfolding for all unfolding versions implemented.
+    }
+}
+
 \section{Changes in Version 1.10-8}{
   \itemize{
     \item variable names in morsescales corrected.

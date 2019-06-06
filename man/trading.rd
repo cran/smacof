@@ -2,10 +2,8 @@
 \alias{trading}
 \docType{data}
 \title{Trading data}
-\description{Data from the New Geographical Digest (1986), analysed in Cox and Cox (2001),
-on which countries traded with other countries. For 20 countries the main trading partners 
-are dichotomously scored (1 = trade performed, 0 = trade not performed). 
-Based on this dichotomous matrix the dissimilarities are computed using the Jaccard coefficient.
+\description{Data from the New Geographical Digest (1986) analyzed in Cox and Cox (2001). For 20 countries their main trading partners were dichotomously scored (1 = trade performed, 0 = trade not performed). 
+Based on this dichotomous matrix the dissimilarities were computed using the Jaccard coefficient.
 }
 \usage{data(trading)}
 \format{Object of class \code{"dist"} with dissimilarities of the following countries:

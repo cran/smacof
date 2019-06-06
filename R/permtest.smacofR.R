@@ -1,4 +1,4 @@
-permtest.smacofR <- function(object, data = NULL, method.dat = "full", nrep = 100, verbose = TRUE, ...)
+permtest.smacofR <- function(object, data = NULL, method.dat = "rows", nrep = 100, verbose = TRUE, ...)
 {
 ## val ... stress value  
 ## n... number of objects

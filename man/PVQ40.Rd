@@ -3,9 +3,7 @@
 \alias{PVQ40agg}
 \docType{data}
 \title{Portrait Value Questionnaire}
-\description{The PVQ40 (Schwartz et al., 1999) consists of 40 items, each a short portrait of one person. For example, to
-measure power, the PVQ includes two portraits (male/female versions): It is important to him to be rich. He wants to have a lot of money and expensive things. It is important to him to get respect from others. He wants people to do
-what he says. Respondent indicates on 6-point bipolar rating scale (1 ... not at all like me, 6 ... very much like me) the degree to which the description also fits him-/herself. Gender and age of the participants are added as attributes.
+\description{The PVQ40 (Schwartz et al., 1999) consists of 40 items, each a short portrait of one person. For example, to measure power, the PVQ includes two portraits (male/female versions): It is important to him to be rich. He wants to have a lot of money and expensive things. It is important to him to get respect from others. He wants people to do what he says. Respondents indicate on 6-point bipolar rating scale (1 ... not at all like me, 6 ... very much like me) the degree to which the description also fits himself/herself. Gender and age of the participants are added as attributes.
 }
 \usage{data(PVQ40)}
 \format{PVQ40 data of 151 adults from various states in the USA:
@@ -34,11 +32,14 @@ Age and Gender are added as attributes.
 }
 
 \details{
-\code{PVQ40agg} is an aggregated version of \code{PVQ40} where the item scores belonging to the same value are averaged. 
+\code{PVQ40agg} is an aggregated version of \code{PVQ40} where the item scores belonging to the same value are averaged. Abbreviations: power (PO), achievement (AC), hedonism (HE), stimulation (ST), self-direction (SD), universalism (UN), benevolence (BE), tradition (TR), conformity (CO), security (SE). 
 }
 
-\references{Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.). Springer.
+\references{Borg, I., Bardi, A., & Schwartz, S. H. (2017). Does the value circle exist within persons or only across persons? Journal of Personality, 85(2), 151-162. 
 }
+
+\seealso{\code{\link{indvalues}}}
+
 \examples{
 str(PVQ40)
 head(PVQ40)

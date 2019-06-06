@@ -32,6 +32,8 @@ spline.degree = 2, spline.intKnots = 2)
 
 \details{
 This function generates a large set of MDS solutions using random initial configurations, matches them all by Procrustean fittings, computes the inter-correlations of their point coordinates, and finally runs an interval MDS of these inter-correlations. It can be used to explore local minima.
+
+In the plot function the number reflects the index of corresponding MDS fit, the size reflects the stress value: the larger the font, the larger the stress (i.e., the worse the solution). The size is associated with a corresponding color shading (the smaller the size the darker the color). 
 }
 
 \value{
@@ -55,9 +57,6 @@ set.seed(123)
 res <- icExplore(diss, type = "ordinal", nrep = 20, returnfit = TRUE)
 res
 plot(res) 
-## The number reflects the index of corresponding MDS fit,
-## the size reflects the stress value: the larger the font, the larger the 
-## stress (i.e., the worse the solution). 
 
 res$mdsfit[[14]]  ## bad fitting solution
 res$mdsfit[[3]]   ## better fitting solution

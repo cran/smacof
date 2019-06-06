@@ -11,7 +11,7 @@
 }
 \usage{
 \method{permtest}{smacof}(object, data,  method.dat = "pearson", nrep = 100, verbose = TRUE, ...)
-\method{permtest}{smacofR}(object, data = NULL,  method.dat = "full", nrep = 100, verbose = TRUE, ...)
+\method{permtest}{smacofR}(object, data = NULL,  method.dat = "rows", nrep = 100, verbose = TRUE, ...)
 \method{plot}{smacofPerm}(x, alpha = 0.05, main, xlab, ylab, ...)
 
 }

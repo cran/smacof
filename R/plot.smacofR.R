@@ -95,7 +95,7 @@ plot.smacofR <- function(x, plot.type = "confplot", what = c("both", "columns", 
     } else xlab <- xlab
     if (missing(ylab)) ylab <- "Configuration Distances/d-hats" else ylab <- ylab
     
-    if (missing(xlim)) xlim <- range(as.vector(x$obsdiss ))
+    if (missing(xlim)) xlim <- range(as.vector(x$obsdiss), na.rm = TRUE)
     if (missing(ylim)) ylim <- range(c(0, as.vector(x$confdist), as.vector(x$dhat)))
     
     notmiss <- as.vector(x$weightmat > 0)
@@ -104,7 +104,10 @@ plot.smacofR <- function(x, plot.type = "confplot", what = c("both", "columns", 
     if (is.null(col.dhat)){ # Fix colors to colors of those of Set1 of RColorBrewer.
       col.dhat = rep(c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", 
                        "#FFFF33", "#A65628", "#F781BF", "#999999"), length.out = nrow(x$obsdiss))
+    } else {
+      col.dhat = rep(col.dhat, length.out = nrow(x$obsdiss))
     }
+    
     plot(xcoor[notmiss], ycoor[notmiss], main = main, type = "n", pch = pch, cex = cex,
          xlab = xlab, ylab = ylab, col = "darkgray", xlim = xlim, ylim = ylim, ...)
     
@@ -115,9 +118,10 @@ plot.smacofR <- function(x, plot.type = "confplot", what = c("both", "columns", 
         points((x$obsdiss[x$iord[[1]]])[notmiss.iord], (as.vector(x$dhat[x$iord[[1]]]))[notmiss.iord], 
                type = "b", pch = pch, cex = cex, col = 1)
       } else { ## Row conditional
+        notmiss <- x$weightmat > 0 
         for (i in 1:length(x$iord)){
-          notmiss.iord <- notmiss[x$iord[[i]]]
-          xcoord      <- x$obsdiss[i, x$iord[[i]] ]
+          notmiss.iord <- notmiss[i,][x$iord[[i]]]       ## FIXME!!!can't use vectorized notmiss
+          xcoord      <- x$obsdiss[i, x$iord[[i]]][notmiss.iord]  ## FIXME
           ycoord.d    <- (as.vector(x$confdist[i, x$iord[[i]] ]))[notmiss.iord]
           ycoord.dhat <- (as.vector(x$dhat[i, x$iord[[i]] ]))[notmiss.iord]
           points(xcoord, ycoord.d, pch = pch, cex = cex, col = col.dhat[i])

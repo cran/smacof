@@ -8,7 +8,7 @@ jackknife.smacofB <- function(object, eps = 1e-6, itmax = 100, verbose = FALSE)
     n <- nrow(delta)
     x0 <- object$conf
     ndim <- object$ndim
-   type <- object$type
+    type <- object$type
     
     #x0 <- smacofSym (delta, ndim = ndim, metric = metric) $ conf
     xx <- smacofDeleteOne(delta, ndim = ndim, type = type)
@@ -20,11 +20,11 @@ jackknife.smacofB <- function(object, eps = 1e-6, itmax = 100, verbose = FALSE)
     itel <- 1
     repeat {
         y0 <- matrix (0, n, ndim)
-        for (i in 1 : n) {
+        for (i in 1:n) {
             y0 <- y0 + xx[, , i] %*% kk[, , i]
             }
         y0 <- ((n - 1) * y0) / (n * (n - 2))
-        for (i in 1: n) {
+        for (i in 1:n) {
             zz <- matrix (0, n, ndim)
             for (j in i : n) {
                 zz <- zz + xx[, , j] %*% kk[, , j]
@@ -33,19 +33,15 @@ jackknife.smacofB <- function(object, eps = 1e-6, itmax = 100, verbose = FALSE)
             kk[, , i] <- procrustus (xz)
             }
         nloss <- 0
-        for (i in 1 : n) {
-  
- 
+        for (i in 1:n) {
             yy[, , i] <- xx[, , i] %*% kk [, , i] 
             yy[i, , i] <- n * y0[i, ] / (n - 1)
             yy[, , i] <- yy[, , i] - outer (rep (1, n), y0[i, ] / (n - 1))
             nloss <- nloss + sum ( (y0 - yy[, , i]) ^ 2)
             }
         if (verbose) {
-  	     cat("Iteration: ", formatC (itel, digits=3, width=3),
-			 "Old Loss: ", formatC (oloss, digits=10, width=15, format="f"),
-			 "New Loss: ", formatC (nloss, digits=10, width=15, format="f"),
-			 "\n")
+  	     cat("Iteration: ", formatC (itel, digits=3, width=3), "Old Loss: ", formatC (oloss, digits=10, width=15, format="f"), 
+  	         "New Loss: ", formatC (nloss, digits=10, width=15, format="f"), "\n")
 			 }
 	    if (((oloss - nloss) < eps) || (itel == itmax)) {
 	        break()

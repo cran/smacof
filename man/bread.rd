@@ -14,7 +14,7 @@ bread odor, yeast odor, off-flavor, color, moisture, dough, salt taste, sweet ta
 other taste, and total taste. 
 }
 
-\references{Bro, R. (1998). Multi-way Analysis in the Food Industry: Models, Algorithms, and Applications. Ph.D. thesis, University of Amsterdam (NL) \& Royal Veterinary and Agricultural University (DK).}
+\references{Bro, R. (1998). Multi-way Analysis in the Food Industry: Models, Algorithms, and Applications. Ph.D. thesis, University of Amsterdam (NL) & Royal Veterinary and Agricultural University (DK).}
 \examples{
 bread
 }

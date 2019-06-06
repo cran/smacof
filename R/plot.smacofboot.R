@@ -1,7 +1,7 @@
 # plot method for bootstrap smacof
 
 plot.smacofboot <- function(x, plot.dim = c(1,2), col = 1, label.conf = list(label = TRUE, pos = 3, cex = 0.8), 
-                            ell = list(lty = 1, lwd = 1), main, xlab, ylab, xlim, ylim, asp = 1, type = "p", pch = 20, ...)
+                            ell = list(lty = 1, lwd = 1, col = "gray"), main, xlab, ylab, xlim, ylim, asp = 1, type = "p", pch = 20, ...)
                             
                             
 {
@@ -19,6 +19,7 @@ plot.smacofboot <- function(x, plot.dim = c(1,2), col = 1, label.conf = list(lab
   
   if (is.null(ell$lty)) ell$lty <- 1
   if (is.null(ell$lwd)) ell$lwd <- 1
+  if (is.null(ell$col)) ell$col <- "gray"
   
   n <- x$nobj
   aus <- list()
@@ -44,8 +45,8 @@ plot.smacofboot <- function(x, plot.dim = c(1,2), col = 1, label.conf = list(lab
     }
   }
   
-  if (length(col) != n) col <- rep(col[1], n)
-  for (i in 1:n) lines(aus[[i]][,1], aus[[i]][,2], lty = ell$lty, lwd = ell$lwd, col = col[i]) 
+  if (length(ell$col) != n) cols <- rep(ell$col[1], n)
+  for (i in 1:n) lines(aus[[i]][,1], aus[[i]][,2], lty = ell$lty, lwd = ell$lwd, col = cols[i]) 
   names(aus) <- rownames(x$conf)
   invisible(aus)
 }

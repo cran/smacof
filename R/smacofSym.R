@@ -90,7 +90,7 @@ smacofSym <- function(delta, ndim = 2, type = c("ratio", "interval", "ordinal","
     dhat2 <- transform(e, disobj, w = wgths, normq = nn)  ## dhat update
     dhat <- dhat2$res
     
-    snon <- sum(wgths*(dhat-e)^2)/nn     #stress non-metric
+    snon <- sum(wgths*(dhat-e)^2)/nn     
     
     #print out intermediate stress
     if (verbose) cat("Iteration: ",formatC(itel,width=3, format="d"),

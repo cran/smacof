@@ -1,0 +1,1140 @@
+%\VignetteIndexEntry{SMACOF2 Package Vignette}
+%\VignetteEngine{knitr::knitr}
+
+\documentclass[article, nojss]{jss}
+\usepackage{amsmath, amsfonts, thumbpdf}
+\usepackage{float,amssymb}
+\usepackage{hyperref}
+\usepackage{thumbpdf,lmodern}
+
+\newcommand{\defi}{\mathop{=}\limits^{\Delta}}  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% declarations for jss.cls %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% almost as usual
+\author{Patrick Mair\\ Harvard University \And 
+        Patrick J. F. Groenen\\ Erasmus University Rotterdam \AND
+        Jan de Leeuw\\ University of California, Los Angeles}
+\title{More on Multidimensional Scaling and Unfolding in \proglang{R}: \pkg{smacof} Version 2}
+\Plainauthor{Patrick Mair, Jan de Leeuw, Patrick J. F. Groenen} %% comma-separated
+\Plaintitle{More on Multidimensional Scaling in R: smacof Version 2} %% without formatting
+\Shorttitle{SMACOF in \proglang{R}} %% a short title (if necessary)
+
+%% an abstract and keywords
+\Abstract{
+This vignette is a (slightly) modified version of the paper submitted to the Journal of Statistical Software.
+
+The \pkg{smacof} package provides an infrastucture for flexible fitting of multidimensional scaling (MDS) techniques. Since its first publication \citep{DeLeeuw+Mair:2009} the functionality of the package was enhanced, and several additional methods, features and utilities were added. Major updates include a complete re-implementation of multidimensional unfolding allowing for monotone dissimilarity transformations, including row-conditional, circular, and external unfolding. Also, the constrained MDS implementation was extended in terms of optimal scaling of the external variables. Further package additions include various tools for goodness-of-fit assessment, functions for unidimensional scaling, gravity MDS, asymmetric MDS, Procrustes, and MDS biplots. All these new package functionalities are illustrated using a variety of real-life applications. 
+}
+
+\Keywords{multidimensional scaling, multidimensional unfolding, SMACOF, \proglang{R}}
+\Plainkeywords{multidimensional scaling, multidimensional unfolding, SMACOF, R} 
+
+%% publication information
+%% NOTE: This needs to filled out ONLY IF THE PAPER WAS ACCEPTED.
+%% If it was not (yet) accepted, leave them commented.
+%% \Volume{13}
+%% \Issue{9}
+%% \Month{September}
+%% \Year{2004}
+%% \Submitdate{2004-09-29}
+%% \Acceptdate{2004-09-29}
+
+%% The address of (at least) one author should be given
+%% in the following format:
+\Address{
+  Patrick Mair\\
+  Department of Psychology\\
+  Harvard University\\
+  33 Kirkland Street\\
+  Cambridge, MA 02138\\
+  E-mail: \email{mair@fas.harvard.edu}\\
+  URL: \url{http://scholar.harvard.edu/mair}
+}
+%% It is also possible to add a telephone and fax number
+%% before the e-mail in the following format:
+%% Telephone: +43/1/31336-5053
+%% Fax: +43/1/31336-734
+
+%% for those who use Sweave please include the following line (with % symbols):
+%% need no \usepackage{Sweave.sty}
+
+%% end of declarations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+<<preliminaries, echo=FALSE, results='hide'>>=
+library("knitr")
+opts_chunk$set(highlight=FALSE, prompt=TRUE, background='#FFFFFF')
+options(replace.assign=TRUE, width=72, prompt="R> ")
+@
+
+<<setup, include=FALSE, cache=FALSE>>=
+render_sweave()
+@
+
+
+
+\section{Introduction}
+Multidimensional scaling \citep[MDS;][]{Torgerson:1952, Kruskal:1964a, Borg+Groenen:2005} is a technique that represents proximities among objects as distances among points in a low-dimensional space. Multidimensional unfolding \citep{Coombs:1964, Busing+Groenen+Heiser:2005, Borg+Groenen:2005} is a related technique that represents input preference data as distances (among individuals and objects) in a low-dimensional space. Nowadays, MDS as well as unfolding problems are typically solved through numeric optimization. The state-of-the-art approach is called SMACOF \citep[Stress Majorization of a Complicated Function;][]{deLeeuw:1977} and provides the user with a great amount of flexibility for specifying MDS and unfolding variants. Since the first publication of the \pkg{smacof} package \proglang{R} by \citet{DeLeeuw+Mair:2009}, several additional MDS and unfolding approaches as well as various extensions and utility functions have been implemented; these extensions will be presented in this article. We keep our elaborations fairly applied since the core technical details were provided in the original publication. 
+
+The first part of this paper gives the reader the key ingredients of MDS, with a special focus on newly implemented dissimilarity transformation functions. This is followed by a section on MDS goodness-of-fit assessment, including various ways of assessing the stability of a solution. The incorporation of optimal scaling on the external variables, as presented in the subsequent section, makes MDS an attractive tool for confirmatory research. What follows next is a detailed presentation of the recently implemented unfolding function, which 
+adds great amounts of flexibility in model specification, compared to the original implementation. Finally, several smaller additions such as Procrustes transformation, asymmetric MDS, gravity MDS, unidimensional scaling, and MDS biplots are presented. Related \proglang{R} packages will be mentioned in the respective sections.  
+
+
+\section{SMACOF in a nutshell}
+\label{sec:smacofnut}
+MDS takes a dissimilarity matrix $\Delta$ of dimension $n \times n$ with non-negative elements $\delta_{ij}$ as input. These dissimilarities can be either directly observed (e.g., in an experimental setting a participant has to rate similarities between pairs of stimuli) or derived (e.g., by applying a proximity measure on a multivariate data frame). If the data are collected or derived as similarities $s_{ij}$, the \code{sim2diss} function supports users to convert them into dissimilarities $\delta_{ij}$. Corresponding conversion formulas are given in Table~\ref{tab:sim2diss}. 
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Method (Argument)} & \textbf{Conversion Formula} \\
+\hline
+Correlation (\code{"corr"}) & $\delta_{ij} = \sqrt{1-r_{ij}}$ \\
+Reverse (\code{"reverse"}) & $\delta_{ij} = \min(s_{ij}) + \max(s_{ij}) - s_{ij}$ \\
+Reciprocal (\code{"reciprocal"})& $\delta_{ij} = 1/s_{ij}$\\
+Membership (\code{"membership"})& $\delta_{ij} = 1 - s_{ij}$\\
+Rank orders (\code{"ranks"}) & $\delta_{ij} = \text{rank}(-s_{ij})$\\
+Exponential (\code{"exp"}) & $\delta_{ij} = -\log(s_{ij}/\max(s_{ij}))$ \\
+Gaussian (\code{"Gaussian"}) & $\delta_{ij} = \sqrt{-\log(s_{ij}/\max(s_{ij}))}$ \\ 
+Transition frequencies \code{"transition"}) & $\delta_{ij} = 1/\sqrt{f_{ij}}$\\
+Co-occurrences (\code{"cooccurrence"}) & $\delta_{ij} = \left(1 + \frac{f_{ij} \sum_{i,j} f_{ij}}{\sum_i f_{ij}\sum_j f_{ij}}\right)^{-1}$ \\
+Gravity (\code{"gravity"}) & $\delta_{ij} = \sqrt{\frac{\sum_i f_{ij}\sum_j f_{ij}}{f_{ij} \sum_{i,j} f_{ij}}}$ \\
+Confusion proportions (\code{"confusion"}) & $\delta_{ij} = 1 - p_{ij}$ \\
+Probabilities (\code{"probability"}) & $\delta_{ij} = 1/\sqrt{\arcsin(p_{ij})}$\\
+Integer value $z$ & $\delta_{ij} = z - s_{ij}$ \\
+\hline 
+\end{tabular}
+\caption{Conversions of similarities into dissimilarities: similarities $s_{ij}$, correlations $r_{ij}$, frequencies $f_{ij}$, proportions/probabilities $p_{ij}$.}
+\label{tab:sim2diss}
+\end{center}
+\end{table}
+
+
+SMACOF uses majorization \citep[see][for details]{DeLeeuw+Mair:2009} to solve Kruskal's \emph{stress} target \citep{Kruskal:1964a}
+\begin{equation}
+\label{eq:stress}
+\sigma^2(\hat{\mathbf{D}}, \mathbf X) = \sum_{i < j} w_{ij}(\hat{d}_{ij} - d_{ij}(\mathbf X))^2 \rightarrow \text{min!}
+\end{equation}
+with $\sum_{i < j} w_{ij}\hat{d}_{ij}^2 = n(n-1)/2$ as constraint. Here, $w_{ij}$ denotes a non-negative a priori weight for $\delta_{ij}$ which, by default, is 1. If a $\delta_{ij}$ is missing, all functions in \pkg{smacof} set the corresponding $w_{ij} = 0$ such that these entries are blanked out from optimization. Solving the stress target results in an $n \times p$ matrix $\mathbf X$ of point coordinates located in a $p$-dimensional space ($p$ fixed a priori) with Euclidean distances 
+\[
+\label{eq:fitdist}
+d_{ij}(\mathbf X) = \sqrt{\sum_{s=1}^p (x_{is} - x_{js})^2}. 
+\]
+The $\hat{d}_{ij}$'s are the \emph{disparities} (also called \emph{d-hats}), collected in the $n \times n$ matrix $\hat{\mathbf D}$. Disparities are optimally scaled dissimilarities. That is, a transformation admissible on the assumed scale level \citep[``measurement levels as functions''; see, e.g.,][]{Jacoby:1999} is applied. The first \pkg{smacof} package incarnation offered two specification options only: metric or nonmetric. The new package version implements the following bundle of transformation functions: 
+\begin{itemize}
+\item Ratio MDS: $\hat{d}_{ij} = b\delta_{ij}$.
+\item Interval MDS: $\hat{d}_{ij} = a + b\delta_{ij}$.
+\item Ordinal MDS:  $\hat{d}_{ij} = f(\delta_{ij})$ where $f$ is a monotone step function. Approaches for tie handling (i.e., in case of $\delta_{ij} = \delta_{i'j'}$) are the following:
+\begin{itemize}
+\item Primary approach (``break ties''): does not require that $\hat d_{ij} = \hat d_{i'j'}$. 
+\item Secondary approach (``keep ties tied''): requires that $\hat d_{ij} = \hat d_{i'j'}$. 
+\item Tertiary approach: requires that the means of the tie blocks are in the correct order.
+\end{itemize}
+\item Monotone spline MDS:  $\hat{d}_{ij} = f(\delta_{ij})$ where $f$ is an $I$-spline (integrated spline) transformation \citep{Ramsay:1988} for a fixed number of knots and a fixed spline degree. 
+\end{itemize}
+Since dissimilarities are non-negative, these monotone transformations impose non-negativity on the disparities as well. 
+
+A normalized stress version called \emph{stress-1} can be derived in order to make the stress independent from the input dissimilarity magnitudes. Equation~\ref{eq:stress} is modified to
+\begin{equation}
+\label{eq:stress1}
+\sigma_1(\hat{\mathbf{D}}, \mathbf X) = \sqrt{\frac{\sum_{i < j} w_{ij}(\hat{d}_{ij} - d_{ij}(\mathbf X))^2}{n(n-1)/2}}, 
+\end{equation}
+Various functions of the package report this normalized stress value as output\footnote{From now on, whenever we say ``stress'', we refer to ``stress-1''.}. 
+
+To illustrate MDS with different types of transformation functions we use a simple dataset from \cite{Guttman:1965}. The data consist of an $8 \times 8$ matrix containing intercorrelations of eight items in an intelligence test. First, we need to convert these similarities into dissimilarities as all \pkg{smacof} functions operate on dissimilarities. Second, we fit four MDS versions and report the corresponding stress values (normalized to stress-1).  
+
+<<intelligence>>=
+library("smacof")
+idiss <- sim2diss(intelligence[,paste0("T", 1:8)])  ## convert correlation 
+fitrat <- mds(idiss)                                ## ratio MDS
+fitint <- mds(idiss, type = "interval")             ## interval MDS
+fitord <- mds(idiss, type = "ordinal")              ## ordinal MDS
+fitspl <- mds(idiss, type = "mspline")              ## spline MDS
+round(c(fitrat$stress, fitint$stress, fitord$stress, fitspl$stress), 3)
+@
+
+Figure~\ref{fig:shepard} shows the Shepard diagrams involving four different transformation functions. These diagrams plot the observed dissimilarities $\delta_{ij}$ against the fitted distances $d_{ij}(\mathbf X)$, and map the disparities $\hat{d}_{ij}$ into the point cloud \citep{deLeeuw+Mair:2015}. 
+
+<<shepard-plot, eval=FALSE, echo=FALSE>>=
+op <- par(mfrow = c(2,2))
+plot(fitrat, plot.type = "Shepard", main = "Ratio MDS")
+plot(fitint, plot.type = "Shepard", main = "Interval MDS")
+plot(fitord, plot.type = "Shepard", main = "Ordinal MDS")
+plot(fitspl, plot.type = "Shepard", main = "Spline MDS")
+par(op)
+@
+\begin{figure}[ht!]
+\begin{center}
+<<shepard-plot1, echo=FALSE, fig.width=8, fig.height=8>>=
+<<shepard-plot>>
+@
+\end{center}
+\caption{\label{fig:shepard} Shepard diagrams for four different dissimilarity transformations.}
+\end{figure}
+
+The option to apply various dissimilarity transformations is one of the advantages of the SMACOF framework compared to classical scaling \citep{Torgerson:1952} as implemented in \pkg{stats}' \code{cmdscale}. In \pkg{smacof}, these transformation functions are now also available for all kinds of three-way MDS models (\code{indscal} and \code{idioscal} functions), as well as for confirmatory MDS and unfolding, as described further below. 
+
+
+\section{Tools for goodness-of-fit assessment}
+\cite{Mair+Borg+Rusch:2016} give an extensive treatment of how to assess goodness-of-fit in MDS. Here we present some recently implemented utility functions that support users with this task. 
+
+\subsection{Configuration starting values}
+\label{sec:starting}
+Optimizing the stress in Equation~\ref{eq:stress} through majorization leads to local minima problems since the stress surface is generally bumpy. By default, \pkg{smacof} uses a classical scaling solution to support the algorithm with a reasonable starting configuration. This is not necessarily the best choice because it does not always lead to the lowest stress value. A common heuristic strategy is to try out several random starting configurations, and pick the fit with the lowest stress value. 
+
+To illustrate this approach, we use one of the classical MDS textbook datasets from \cite{Wish:1971}, containing similarity ratings for 12 countries, for which we fit a ratio MDS.
+
+<<lawlerfit>>=
+WishD <- sim2diss(wish, method = 7)  ## convert into dissimilarities
+fitWish <- mds(WishD)                ## fit ratio MDS
+@
+
+This leads to a stress of \Sexpr{round(fitWish$stress, 4)}. Now we fit 100 additional ratio MDS models based on different random starts, and report the lowest stress value.
+
+<<rstarts, cache=TRUE>>=
+stressvec <- NULL
+fitbest <- NULL
+set.seed(123)
+for(i in 1:100) {
+  fitran <- mds(WishD, init = "random")
+  stressvec[i] <- fitran$stress
+  if (i == 1) fitbest <- fitran
+  if (stressvec[i] < fitbest$stress) fitbest <- fitran
+}
+round(fitbest$stress, 4)
+@
+
+This solution leads to a slightly lower stress value than the one obtained with a classical scaling start. From a purely statistical point of view the user would normally decide to go with this solution. However, from more of a substantive perspective, interpretability plays an important role. For instance, there might a solution with a reasonably low stress value (but not the lowest) which leads to better interpretability. This issue is studied in detail in \citet{Borg+Mair:2017} who propose the following strategy (p. 21--22): 
+\begin{enumerate}
+\item Run an MDS analysis with a set of different initial configurations (e.g., using many random configurations).
+\item Save all resulting MDS solutions and their fit indices.
+\item Use Procrustean fitting (see Section~\ref{sec:proc}) to eliminate all meaningless differences (i.e., differences not driven by the data) among the MDS solutions.
+\item Compute the similarity of each pair of MDS configurations.
+\item Analyze the similarity structure of the MDS configurations with two-dimensional MDS (to visualize the similarity structure) or cluster analysis (to identify types of MDS configurations).
+\item For each type of MDS configuration with a reasonably low stress, plot one prototypical MDS solution and check its interpretability.
+\item Pick the MDS solution that is acceptable in terms of stress and is the best interpretation.
+\end{enumerate}
+These steps are implemented in the \code{icExplore} function. Again, we fit 100 ratio MDS models with random starts and save all fitted MDS objects (\code{returnfit} argument). 
+
+<<ic-plot, eval=FALSE>>=
+set.seed(123)
+icWish <- icExplore(WishD, nrep = 100, returnfit = TRUE)
+plot(icWish, main = "IC Plot Wish")
+@
+
+\begin{figure}[t]
+\begin{center}
+<<ic-plot1, echo=FALSE, cache=TRUE, out.width='0.7\\textwidth'>>=
+<<ic-plot>>
+@
+\end{center}
+\caption{\label{fig:ic} Similarity structure of 100 MDS solutions. Each label corresponds to an MDS solution. The size of the labels (and their color shading) is proportional to the stress.}
+\end{figure}
+
+Figure~\ref{fig:ic} shows the configuration plot of the 100 MDS solution based on random starts (cf. Step 5). The larger the size of the label, the worse the MDS fit. Based on this plot the user can extract various solutions that fit satisfactorily, plot the configurations, and interpret the solutions. 
+
+
+
+\subsection{Stress norms and permutation tests}
+\citet[p. 3]{Kruskal:1964a} says that ``our experience with experimental and synthetic data suggests the following verbal evaluation: 20\% poor, 10\% fair, 5\% good, 2.5\% excellent, 0\% perfect''. In subsequent years, these rules of thumb have been applied in a somewhat mechanical manner. This is problematic for various reasons \citep[see][]{Mair+Borg+Rusch:2016, Borg+Groenen+Mair:2012}; one of which is that the stress depends on $n$, as is obvious in Equation~\ref{eq:stress}: the larger $n$, the larger the stress\footnote{In modern MDS applications researchers often have to scale a large number of objects.}. 
+
+This issue was recognized in the early days of MDS. Throughout the 1970s various researchers have studied this phenomenon by means of Monte Carlo simulations within the context of ordinal MDS \citep[see][for an overview]{Spence+Young:1978}. These studies lead to the concept of \emph{stress norms}. The idea is to create random dissimilarities (e.g., by drawing from a uniform $U(0,1)$ distribution) for a given $n$ and $p$. This procedure is repeated many times such that the average stress value and the standard deviation can be computed. 
+
+A corresponding implementation is provided by the function \code{randomstress} which allows users not only to derive ordinal MDS norms, but also to obtain stress norms for other types of MDS from Section~\ref{sec:smacofnut}. 
+As an example, we use a dataset from \citet{Lawler:1967} who studied the performance of managers. There are three traits (T1 = quality of output, T2 = ability to generate output, T3 = demonstrated effort to perform), and three methods (M1 = rating by superior, M2 = peer rating, M3 = self-rating). We start the stress norm analysis by fitting a 2D ratio MDS model:
+
+<<lawler>>=
+LawlerD <- sim2diss(Lawler, to.dist = TRUE)
+fitLaw <- mds(LawlerD)
+@
+
+This leads to a stress of \Sexpr{round(fitLaw$stress, 4)}. Let us explore the random stress value for this example ($n = 9$, $p = 2$; 500 replications):
+
+<<rstress, cache=TRUE>>=
+set.seed(123)
+rstress <- randomstress(n = attr(LawlerD, "Size"), ndim = 2, nrep = 500, 
+                        type = "ratio")
+@
+
+This function call returns a vector of 500 stress values. Let $\bar x_r$ denote the average random stress value and $\sigma_r$ the standard deviation. The default in the random stress literature \citep[see e.g.][]{Spence+Ogilvie:1973} is to use $\bar x_r - 2\sigma_r$ as lower bound: if the observed stress is smaller than this lower bound, the stress can be considered as ``significant''. 
+
+<<mrstress>>=
+lbound <- mean(rstress) - 2*sd(rstress)
+round(lbound, 4)
+@
+
+In our example the stress of \Sexpr{round(fitLaw$stress, 4)} from the original MDS fit is above this threshold.  This suggests a ``non-significant'' result (the 2D ratio MDS solution does not fit satisfactorily).  
+
+There are several issues associated with such random stress norms. First, as \cite{Spence+Ogilvie:1973} point out, the dispersion of the random stress norms is in general very small. In most practical applications the strategy applied above rarely leads to ``non-significant'' results; our example is somewhat of an exception. Second, apart from $n$ and $p$, other circumstances such as the error in the data, missing values, as well as ties affect the stress \citep{Mair+Borg+Rusch:2016, Borg+Groenen:2005}. Third, the benchmark is based on completely random configurations. Real-life data almost always have some sort of structure in it such that the random stress strategy leads to ``significant'' results in most cases. 
+
+Instead of generating random dissimilarities, permutation tests can be used, as formalized in \cite{Mair+Borg+Rusch:2016}. They lead to ``sharper'' tests than random null configurations. There are two scenarios for setting up a permutation scheme. First, in the case of directly observed dissimilarities the elements in $\Delta$ can be permuted. For each permutation sample an MDS model of choice is fitted. By doing this many times it results in a null distribution of stress values. Second, for derived dissimilarities, \citet{Mair+Borg+Rusch:2016} propose a strategy for systematic column-wise permutations (one variable at a time). This permutation scheme gives a more informative null distribution compared to full column-wise permutations. For each permutation sample a dissimilarity matrix is computed, and an MDS fitted. Again, this gives a stress distribution under the $H_0$ of little departure from complete exchangeability of dissimilarities in the data-generating process.
+
+Let us illustrate both permutation scenarios. For directly observed dissimilarities we continue with the Lawler example from above (500 permutations): 
+
+<<permlaw, cache=TRUE>>=
+set.seed(123)
+permLaw <- permtest(fitLaw, nrep = 500, verbose = FALSE)
+permLaw
+@
+
+We cannot reject the $H_0$ of ``stress/configuration are obtained from a random permutation of dissimilarities''. 
+For the derived dissimilarity situation we use a dataset from \citet{McNally:2015} which is included in the \pkg{MPsychoR} package \citep{Mair:2018}. It includes 17 posttraumatic stress disorder (PTSD) symptoms reported by survivors of the Wenchuan earthquake in 2008, scaled on a 5-point rating scale. We use the Euclidean distance as (derived) dissimilarity measure and compute an interval MDS. This leads to the following stress value:
+
+<<wenmds>>=
+data(Wenchuan, package = "MPsychoR")
+Wdelta <- dist(t(Wenchuan))                                        
+fitWen <- mds(Wdelta, type = "interval")        
+round(fitWen$stress, 4)
+@
+
+In the following \code{permtest} call we provide the raw input data through the \code{data} argument. This way the function knows that the permutations should be performed on the raw data rather than on $\Delta$. We also need to tell the function which dissimilarity measure we used above before fitting the MDS. We perform 1000 replications.
+
+<<wenperm, cache=TRUE>>=
+set.seed(123)
+permWen <- permtest(fitWen, data = Wenchuan, method.dat = "euclidean", 
+                    nrep = 1000, verbose = FALSE)
+permWen
+@
+
+This time we reject $H_0$. Figure~\ref{fig:wenperm}, obtained by calling \code{plot(permWen)}, visualizes the results in two ways: the left panel shows the empirical cumulative distribution function (ECDF) of the permutation stress values, whereas the right panel shows the permutation stress histogram including the critical value (lower 5\% quantile) and the observed stress value. 
+
+<<wenperm-plot, eval=FALSE, echo = FALSE>>=
+op <- par(mfrow = c(1,2))
+plot(permWen)
+perm5 <- quantile(permWen$stressvec, probs = 0.05)    ## critical value
+hist(permWen$stressvec, xlim = c(0.10, 0.40), xlab = "Stress Values", 
+     main = "Wenchuan Permutation Histogram")
+abline(v = perm5, lty = 2, col = "red", lwd = 2)             
+abline(v = fitWen$stress)       
+par(op)
+@
+\begin{figure}[t]
+\begin{center}
+<<wenperm-plot1, echo=FALSE, fig.width=12, fig.height=6>>=
+<<wenperm-plot>>
+@
+\end{center}
+\caption{\label{fig:wenperm} Left panel: ECDF of the permuted stress values (dashed gray line at $\alpha = 0.05$, solid gray line at the $p$-value). Right panel: permutation stress histogram (red dashed line at critical value, solid black line at observed stress value).}
+\end{figure}
+
+Note that such permutation strategies can be applied to unfolding models (see Section~\ref{sec:unfolding}) as well \citep[see][for details]{Mair+Borg+Rusch:2016}. 
+
+
+\subsection{Stability of a solution I: jackknife}
+\label{sec:jackboot}
+\citet{deLeeuw+Meulman:1986} developed a jackknife strategy for MDS in order to examine the stability of a solution. Their approach, implemented in the \code{jackknife} function, computes $i = 1, \ldots, n$ additional solutions with configurations $\mathbf X_i$ (object $i$ being left out). Note that each $\mathbf X_i$ has row $i$ missing and has therefore $n-1$ rows in total. To make the $\mathbf X_i$'s comparable, the location of the missing point is estimated by minimizing a least squares problem, and subsequently transformed using Procrustes with $\mathbf X$ as target. Let us denote the resulting configurations by $\mathbf X_i^{\ast}$, each of them of dimension $n \times p$. From these configurations the average (centroid) jackknife solution $\bar{\mathbf X}^{\ast}$ can be computed. Thus, we have $n+2$ comparable configurations in total which can be represented in a single plot, as shown below. 
+
+\cite{deLeeuw+Meulman:1986} also introduced various measures related to the jackknife solution. The first one is a stability measure and is computed as follows:
+\begin{equation}
+\label{eq:stability}
+ST = 1-\frac{\sum_{i=1}^n \|\mathbf X_i^{\ast} - \bar{\mathbf X}^{\ast}\|^2}{\sum_{i=1}^n \|\mathbf X_i^{\ast}\|^2}.
+\end{equation}
+$ST$ can be interpreted as the ratio of between and total variance. To measure the cross-validity, that is, comparing the ``predicted'' configuration of object $i$ as the $i$-th row in $\bar{\mathbf X}^{\ast}$ with the actual configuration ($i$-th row in $\mathbf X$),
+\begin{equation}
+CV = 1-\frac{n \|\mathbf X - \bar{\mathbf X}^{\ast}\|^2}{\sum_{i=1}^n \|\mathbf X_i^{\ast}\|^2}
+\end{equation}
+can be used. Finally, the dispersion around the original solution $\mathbf X$ can be expressed as 
+\begin{align*}
+DI &= \frac{1}{n} \sum_{i=1}^n \|\mathbf X_i^{\ast} - \mathbf X \|^2 \\
+   &= \frac{1}{n} \sum_{i=1}^n \|\mathbf X_i^{\ast} - \bar{\mathbf X}^{\ast} \|^2 + \|\mathbf X - \bar{\mathbf X}^{\ast}\|^2 \\
+   &= 2 - (ST + CV).
+\end{align*}
+
+The dataset we use to illustrate the jackknife MDS is from \cite{McNally+Mair:2017}, included in the \pkg{MPsychoR} package. Below we scale 16 depression symptoms reported by patients using the Quick Inventory of Depressive Symptomatology (QIDS-SR). We fit a 2D ordinal MDS on the Euclidean distance input matrix, subject to an MDS jackknife. 
+
+<<jackmds>>=
+data(Rogers, package = "MPsychoR")
+RogersSub <- Rogers[,1:16]
+RogersD <- dist(t(RogersSub))
+fitRogers <- mds(RogersD, type = "ordinal")
+jackRogers <- jackknife(fitRogers)
+jackRogers
+@
+
+<<jack-plot, eval=FALSE>>=
+plot(jackRogers)
+@
+\begin{figure}[t]
+\begin{center}
+<<jack-plot1, echo=FALSE, out.width='0.7\\textwidth'>>=
+<<jack-plot>>
+@
+\end{center}
+\caption{\label{fig:jack} Jackknife MDS plot. The labels are positioned at the original point coordinates, the stars represent the resampled solutions with the jackknife centroid at the center.}
+\end{figure}
+
+The print output shows the jackknife measures reported above. Figure~\ref{fig:jack} shows the jackknife MDS plot. The labels are placed at $\mathbf X$. The center of the stars denote the jackknife centroids, the rays the $n-1$ jackknife solutions. The results suggests that the solution is very stable. 
+
+Further options for using jackknife in MDS are presented in \citet{Vera:2017} where the distances are subject to stability analysis.  
+
+\subsection{Stability of a solution II: bootstrap}
+\label{sec:mdsboot}
+Bootstrap approaches for stability assessment in MDS were proposed by \citet{Meulman+Heiser:1983}, \citet{Heiser+Meulman:1983}, and \citet{Weinberg:1984}, and further refined by \citet{Jacoby+Armstrong:1999}. The \pkg{smacof} implementation resamples the original data and therefore works for derived dissimilarities only. The confidence ellipsoids are computed as follows. Let $\mathbf x_i$ denote the row coordinates of object $i$ from the original configuration $\mathbf X$. Let $\mathbf S_i$ be the $p \times p$ covariance matrix of the bootstrapped solutions of object $i$. The $100(1-\alpha)$\% confidence ellipsoid for object $i$ is determined by the points $\mathbf z_j$ for which 
+\begin{equation}
+\label{eq:ellipse}
+(\mathbf z_j - \mathbf x_i)\mathbf S_i^{-1}(\mathbf z_j - \mathbf x_i)' = \chi^2(\alpha; p), 
+\end{equation}
+where $\chi^2(\alpha; p)$ is the $\alpha$-quantile of the $\chi^2$-distribution with $df = p$. In \proglang{R}, this computation can be easily achieved using the \pkg{ellipse} package \citep{Murdoch+Chow:2018}. As a stability measure, we can use a slight modification of Equation~\ref{eq:stability}:
+\begin{equation}
+\label{eq:stability2}
+ST = 1-\frac{\sum_{l=1}^N \|\mathbf X_l^{\ast} - \bar{\mathbf X}^{\ast}\|^2}{\sum_{l=1}^N \|\mathbf X_l^{\ast}\|^2}.
+\end{equation}
+$N$ denotes the number of bootstrap replications, $\mathbf X_l^{\ast}$ the configuration of the $l$-th replication, $\bar{\mathbf X}^{\ast}$ the bootstrap centroid configuration. Again, $ST$ reflects a between/total variance ratio and can be used to compare various MDS solutions against each other \citep{Heiser+Meulman:1983}. For instance, one could compare an unrestricted solution with a restricted solution (see Section~\ref{sec:constraint}). The larger $ST$, the more stable the solution. 
+
+Let us apply the corresponding \code{bootmds} function on the Rogers data. We use $N=500$ bootstrap replications. 
+
+
+<<bootmds, cache=TRUE>>=
+set.seed(123)
+bootRogers <- bootmds(fitRogers, RogersSub, method.dat = "euclidean", 
+                      nrep = 500)
+bootRogers
+@
+In addition to the stability coefficient, the function also reports the stress averaged across bootstrap samples, including the a 95\% confidence interval (bootstrap percentile). 
+
+
+<<boot-plot, eval=FALSE>>=
+plot(bootRogers)
+@
+\begin{figure}[t]
+\begin{center}
+<<boot-plot1, echo=FALSE, out.width='0.7\\textwidth'>>=
+<<boot-plot>>
+@
+\end{center}
+\caption{\label{fig:boot} Bootstrap MDS plot with 95\% confidence ellipsoids.}
+\end{figure}
+
+Figure~\ref{fig:boot} shows the resulting bootstrap configuration with the confidence ellipsoids. There is a fair amount of instability associated with the sleep-onset insomnia item (labeled ``onset''). 
+
+\subsection{Stability of a solution III: pseudo-confidence ellipses}
+\label{sec:confell}
+\citet{Ramsay:1977, Ramsay:1982} incorporated MDS into a parametric (log-)normal framework with maximum-likelihood estimation. This idea makes it easy to derive confidence ellipsoids around the points in the configuration. \citet{deLeeuw:2019} achieved similar ellipsoids without any distributional assumptions, based on stress derivatives. This approach works for symmetric MDS solutions as well as for individual difference models (INDSCAL, IDIOSCAL) of arbitrary dimensions. In its current form, it is limited to ratio transformations only. Expressions for stress derivatives can be found in the corresponding paper. 
+
+Let us use the same dataset as above and fit a ratio MDS. The \code{confEllipse} function computes the stress derivatives and subsequently the confidence ellipsoids. 
+
+<<confmds>>=
+fitRogers2 <- mds(RogersD)               
+confRogers <- confEllipse(fitRogers2)    
+@
+
+The following plot function takes this object and produces the configuration plot with the ellipsoids. Of importance is the \code{eps} argument which we set to 0.01 below. This value implies that that we look at a perturbation region where stress is at most 1\% larger than the minimum we have found. Figure~\ref{fig:cell} shows the corresponding configuration plot. 
+
+<<cell-plot, eval=FALSE>>=
+plot(confRogers, eps = 0.01, ylim = c(-0.11, 0.11), 
+     ell = list(lty = 1, col = "gray"))
+@
+\begin{figure}[ht]
+\begin{center}
+<<cell-plot1, echo=FALSE, out.width='0.7\\textwidth'>>=
+<<cell-plot>>
+@
+\end{center}
+\caption{\label{fig:cell} Pseudo-confidence ellipses for ratio MDS solution.}
+\end{figure}
+
+Note that the scales along the axes differ from the ones in Figure~\ref{fig:boot} and Figure~\ref{fig:jack} (apart from the fact that ratio MDS is used) since the SMACOF engine for estimating the solution the confidence ellipsoids are based on normalizes the coordinates differently \citep[see][for details]{deLeeuw:2019}. 
+
+
+
+
+% ---------------------------- confirmatory MDS --------------------------
+\section{MDS with optimal scaling on external predictors}
+\label{sec:constraint}
+Another advantage of the SMACOF framework compared to classical MDS is the option to fit restricted MDS variants. There are two basic strategies to constrain an MDS configuration. The first option involves internal constraints where the points are forced to be located on a geometric shape. For the particular case of a sphere this can be achieved using \code{smacofSphere}. The corresponding theory was described in \cite{DeLeeuw+Mair:2009}. The only spherical update since the original publication has been the incorporation of various types of dissimilarity transformations in \code{smacofSphere}. 
+
+Here we focus on a second strategy, that is, imposing external constraints on the configuration in the tradition of \cite{deLeeuw+Heiser:1980}, \cite{Borg+Lingoes:1980}, and \cite{Heiser+Meulman:1983}. The simplest form of such a restriction is a linear restriction
+\begin{equation}
+\label{eq:reslin}
+\mathbf X = \mathbf{ZC},
+\end{equation}
+directly incorporated into the stress formula given in (\ref{eq:stress}). $\mathbf Z$ is a known covariate matrix of dimension $n \times q$ with number of covariates $q \geq p$. $\mathbf C$ is a $q \times p$ matrix of regression weights to be estimated, subject to potential additional restrictions, as outlined below.  
+
+For practical purposes, however, this basic implementation is of limited use. For instance, specifying a 2 $\times$ 2 ANOVA design in $\mathbf Z$ collapses point coordinates to four points only in a 2D configuration. What makes the external restriction concept attractive in practice is to apply an additional optimal scaling step on the external scales within each majorization iteration. Equation~\ref{eq:reslin} changes to 
+\begin{equation}
+\mathbf X = \hat{\mathbf Z}\mathbf C.
+\end{equation}
+Each predictor variable $\mathbf z_1, \ldots, \mathbf z_q$ is subject to an optimal scaling transformation. The most popular option is to scale these vectors in an ordinal way (i.e., using monotone regression), but other transformations such as interval or splines (with or without monotonicity constraints) that are all implemented \pkg{smacof}, can be considered as well. Note that these transformations are independent from the monotone dissimilarity transformations (see Section~\ref{sec:smacofnut})
+
+Let us illustrate such a constrained MDS using a dataset taken from \citet{Engen+Levy+Schlosberg:1958} on facial expressions \citep[see also][]{Heiser+Meulman:1983}. Participants had to rate proximities of 13 facial expressions, resulting in the dissimilarity matrix $\Delta$. Rating scale values were collected by \citet{Abelson+Sermat:1962} for the dimensions ``pleasant-unpleasant'' (PU), ``attention-rejection'' (AR), and ``tension-sleep'' (TS). They constitute the matrix $\mathbf Z$. We start this example by fitting an unrestricted ordinal MDS. Note that for illustration purposes we remove the object labels in $\Delta$.
+
+<<faceexp>>=
+Delta <- FaceExp
+attr(Delta, "Labels") <- NULL            ## remove object labels
+fitFace <- mds(Delta, type = "ordinal")  ## fit ordinal MDS
+@
+
+This unrestricted ordinal solution leads to a stress value of \Sexpr{round(fitFace$stress, 3)}. 
+
+Now we incorporate the covariate restrictions. For simplicity, we focus on PU and TS only, for which we perform an ordinal transformation. In both cases we use the primary approach to ties (default). In the first model we restrict $\mathbf C$ to be diagonal. Note that for the diagonal restriction the number of dimensions is determined by the number of covariates (i.e., $q = p$), since each covariate defines an axis (dimension). Also, we use the configuration from the unrestricted model as starting configuration. It is important that the user provides a reasonable starting configuration for the constrained MDS computation; using the one from an unrestricted fit is a good option in general. The constrained MDS model (ordinal dissimilarity transformation, ordinal covariate transformation, diagonal regression weights restriction) can be fitted as follows:
+
+<<facecons>>=
+Z <- FaceScale[, c(1,3)]                 ## select PU and TS as covariates
+fitFaceC1 <- smacofConstraint(Delta, type = "ordinal", 
+  constraint = "diagonal", external = Z, constraint.type = "ordinal", 
+  init = fitFace$conf)
+@
+
+Naturally, the stress of \Sexpr{round(fitFaceC1$stress, 3)} is larger than the one of the unrestricted solution.
+
+Before we focus on the interpretation, let us have a look at the optimal scaling transformations performed on the external scales. Figure~\ref{fig:trafo} shows the monotone regression fits for PU and TS. 
+
+<<trafo-plot, eval=FALSE, echo=FALSE>>=
+op <- par(mfrow = c(1,2))
+ind1 <- order(Z[,1])
+plot(Z[ind1, 1], fitFaceC1$external[ind1, 1], type = "s", lwd = 2,
+     xlab = "Original Scale", ylab = "Transformed Scale", 
+     main = "Pleasant-Unpleasant Transformation")
+ind2 <- order(Z[,2])
+plot(Z[ind2, 2], fitFaceC1$external[ind2, 2], type = "s", lwd = 2,
+     xlab = "Original Scale", ylab = "Transformed Scale", 
+     main = "Tension-Sleep Transformation")
+par(op)
+@
+\begin{figure}[t!]
+\begin{center}
+<<trafo-plot1, echo=FALSE, fig.width = 12, fig.height = 5.5>>=
+<<trafo-plot>>
+@
+\end{center}
+\caption{\label{fig:trafo} Transformation plots for external variables (original scores on the x-axis, transformed scores on the y-axis).}
+\end{figure}
+
+The resulting MDS configuration, produced with \code{plot(fitFaceC1)}, is given in Figure~\ref{fig:faceconf}. The x-axis corresponds to the PU dimension, the y-axis to the TS dimension. This is due to the diagonal restriction in $\mathbf C$ which simply performs dimensional weighting. 
+
+<<C1>>=
+fitFaceC1$C 
+@
+
+<<face-plot, eval=FALSE, echo=FALSE>>=
+plot(fitFaceC1, xlab = "Pleasant-Unpleasant", ylab = "Tension-Sleep", 
+     main = "Face Expression (Diagonal Restriction)")
+@
+\begin{figure}[t!]
+\begin{center}
+<<face-plot1, echo=FALSE, out.width='0.65\\textwidth'>>=
+<<face-plot>>
+@
+\end{center}
+\caption{\label{fig:faceconf} Face expression constraint MDS configuration.}
+\end{figure}
+
+\newpage 
+Another important aspect of this solution is that the order of the external covariates, that is, 
+<<ordcheck>>=
+order(Z[,1], decreasing = TRUE)  ## point order PU (x-axis)
+order(Z[,2], decreasing = TRUE)  ## point order TS (y-axis) 
+@
+is maintained along the x-axis (PU) and along the y-axis (TS) of Figure~\ref{fig:faceconf}. 
+
+Next we modify this model in two ways. In the first variant, instead of applying a monotone transformation on the covariates, we use an interval transformation, while keeping the diagonal restriction in $\mathbf C$ intact.  
+
+<<face2a>>=
+fitFaceC2 <- smacofConstraint(Delta, type = "ordinal", 
+  constraint = "diagonal", external = Z, constraint.type = "interval", 
+  init = fitFace$conf)
+round(fitFaceC2$stress, 3)
+@
+
+In the following second variant we relax the diagonal restriction in $\mathbf C$, while going back to the ordinal transformation of the external variables. 
+
+<<face2b>>=
+fitFaceC3 <- smacofConstraint(Delta, type = "ordinal", 
+  constraint = "linear", external = Z, constraint.type = "ordinal", 
+  init = fitFace$conf)
+round(fitFaceC3$stress, 3)
+fitFaceC3$C   ## C unrestricted
+@
+
+Note that the extension with the interval transformation is more restrictive than the original constrained MDS from above because, instead of the step function in Figure~\ref{fig:trafo}, we perform a linear transformation. The second extension is less restrictive than the original constrained MDS since $\mathbf C$ is unrestricted. This is reflected in the magnitudes of the corresponding stress values. 
+
+<<face2-plot, eval=FALSE, echo=2:4>>=
+op <- par(mfrow = c(1,2))
+plot(fitFaceC2, xlab = "Pleasant-Unpleasant", ylab = "Tension-Sleep", 
+     main = "Face Expression (Interval Transformation)")
+plot(fitFaceC3, main = "Face Expression (Linear Restriction)")
+par(op)
+@
+\begin{figure}[t]
+\begin{center}
+<<face2-plot1, echo=FALSE, fig.width = 12, fig.height = 6>>=
+<<face2-plot>>
+@
+\end{center}
+\caption{\label{fig:faceconf2} Left panel: interval covariate transformation, diagonal restriction in $\mathbf C$. Right panel: ordinal covariate transformation, linear restriction in $\mathbf C$.}
+\end{figure}
+
+Figure~\ref{fig:faceconf2} shows the configurations of these two versions. In the left panel we still have the same dimensional PU-TS interpretation as above. However, the difference is that the points along the x-axis and y-axis are linearly transformed (interval). Thus, the relative distance between two points on the original scale is perceived on the transformed level. In the right panel the dimensional interpretation no longer holds since $\mathbf C$ is not diagonal: the solution is rotated/reflected followed by dimensional stretching. By applying an SVD on $\mathbf C$ the user can get the rotation matrices \citep[see][p. 232, for details]{Borg+Groenen:2005}. Note that abandoning the diagonal restriction gives us the opportunity to include additional covariates (i.e., no $p = q$ restriction) since the axes are no longer defined by the covariates. 
+
+
+
+
+
+% ----------------------------------------------- Unfolding ---------------------------------------
+\section{Unfolding}
+\label{sec:unfolding}
+As mentioned in the introduction, one of the major updates since the first publication of the package was a complete re-implementation of the \code{unfolding} function. This update gives the user the possibility to apply the usual transformations on the dissimilarities, to incorporate circular restrictions, and to fit row-conditional and external unfolding models. 
+
+\subsection{Unfolding theory}
+Unfolding takes a rectangular dissimilarity matrix $\boldsymbol{\Delta}$ of dimension $n \times m$ with elements $\delta_{ij}$ ($i = 1,\ldots,n$ and $j=1,\ldots,m$) as input. Such data are most often rankings or ratings. The stress from Equation~\ref{eq:stress} changes to 
+\begin{equation}
+\label{eq:stressu}
+\sigma^2(\hat{\mathbf D}, \mathbf X_1, \mathbf X_2) = \sum_{i=1}^n \sum_{j=1}^m w_{ij}(\hat d_{ij} - 
+d_{ij}(\mathbf X_1, \mathbf X_2))^2,
+\end{equation}
+with the fitted Euclidean distances ($p$-dimensional space) expressed as
+\begin{equation}
+\label{eq:edistu}
+d_{ij}(\mathbf X_1, \mathbf X_2) = \sqrt{\sum_{s=1}^p (x_{1is} - x_{2js})^2}.
+\end{equation}
+$\mathbf X_1$ is an $n \times p$ matrix (row configuration), $\mathbf X_2$ an $m \times p$ matrix (column configuration), and $\hat{\mathbf D}$ the $n \times m$ matrix of disparities. Again, the weights $w_{ij}$ and the dissimilarities $\delta_{ij}$ must be non-negative. 
+
+In terms of stress normalization, \citet[Section 11.1]{Borg+Groenen:2005} argue that one could find an optimal dilation factor that multiplies both the row and column coordinates by the same constant. If one would do so, then the absolute coordinates change, but not the relative ones. If one finds this optimal dilation constant that minimizes stress, then the resulting stress value can be written as 
+\begin{equation}
+\label{eq:stressunorm}
+\sigma_1(\hat{\mathbf D}, \mathbf X_1, \mathbf X_2) = 
+\sqrt{\frac{1-\sum_{i,j}(w_{ij}\hat d_{ij}d_{ij}(\mathbf X_1, \mathbf X_2))^2}{\sum_{i,j}w_{ij}\hat d_{ij}^2\sum_{i,j}w_{ij}d_{ij}^2(\mathbf X_1, \mathbf X_2)}}.
+\end{equation}
+This expression provides a short cut to compute the stress-1 value if we would allow for an optimal dilation constant. At the same time it is a trick for interpretation in terms of the well known stress-1 value after all the majorization computations are done. Details on the majorization approach in the case of ratio transformations are given in \citep{DeLeeuw+Mair:2009}. Below we elaborate on a modification that is able to handle general monotone dissimilarity transformations from Section~\ref{sec:smacofnut}.  
+
+
+\subsection{Transformation functions}
+Early versions of nonmetric multidimensional unfolding (i.e., ordinal transformation) are described in \citet{Coombs:1964}. \citet{Busing+Groenen+Heiser:2005} elaborate in detail on the challenges of including transformation functions in unfolding with respect to optimization. One major problem is degeneracy of the solution due to equal disparities. They suggest that one penalizes the stress by the coefficient of variation, which moves the algorithm away from solutions with small variation in the fitted distances. The corresponding badness-of-fit target is called \emph{p-stress}:
+\begin{equation}
+\label{eq:pstress}
+\sigma^2_p(\hat{\mathbf D}, \mathbf X_1, \mathbf X_2) = \sigma^{2\lambda}(\hat{\mathbf D}, \mathbf X_1, \mathbf X_2)\mu(\hat{\mathbf D}).
+\end{equation}
+The coefficient of variation $\nu(\hat{\mathbf D})$ is calculated on the basis of the disparities and enters the penalty term as follows:
+\begin{equation}
+\label{eq:penmu}
+\mu(\hat{\mathbf D}) = 1 + \frac{\omega}{\nu(\hat{\mathbf D})}.
+\end{equation}
+Obviously this penalty term acts as a multiplicative factor in Equation~\ref{eq:pstress}. As $\nu(\hat{\mathbf D})$ decreases, the p-stress penalization increases. 
+
+Furthermore, there are two tuning parameters involved in this p-stress setup: 
+\begin{itemize}
+\item $\lambda \in (0;1]$ is a lack-of-penalty parameter that controls the influence of penalty term: the larger $\lambda$, the smaller the penalty influence. 
+\item $\omega$ acts as range parameter in the penalty term: for a small $\omega$ the penalty is especially effective if $\nu(\hat{\mathbf D})$ is small. 
+\end{itemize}
+The defaults for these tuning parameters used in \code{unfolding} are $\lambda = 0.5$ and $\omega = 0.1$ which, in most practical situations, turn out to be a good choice\footnote{Personal communication with Frank Busing.}. 
+The p-stress target can be minimized using majorization, for which the details are given in \citet{Busing+Groenen+Heiser:2005}. From a practical point of view, after obtaining a p-stress optimized solution, users can consider the normalized stress from Equation~\ref{eq:stressunorm} as goodness-of-fit index\footnote{For details on how to assess the goodness-of-fit of an unfolding solution see \citet{Mair+Borg+Rusch:2016}.}. Note that all the dissimilarity transformation functions from MDS (i.e., ratio, interval, ordinal, spline; cf. Section~\ref{sec:smacofnut}) are implemented for unfolding as well. 
+
+Let us provide an example of an ordinal unfolding solution. We use a dataset from \citet{Dabic+Hatzinger:2009}, available in the \pkg{prefmod} package \citep{Hatzinger+Dittrich:2012}, where individuals were asked to configure a car according to their preferences. They could choose freely from several modules such as exterior and interior design, technical equipment, brand, price, and producing country. We use only the first 100 individuals. 
+
+<<carconf, message=FALSE>>=
+library("prefmod")
+carconf1 <- carconf[1:100, 1:6]
+head(carconf1)
+@
+
+Since not all individuals ranked all objects, we have the situation of ``partial rankings''. The \code{unfolding} function specifies a proper weight matrix $\mathbf W$ automatically: $w_{ij} = 0$ if $\delta_{ij}$ is missing;  $w_{ij} = 1$ otherwise. This way, the corresponding missing dissimilarities are blanked out from the optimization. For the ordinal unfolding model we are going to fit, this weight matrix can be extracted using \code{unf_ord$weightmat}. 
+
+<<ordinal-unfolding>>=
+unf_ord <- unfolding(carconf1, type = "ordinal")  ## fit ordinal unfolding
+unf_ord
+@
+
+This call prints out the stress-1 value as well as the final p-stress value. The configuration plot and Shepard diagram shown in Figure~\ref{fig:uconf} can be produced as follows: 
+
+<<carunf-plot, eval=FALSE, echo=2:4>>=
+op <- par(mfrow = c(1,2))
+plot(unf_ord, main = "Unfolding Configuration Car Preferences")
+plot(unf_ord, plot.type = "Shepard", 
+     main = "Shepard Diagram Car Preferences")
+par(op)
+@
+\begin{figure}[t]
+\begin{center}
+<<carunf-plot1, echo=FALSE, fig.width=12, fig.height=6>>=
+<<carunf-plot>>
+@
+\end{center}
+\caption{\label{fig:uconf} Left panel: unfolding configuration of car preference data. Right panel: Shepard diagram car preference data (ordinal transformation).}
+\end{figure}
+
+The Shepard diagram shows the ordinal transformation of the input dissimilarities, whereas the configuration plot maps the row and column coordinates into a joint space, which makes distances between any pair of points interpretable. 
+
+
+
+\subsection{Row-conditional unfolding}
+\label{sec:rcunfolding}
+The solution above is an \emph{unconditional} (also called \emph{matrix-conditional}) unfolding solution since a single transformation function is estimated that applies to all individuals. The ranks are compared unconditionally which, in some situations, is a fairly restrictive assumption. For instance, in our example it might be the case that individual $i$ is quite indifferent to all car characteristics, but still ranks them. Individual $i'$, however, could have strong preferences but might end up with the same ranking as individual $i$. Treating these ranks as equal is a strong assumption. Similarly, for rating data in $\boldsymbol{\Delta}$, individual $i$'s rating of, for instance, 2 is assumed to be equal to any other individual's rating of 2. 
+
+\emph{Row-conditional unfolding} relaxes this assumption by estimating separate transformation functions for each individual (i.e., for each row in $\boldsymbol{\Delta}$). Technically, what changes with respect to the p-stress expression in Equation~\ref{eq:pstress} is the penalty term. \citet{Busing+Groenen+Heiser:2005} suggest to use the harmonic mean for row-wise aggregation of the penalty components which modifies Equation~\ref{eq:penmu} to
+\begin{equation}
+\mu_c(\hat{\mathbf D}) = 1 + \frac{\omega}{\left(\frac{1}{n}\sum_{i=1}^{n} \nu^{-2}(\hat{\boldsymbol d}_i)\right)^{-1}}.
+\end{equation}
+The $\hat{\boldsymbol d}_i$'s are the row vectors in $\hat{\mathbf D}$. The raw stress term in Equation~\ref{eq:pstress} remains unadjusted since it is additive over the rows. 
+
+Let us fit a row-conditional version of the ordinal unfolding on the car characteristics data. We use the final configuration obtained above as starting configuration. Note that for computational reasons we provide a slightly more generous convergence boundary $\varepsilon$ than the default\footnote{In the $t$-th iteration the convergence criterion used in \code{unfolding} is \\
+$2(\sigma_p(\mathbf X_1, \mathbf X_2)^{(t-1)}-\sigma_p(\mathbf X_1, \mathbf X_2)^{(t)}) \leq \varepsilon(\sigma_p(\mathbf X_1, \mathbf X_2)^{(t-1)}+\sigma_p(\mathbf X_1, \mathbf X_2)^{(t)} + 10^{-15})$
+.}. In general, we recommend to increase the number of iterations using the \code{itmax} argument, if needed. For a reasonably large sample size it can take a while until the algorithm converges. A parallelized fit can be evoked through the \code{parallelize} argument. 
+
+<<row-unfolding, cache = TRUE>>=
+startconf <- list(unf_ord$conf.row, unf_ord$conf.col) 
+unf_cond <- unfolding(carconf1, type = "ordinal", conditionality = "row", 
+                      eps = 6e-5, init = startconf)
+unf_cond
+@
+
+Compared to the unconditional fit, the row-conditional version clearly reduced the stress-1.  Figure~\ref{fig:condconf} shows the resulting configuration plot in the left panel. The Shepard diagram in the right panel nicely illustrates the difference between unconditional and row-conditional unfolding. While in unconditional unfolding we fitted a single transformation function only (see right panel of Figure~\ref{fig:uconf}), in row-conditional unfolding each individual gets its own transformation function. Since we have missings in our data, not all individuals have the full six-ranking monotone trajectories. 
+
+
+<<condunf-plot, eval=FALSE, echo=2:4>>=
+op <- par(mfrow = c(1,2))
+plot(unf_cond, main = "Conditional Unfolding Configuration Car Preferences")
+plot(unf_cond, plot.type = "Shepard", 
+     main = "Shepard Diagram Car Preferences", col.dhat = "gray")
+par(op)
+@
+\begin{figure}[t]
+\begin{center}
+<<condunf-plot1, echo=FALSE, fig.width=12, fig.height=6>>=
+<<condunf-plot>>
+@
+\end{center}
+\caption{\label{fig:condconf} Left panel: row-conditional unfolding configuration of car preference data. Right panel: Shepard diagram (ordinal transformation) row-conditional unfolding.}
+\end{figure}
+
+Some practical suggestions on when to use row-conditional unfolding as opposed to unconditional unfolding are given in \citet[p. 100]{Borg+Groenen+Mair:2012}. 
+
+
+
+\subsection{Spherical unfolding}
+Sometimes it is of interest to restrict either row coordinates or column coordinates to be on a geometric shape such as a sphere. Technically, this implies that within each iteration the row (or column) coordinates have to be spherically restricted. Let us elaborate on this restriction for the row coordinates in $\mathbf X:= \mathbf X_1$ for $p=2$ (for the column coordinates in $\mathbf X_2$ it works in an analogous fashion). Each row vector $\mathbf x_i$ can be expressed in polar coordinates \citep[see][]{Cox+Cox:1991}: 
+\[
+\mathbf x_i = (r_i \cos(\theta_i), r_i \sin(\theta_i))',
+\]
+with $\theta_i$ as the corresponding angle and $r_i$ as the radius. We aim to find a circular restricted configuration $\mathbf X_c$ for which the row vectors have polar coordinates
+\[
+\mathbf x_{c,i} = (r \cos(\theta_{c,i}), r \sin(\theta_{c,i}))'.
+\]
+We have a single radius $r$ and the corresponding angle $\theta_{c,i}$. To compute $\mathbf X_c$, we want to minimize the quadratic part of the majorizing function:  
+\begin{align*}
+\|\mathbf X -\mathbf X_c\|^2 &= \|\mathbf X\|^2 + \|\mathbf X_c\|^2 -2 \times \text{trace}(\mathbf X_c'\mathbf X) \\
+&= \|\mathbf X\|^2 + n r^2 - 2 \times \text{trace}(\mathbf X_c'\mathbf X) \\
+&= \|\mathbf X\|^2 + n r^2 - 2\sum_{i=1}^n r \times r_i (\cos(\theta_{c,i}) \cos(\theta_i) + \sin(\theta_{c,i})\sin(\theta_i))
+\end{align*}
+In the last term, the best $\theta_{c_i}$ that can be chosen is the one that maximizes $\cos(\theta_{c,i}) \cos(\theta_i) + \sin(\theta_{c,i})\sin(\theta_i)$. This implies choosing $\theta_{c,i} = \theta_i$ so that 
+\[
+\cos(\theta_{c,i}) \cos(\theta_i) + \sin(\theta_{c,i})\sin(\theta_i) = \cos^2(\theta_{c,i}) + \sin^2(\theta_i) = 1. 
+\]
+Substituting the optimal $\theta_{c,i} = \theta_i$ gives
+\[
+\|\mathbf X -\mathbf X_c\|^2 =  \|\mathbf X\|^2 + nr^2 - 2r\sum_{i=1}^n r_i.  
+\]
+Setting the first derivative equal to zero yields the update 
+\[
+r = \frac{1}{n} \sum_{i=1}^n r_i.
+\]
+This simple expression gives us the optimal circular projection of the row coordinates in $\mathbf X$. As mentioned above, the same steps can be carried out for the column coordinates ($\mathbf X:=\mathbf X_2$; replace $i$ by $j$, and $n$ by $m$ in these equations). 
+
+To illustrate an unfolding solution where we restrict the column coordinates to be on a circle, we use a dataset from personality research by \citet{Borg+Bardi+Schwartz:2017}. The data are derived from the Schwartz Value Survey (SVS). They were centered (row-wise) and converted from preferences into dissimilarities, hence representing a rectangular dissimilarity matrix $\boldsymbol{\Delta}$ with \Sexpr{nrow(indvalues)} persons and \Sexpr{ncol(indvalues)} variables referring to Schwartz' psychological values: power, achievement, hedonism, stimulation, self-direction, universalism, benevolence, tradition, conformity, and security. We fit two (ratio) unfolding solutions: an unrestricted one and one with circular restrictions on the column coordinates (values): 
+
+<<unfcircle, cache=TRUE>>=
+unf_vals <- unfolding(indvalues)                      ## unrestricted
+unf_valsc <- unfolding(indvalues, circle = "column")  ## restricted
+@
+
+Comparing the stress values we get \Sexpr{round(unf_vals$stress, 3)} for the unrestricted solution, and \Sexpr{round(unf_valsc$stress, 3)} for the restricted solution. This suggests that the circular solution is basically as good as the unrestricted one. 
+
+The reason for this becomes obvious by looking at the configuration plots in Figure~\ref{fig:uconfc}. The unrestricted solution in the left panel suggests that the personal values approximate a circle, as suggested by Schwartz' value theory. The configuration in the right panel results from forcing the psychological values to be arranged on a circle. 
+
+<<schwartzcir-plot, eval=FALSE, echo=FALSE>>=
+op <- par(mfrow = c(1,2))
+plot(unf_vals, main = "Values Unfolding Configuration (Unrestricted)", ylim = c(-1.5, 1.1))
+abline(h = 0, v = 0, col = "gray", lty = 2)
+plot(unf_valsc, main = "Values Unfolding Configuration (Circular Restriction)", ylim = c(-1.5, 1.1))
+abline(h = 0, v = 0, col = "gray", lty = 2)
+rad <- sqrt(sum(unf_valsc$conf.col[1,]^2))
+draw.circle(0, 0, radius = rad, border = "cadetblue", lty = 2)
+par(op)
+@
+\begin{figure}[t]
+\begin{center}
+<<schwartzcir-plot1, echo=FALSE, message=FALSE, fig.width=12, fig.height=6>>=
+<<schwartzcir-plot>>
+@
+\end{center}
+\caption{\label{fig:uconfc} Left panel: unrestricted unfolding configuration of personal values. Right panel: circular unfolding solution personal values (circle superimposed).}
+\end{figure}
+
+
+
+\subsection{External unfolding}
+External unfolding uses fixed coordinates for either the rows or the columns. Early references are \citet{Srinivasan+Shocker:1973}, \citet{Rodgers+Young:1981}, and \citet{DeSarbo+Rao:1984}. Within each iteration either the row coordinates in $\mathbf X_1$ (in case of fixed coordinates denoted as $\mathbf F_1$), or the column coordinates in $\mathbf X_2$ (in case of fixed coordinates denoted as $\mathbf F_2$) need to be constrained and scaled. The scaling factors for fixed rows and fixed columns, respectively, are
+\begin{align*}
+s_1 = \frac{\text{trace}(\mathbf F_1'\mathbf X_1)}{\|\mathbf F_1\|}, \\
+s_2 = \frac{\text{trace}(\mathbf F_2'\mathbf X_2)}{\|\mathbf F_2\|}.
+\end{align*}
+Based on these scaling factors the updated coordinates are $\mathbf X_1 := s_1\mathbf F_1$ in case of row restrictions, or $\mathbf X_2 := s_2\mathbf F_2$ in case of column restrictions. Using this adjustment the new coordinates are properly scaled with respect to the unconstrained column/row coordinates, while maintaining the specified shape constraints. 
+
+To illustrate, we use once more a dataset from \citet{Borg+Bardi+Schwartz:2017}. This time we use the results from the Portrait Value Questionnaire (PVQ). Its a questionnaire of 40 items assessing how persons rate the personal importance of ten basic values: power (PO), achievement (AC), hedonism (HE), stimulation (ST), self-direction (SD), universalism (UN), benevolence (BE), tradition (TR), conformity (CO), security (SE) on a scale from 0 to 6. We use an aggregated version where the item scores belonging to the same psychological value are averaged. As fixed coordinates we use the following value circle coordinates: 
+
+<<valcirc>>=
+tuv <- matrix(NA, nrow = ncol(PVQ40agg), ncol = 2) 
+alpha <- -360/10
+for (i in 1:10){ 
+  alpha <- alpha+360/10
+  tuv[i,1] <- cos(alpha*pi/180)
+  tuv[i,2] <- sin(alpha*pi/180) 
+}
+@
+
+This specification is different from the spherical unfolding since here we fix the value coordinates on the circle (equidistant) instead of just forcing them to be aligned on a circle. Of course, in external unfolding we can specify any arbitrarily fixed configuration; it does not have to be a circle. 
+
+Below we fit two solutions: an unconstrained ordinal unfolding solution, and a constrained ordinal unfolding solution with fixed circular column coordinates. Since smaller responses in the PVQ data reflect larger dissimilarities, we reverse the category scores. 
+
+<<extunf>>=
+delta <- (max(PVQ40agg) + 1) - PVQ40agg 
+unf_pvq <- unfolding(delta, type = "ordinal")        ## unconstrained
+unf_pvqext <- unfolding(delta, type = "ordinal", 
+    fixed = "column", fixed.coord = tuv)             ## constrained
+@
+
+The stress value of the unconstrained solution is \Sexpr{round(unf_pvq$stress, 3)}, whereas the one for the external solution is \Sexpr{round(unf_pvqext$stress, 3)}, which is clearly larger. The plots given in Figure~\ref{fig:unext} reflect the corresponding differences in the configurations. The unrestricted solution clearly deviates from the theoretical circle. 
+
+<<unfext-plot, eval=FALSE, echo=FALSE, purl=FALSE>>=
+op <- par(mfrow = c(1,2))
+plot(unf_pvq, label.conf.columns = list(cex = 1), ylim = c(-1.1, 1.1), main = "PVQ Unrestricted")
+plot(unf_pvqext, label.conf.columns = list(cex = 1), ylim = c(-1.1, 1.1), main = "PVQ Fixed Value Circle")
+par(op)
+@
+\begin{figure}[t]
+\begin{center}
+<<unfext-plot1, echo=FALSE, message=FALSE, fig.width=12, fig.height=6>>=
+<<unfext-plot>>
+@
+\end{center}
+\caption{\label{fig:unext} Left panel: unrestricted unfolding solution. Right panel: externally restricted unfolding solution (fixed circular coordinates for personal values).}
+\end{figure}
+
+
+
+\subsection{Vector model of unfolding}
+The vector model of unfolding (VMU) goes back to \citet{Tucker:1960}. It is basically a principal component analysis (PCA) on the transposed input similarity matrix $\mathbf P$. After a singular value decomposition $\mathbf P' \approx \mathbf U\boldsymbol{\Sigma}\mathbf V'$ for given dimensionality $p$, the row coordinates are obtained by $\mathbf X_1 = \sqrt{m-1}\mathbf U\boldsymbol{\Sigma}$, and the column coordinates by $\mathbf X_2 = \sqrt{m-1}\mathbf V$. 
+
+We apply the VMU on the unreversed PVQ data from above, since the inputs have to be similarities. Note that, by default, the \code{vmu} function does an internal row-wise centering of the data. 
+
+<<vmu>>=
+fit_vmu <- vmu(PVQ40agg)        ## VMU fit
+fit_vmu
+@
+
+The results can be visualized using a biplot, where the row scores are represented as preference vectors (see Figure~\ref{fig:vmubi}). 
+
+<<vmubi-plot, eval=FALSE>>=
+plot(fit_vmu, cex = c(1, 0.7)) 
+@
+\begin{figure}[t]
+\begin{center}
+<<vmubi-plot1, echo=FALSE, message=FALSE, out.width='0.7\\textwidth'>>=
+<<vmubi-plot>>
+@
+\end{center}
+\caption{\label{fig:vmubi} VMU biplot portrait value questionnaire.}
+\end{figure}
+
+
+Note that ordinal versions of VMU amount to fitting an ordinal PCA \citep[PRINCALS;][]{deLeeuw+Mair:2009b}. 
+
+
+
+
+
+
+% ----------------------------------------------- Others -------------------------------------------
+\newpage
+\section{Other MDS variants and utilities}
+\label{sec:utilities}
+\subsection{Unidimensional scaling}
+\label{sec:uniscale}
+Unidimensional scaling can be applied in situations where one has a strong reason to believe that there is only one underlying dimension, such as time, ability, or preference. Even though unidimensional scaling can be considered as a special case of MDS, it is generally discussed separately \citep{Mair+deLeeuw:2015} since the local minimum problem becomes serious if \code{mds} is used with \code{ndim = 1}. The \pkg{smacof} package provides a simple implementation where all possible $n!$ dissimilarity permutations are considered for scaling, and the one which leads to a minimal stress is returned. Obviously, this strategy is applicable only to a small number of objects. 
+
+In the following example we examine seven works by Plato. The chronological order of Plato's works is unknown. Scholars only know that ``Republic'' was his first work, and ``Laws'' his last work. The input dissimilarities are derived according to the following strategy. \citet{Cox+Brandwood:1959} extracted the last five syllables of each sentence. Each syllable is classified as long or short which gives 32 types. Based on this classification a percentage distribution across the 32 scenarios for each of the seven works can be computed, subject to a Euclidean distance computation. 
+
+<<plato>>=
+PlatoD <- dist(t(Plato7))
+fitPlato <- uniscale(PlatoD, verbose = FALSE)  ## unidimensional fit
+round(sort(fitPlato$conf), 3)
+@
+
+The last line prints the 1D ``time'' configuration of Plato's works that lead to the lowest stress value. 
+
+
+\subsection{Gravity model}
+\label{sec:gravity}
+The idea of the \emph{gravity model} goes back Newton's law of universal gravitation where he states that force is proportional to the product of the two masses, and inversely proportional to the square of the distance between them. \cite{Haynes:1984} present a wide range of statistical applications of this gravity concept with special emphasis on spatial interactions. Within an MDS context, the gravity model turns out to be especially useful for text co-occurrence data \citep{Mair+Rusch+Hornik:2014, Borg+Groenen+Mair:2012} in order to avoid that words with high co-occurrences dominate the solution. Note that the \code{sim2diss} function already includes a basic gravity computation (see Table~\ref{tab:sim2diss}). Here we present the \code{gravity} function, which does a very similar transformation, but is designed to take a document-term matrix (DTM) as input. 
+
+The first step is to binarize the DTM: if a word (columns) is mentioned at least once in a particular document (rows), the corresponding cell entry is 1, and 0 otherwise. Let $\mathbf Y$ denote this binarized DTM. From this simplified structure the word co-occurrence matrix $\mathbf C$ can be computed by $\mathbf C = \mathbf Y'\mathbf Y$. Thus, only the information on whether words occur together or not is considered. $\mathbf C$ is a symmetric matrix (with elements $c_{ij}$) with co-occurrence frequencies in the off-diagonals. Let $c_{i+} = \sum_{j \neq i} c_{ij}$ and $c_{+j} = \sum_{i \neq j} c_{ij}$ be the respective margins of $\mathbf C$ (diagonal blanked out). 
+The gravity model defines the following dissimilarities (for $i \neq j$): 
+\begin{equation}
+\label{eq:gravity}
+\delta_{ij} = \sqrt{\frac{c_{i+} c_{+j}}{c_{ij}}}.
+\end{equation}
+To illustrate a gravity application on text data we use a DTM similar to the one presented in \cite{Mair+Rusch+Hornik:2014}. This DTM was created on the basis of statements of 254 Republican voters who had to complete the sentence ``I am a Republican because...''. First, let us create the gravity dissimilarities according to the strategy outlined above.
+
+<<>>=
+gopD <- gravity(GOPdtm)$gravdiss
+@
+
+Note that using text data, $\mathbf C$ is typically sparse (i.e., many elements $c_{ij} = 0$). For these elements we cannot compute Equation~(\ref{eq:gravity}) since we divide by 0. The function sets the corresponding entries to \code{NA}. In the subsequent MDS call, these elements are automatically blanked out by setting the corresponding weight $w_{ij}$ to 0 in the basic stress equation. 
+<<gravity-plot, eval=FALSE>>=
+fitGOP <- mds(gopD, type = "ordinal")    ## 2D ordinal MDS
+plot(fitGOP, plot.type = "bubbleplot", bubscale = 20)
+@
+\begin{figure}[t]
+\begin{center}
+<<gravity-plot1, echo=FALSE, out.width='0.7\\textwidth'>>=
+<<gravity-plot>>
+@
+\end{center}
+\caption{\label{fig:gravity} Bubble plot for gravity MDS solution on GOP data. The larger the bubbles, the larger the SPP.}
+\end{figure}
+
+Figure~\ref{fig:gravity} shows the bubble plot which incorporates the stress-per-point (SPP) information. The larger a bubble, the larger the contribution of a particular object (here, word) to the total stress. Objects with large SPP values are responsible for misfit. The closer two words are in the configuration, the more often they have been mentioned together in a single statement. 
+
+An extension of this model is presented in \cite{Mair+Rusch+Hornik:2014}, who introduce the exponent $\lambda$ in order to emphasize larger dissimilarities. The reason for this is that in text data we often end up with little variance in the input dissimilarities which leads to a concentric, circular representation of the configuration.  Equation~\ref{eq:gravity} changes to
+\begin{equation}
+\label{eq:pgravity}
+\delta_{ij} = \left(\frac{c_{i+} c_{+j}}{c_{ij}}\right)^{\frac{\lambda}{2}}. 
+\end{equation}
+This extension is called \emph{power gravity model}. The parameter $\lambda$ needs to be chosen \emph{ad hoc} and can take values from $[-\infty,\infty]$. For $\lambda < 1$ we shrink large dissimilarities, for $\lambda = 1$ we end up with the ordinary gravity model, and for $\lambda > 1$ we stretch large dissimilarities. Note that there is a trade-off between the choice of $\lambda$ and the stress: the more structure we create, the higher the stress. This extension is relevant for metric MDS strategies such as ratio, interval, or spline MDS. The $\lambda$ parameter can be specified in the \code{gravity} function. 
+
+A recent work by \cite{Rusch+Mair+Hornik:2017c} embeds the gravity formulation into a more general loss function which, among other things, finds an optimal $\lambda$ during the optimization process. Their methodology is implemented in the \pkg{cops} package. 
+
+
+
+\subsection{Asymmetric MDS}
+\label{sec:asymds}
+So far, except in unfolding, $\Delta$ has been a symmetric matrix of input dissimilarities. In this section we aim to scale square asymmetric dissimilarity matrices. \citet[Chapter 23]{Borg+Groenen:2005}, \cite{Bove+Okada:2018}, as well as \cite{Zielman+Heiser:1996} present various asymmetric MDS variants of which \pkg{smacof} implements the \emph{drift vector model} \citep{Borg:1979}. The starting point of this approach is to decompose the asymmetric dissimilarity matrix $\Delta$ into a symmetric part $\mathbf M$, and a skew-symmetric part $\mathbf N$:
+\begin{equation}
+\label{eq:symdecomp}
+\Delta = \mathbf M + \mathbf N,
+\end{equation}
+with $\mathbf M = (\Delta + \Delta')/2$, and $\mathbf N = (\Delta - \Delta')/2$. In \pkg{smacof}, the \code{symdecomp} function can be used for this decomposition. Drift vector models display simultaneously the symmetric and the skew-symmetric part of $\Delta$. They first fit an MDS (of any type) on the symmetric matrix $\mathbf M$, resulting in the configuration $\mathbf X$. The asymmetric information is then incorporated as follows \citep[][p. 503]{Borg+Groenen:2005}:
+\begin{itemize}
+\item For each object pair $i, j$ compute $\mathbf a_{ij} = \mathbf x_i - \mathbf x_j$ which results in a vector of length $p$.
+\item Norm $\mathbf a_{ij}$ to unit length, resulting in $\mathbf b_{ij} = \mathbf a_{ij}/\sqrt{a_{ij}'a_{ij}}$.
+\item Incorporate the skew-symmetric part: $\mathbf c_{ij} = n_{ij}\mathbf b_{ij}$ with $n_{ij}$ as the corresponding element in $\mathbf N$ (drift vectors).
+\item For a given point $i$, average the elements in $\mathbf c_{ij}$: $\mathbf d_i = \sum_j c_{ji}/n$ (average drift vectors).
+\item For plotting compute the vector coordiates of $\mathbf d_i$ with angle $\alpha_i = \arccos(\mathbf d_i'\mathbf u_/\sqrt{\mathbf d_i'\mathbf d_i})$ with $\mathbf u' = (0,1)$.
+\end{itemize}
+To illustrate the drift vector model, we use the classical Morse code data by \cite{Rothkopf:1957}. Rothkopf asked 598 subjects to judge whether two signals, presented acoustically one after another, were the same or not. The values are the average percentages for which the answer ``Same!'' was given in each combination of row stimulus $i$ and column stimulus $j$, where either $i$ or $j$ was the first signal presented. The responses were aggregated to confusion rates and subsequently subtracted from 1, such that the values represent dissimilarities. The \code{driftVector} function performs the decomposition from Equation~\ref{eq:symdecomp}, fits an MDS of choice on $\mathbf M$, and applies the drift vector computation steps outlined above. For the Morse code data, the resulting drift configuration plot based on a 2D ordinal MDS fit, is given in Figure~\ref{fig:drift}. 
+
+<<drift-plot, eval=FALSE>>=
+morseDrift <- driftVectors(morse2, type = "ordinal") 
+plot(morseDrift, main = "Drift Vectors Morse Codes")
+@
+\begin{figure}[t]
+\begin{center}
+<<drift-plot1, echo=FALSE, out.width='0.7\\textwidth'>>=
+<<drift-plot>>
+@
+\end{center}
+\caption{\label{fig:drift} MDS solution for asymmetric Morse code data including drift vectors.}
+\end{figure}
+We see that the vectors tend to point in the bottom left direction; they are certainly not random. In the bottom left quadrant we mostly have longer signals suggesting that shorter signals are more often confused with longer ones than vice versa. 
+
+Other approaches to scale asymmetric data implemented in \proglang{R} are the following. \cite{Vera+Rivera:2014} embed MDS into a structural equation modeling framework. Their approach is implemented in the \pkg{semds} package \citep{Vera+Mair:2019}. \cite{Zielman+Heiser:1993} developed a slide-vector approach which is implemented in \pkg{asymmetry} \citep{Zielman:2018}. Unfolding strategies from Section~\ref{sec:unfolding} can also be used for asymmetric dissimilarity matrices. An application can be found in \citet{Sagarra:2018}. 
+
+
+\subsection{Procrustes}
+\label{sec:proc}
+Sometimes it is of interest to compare multiple MDS configurations based on, for instance, different experimental conditions (the objects need to be the same within each condition). The idea of Procrustes \citep{Hurley+Cattell:1962} is to remove ``meaningless'' configuration differences such as rotation, translation, and dilation. Procrustes transformations do not change the fit (stress value) of an MDS. 
+
+In brief, Procrustes works as follows. Let $\mathbf X$ and $\mathbf Y$ be two MDS configuration matrices. $\mathbf X$ is the target configuration, and $\mathbf Y$ the configuration subject to Procrustes transformation leading to the transformed configuration matrix $\hat{\mathbf Y}$. Further, let $\mathbf Z$ be a centering matrix ($\mathbf Z = \mathbf I - n^{-1}\mathbf{11}'$). Procrustes involves the following steps:  
+\begin{enumerate}
+\item Compute $\mathbf C = \mathbf{X'ZY}$.
+\item Perform an SVD on $\mathbf C$, i.e., $\mathbf C = \mathbf{P}\Phi \mathbf{Q}'$. Compute:
+\begin{itemize}
+\item rotation matrix: $\mathbf T = \mathbf{QP}'$,
+\item dilation factor: $s = tr(\mathbf{X'ZYT})/tr(\mathbf{Y'ZY})$,
+\item translation vector $\mathbf t = n^{-1}(\mathbf X - s\mathbf{YT}')\mathbf 1$.
+\end{itemize}
+\item Final solution: $\hat{\mathbf Y} = s\mathbf{YT} + \mathbf{1t}'$. 
+\end{enumerate}
+The matrix $\hat{\mathbf Y}$ contains the Procrustes transformed configuration and replaces $\mathbf Y$. The target configuration $\mathbf X$ and $\hat{\mathbf Y}$ can be plotted jointly and allows researchers to explore potential differences between the configurations. 
+
+The dataset we use to illustrate Procrustes is taken from \cite{Pashkam:2018}. In their functional magnetic resonance imaging (fMRI) experiment on visual object representations they used both natural and artificial shape categories to study the activation of various brain regions. We start with fitting two ordinal MDS solutions, one for each condition
+
+<<maryam>>=
+artD <- sim2diss(VaziriXu$artificialR)
+fitart <- mds(artD, type = "ordinal")    ## artificial condition
+realD <- sim2diss(VaziriXu$realR)
+fitnat <- mds(realD, type = "ordinal")   ## natural condition  
+@
+<<maryam-plot, echo=FALSE, eval=FALSE>>=
+op <- par(mfrow = c(1,2))
+plot(fitart, main = "Configuration Artificial")
+plot(fitnat, main = "Configuration Natural")
+par(op)
+@
+\begin{figure}
+\begin{center}
+<<maryam-plot1, echo=FALSE, fig.width=12, fig.height=6>>=
+<<maryam-plot>>
+@
+\end{center}
+\caption{\label{fig:maryam} Left panel: MDS configuration natural condition. Right panel: MDS configuration artificial condition.}
+\end{figure}
+
+By plotting the two configurations, Figure~\ref{fig:maryam} suggests that these configurations are different. 
+Let us apply a Procrustes transformation with the artificial condition as target configuration $\mathbf X$, and the natural condition solution as testee configuration $\mathbf Y$, subject to transformation. 
+
+<<procnat>>=
+fitproc <- Procrustes(fitart$conf, fitnat$conf)
+fitproc
+@
+
+The print output shows the rotation matrix, the dilation factor, and the translation vector (which is always 0 if two MDS configurations are involved, due to normalization constraints). In addition, it reports Tucker's congruence coefficient for judging the similarity of two configurations. This coefficient is derived from factor analysis and can be computed as follows: 
+\begin{equation}
+\label{eq:congr}
+c(\mathbf X, \mathbf Y) = \frac{\sum_{i<j} w_{ij}d_{ij}(\mathbf X)d_{ij}(\mathbf Y)}{\sqrt{\sum_{i<j} w_{ij}d_{ij}^2(\mathbf X)}\sqrt{\sum_{i<j} w_{ij}d_{ij}^2(\mathbf Y)}}
+\end{equation}
+A few remarks regarding the congruence coefficient. First, it is generally recommended that one uses the congruence coefficient to judge configurational similarity and not the correlation coefficient, since correlating distances does not properly assess the similarity of configurations \citep[see][p. 439--440 for details]{Borg+Groenen:2005}. Second, there is actually no Procrustes transformation needed to compute the congruence coefficient, since $c(\mathbf X, \mathbf Y) = c(\mathbf X, \hat{\mathbf Y}$). Third, when applying (\ref{eq:congr}) within an MDS context, the resulting value of $c(\mathbf X, \mathbf Y)$ is generally high. In factor analysis, values in the range of 0.85-0.94 are considered to be ``fairly similar'', and values higher than 0.95 suggest that the two factors are considered equal \citep[see][for details]{Lorenzo:2006}. 
+
+Figure~\ref{fig:proc} shows the Procrustes transformed solution (i.e., plotting $\mathbf X$ and $\hat{\mathbf Y}$ jointly) and suggests that the two configurations are actually very similar, apart from a few points (e.g., inferior IPS, V4). 
+
+
+<<proc-plot, eval=FALSE>>=
+plot(fitproc, legend = list(labels = c("artificial", "natural")))
+@
+\begin{figure}[t]
+\begin{center}
+<<proc-plot1, echo=FALSE, out.width='0.6\\textwidth'>>=
+<<proc-plot>>
+@
+\end{center}
+\caption{\label{fig:proc} Procrustes on two MDS configurations: the configuration from the artificial condition acts as target; the one from the natural condition is Procrustes transformed.}
+\end{figure}
+
+Another option to apply Procrustes is to use a theoretical configuration as target. For instance, \cite{Borg+Leutner:1983} constructed rectangles on the basis of a grid design (as contained in \code{rect\_constr}) which we use as target configuration. Participants had to rate similarity among rectangles within this grid. Based on these ratings a dissimilarity matrix was constructed, here subject to a 2D ordinal MDS solution. Within the context of theoretical solutions it is sometimes interesting to determine the stress value based on the dissimilarity matrix and an initial configuration (with 0 iterations). The \code{stress0} function does the job. 
+<<stress0>>=
+stress0(rectangles, init = rect_constr)  ## stress value 0 iterations
+@
+
+Now we fit an ordinal MDS model, using the theoretical rectangle alignment as starting values which leads to a clearly lower stress value than the one of the theoretical grid. The resulting MDS configuration is used as testee configuration $\mathbf Y$, subject to Procrustes. 
+
+<<proc2>>=
+fitrect <- mds(rectangles, type = "ordinal", init = rect_constr)
+round(fitrect$stress, 3)
+procRect <- Procrustes(rect_constr, fitrect$conf)
+round(procRect$congcoef, 3)        ## congruence coefficient
+@
+<<proc2-plot, eval=FALSE>>=
+plot(procRect, xlim = c(2, 7), 
+     legend = list(labels = c("theoretical", "observed")))
+@
+\begin{figure}
+\begin{center}
+<<proc2-plot1, echo=FALSE, out.width='0.6\\textwidth'>>=
+<<proc2-plot>>
+@
+\end{center}
+\caption{\label{fig:proc2} Procrustes with theoretical grid as target configuration (blue dots).}
+\end{figure}
+
+Figure~\ref{fig:proc2} plots the rectangle grid and the Procrustes transformed configuration jointly. We see clear differences; the congruence coefficient is still fairly large, however.  
+
+Note that Procrustes is not limited to MDS applications. It can be applied to any configuation matrices $\mathbf X$ and $\mathbf Y$ as long as the objects involved are the same and the matrices have the same dimensions. Other forms of generalized Procustes analysis are given in \citet[Section 20.9]{Borg+Groenen:2005}. 
+
+
+\subsection{MDS biplots}
+\label{sec:mdsbi}
+Biplots were developed within the context of principal component analysis \citep[PCA;][]{Gabriel:1971}. In a PCA biplot the loadings vectors are mapped on top of the scatterplot of the principal component scores. However, the concept of biplots can be applied to other multivariate techniques as well, as elaborated in \cite{Greenacre:2010} and \cite{Gower+Lubbe+Roux:2011}. In MDS, biplots are typically used to map external variables onto the MDS configuration. Such covariates allow users to explore meaningful directions in the MDS space rather than trying to interpret the dimensions directly.
+
+Let $\mathbf Y$ be a $n \times q$ matrix with $q$ external variables in the columns. To produce an MDS biplot, the following multivariate regression problem needs to be solved: 
+\begin{equation}
+\mathbf Y = \mathbf{XB} + \mathbf E,
+\end{equation}
+where $\mathbf B$ is a $p \times q$ containing $p$ regression coefficients for each of the $q$ variables, and $\mathbf E$ is the $n \times q$ matrix of errors. 
+The corresponding OLS estimates $\hat{\mathbf B} = (\mathbf X'\mathbf X)^{-1}\mathbf X'\mathbf Y$ give the coordinates of the external variables in the MDS space. 
+The \pkg{smacof} package provides the \code{biplotmds} function which performs the regression fit. By default, the external variables are standardized internally.
+
+Let us start with a simple example where we map a single metric variable onto a configuration, using the facial expression dataset from Section~\ref{sec:constraint} once more. We fit an unrestricted ordinal MDS solution, and map the pleasant-unpleasant (PU) variable on top of the configuration. 
+
+<<simplebi>>=
+ext <- data.frame(PU = FaceScale[,1])
+fitFace <- mds(FaceExp, type = "ordinal")    ## ordinal MDS fit
+biFace <- biplotmds(fitFace, extvar = ext)   ## map external variable
+coef(biFace)
+round(biFace$R2vec, 3)
+@
+
+We print out the regression coefficients and the $R^2$ value, which tell us how well the external variable can be mapped onto the configuration in terms of the amount of variance explained. Figure~\ref{fig:simplebi} shows two versions of the resulting biplots. The left panel uses the vector representation as advocated in \cite{Greenacre:2010}, the right panel the axis representation as preferred by \cite{Gower+Lubbe+Roux:2011}. For the axis representation we can do an orthogonal projection of the points on the axis, which gives the fitted values. The \pkg{calibrate} package \citep{Graffelman:2013} turns out to be helpful for such purposes. 
+
+<<simplebi-plot, eval=FALSE, echo=c(1, 3:9)>>=
+library("calibrate")
+op <- par(mfrow = c(1,2))
+plot(biFace, main = "Biplot Vector", vecscale = 0.8, 
+     vec.conf = list(col = "brown"), xlim = c(-1.5, 1.5))
+plot(fitFace, main = "Biplot Axis", xlim = c(-1.5, 1.5))
+abline(h = 0, v = 0, lty = 2, col = "gray")
+calFace <- calibrate(biFace$coef[, 1], ext$PU, tm = seq(-5, 6, by = 1), 
+                     Fr = fitFace$conf, dp = TRUE, axiscol = "brown", 
+                     axislab = "PU", labpos = 3, verb = FALSE)
+par(op)
+@
+\begin{figure}[t!]
+\begin{center}
+<<simplebi-plot1, echo=FALSE, message=FALSE, fig.width = 12, fig.height = 6>>=
+<<simplebi-plot>>
+@
+\end{center}
+\caption{\label{fig:simplebi} Left panel: vector representation of external variable. Right panel: axis representation of external variable.}
+\end{figure}
+
+
+Let us move on with a second, more complex example involving multiple external variables which reproduces part of the analysis presented in \citet{Mair:2018b}. We use the mental states dataset from \citet{Tamir:2016} who, for each individual, collected a dissimilarity matrix involving 60 mental states, derived from
+fMRI scans. The data are included in the \pkg{MPsychoR} package. We average across the individuals, which leads to a single $60 \times 60$ dissimilarity, subject to a 2D monotone spline MDS. After the biplot computations, we print out the $R^2$ values. 
+
+<<neuralbi>>=
+library("MPsychoR")
+data(NeuralActivity)       ## dissimilarity matrices
+data(NeuralScales)         ## external variables
+NeuralD <- Reduce("+", NeuralActivity)/length(NeuralActivity)
+fitNeural <- mds(NeuralD, type = "mspline")
+biNeural <- biplotmds(fitNeural, NeuralScales[,1:8])
+round(biNeural$R2vec, 3)
+@
+
+The vector version of the MDS biplot in given in Figure~\ref{fig:neuralbi}.
+
+<<neuralbi-plot, eval=FALSE>>=
+plot(biNeural, col = "gray", label.conf = list(col = "gray", cex = 0.7),
+     vec.conf = list(col = "brown"), main = "Neural Biplot",
+     xlim = c(-1.5, 1.5), ylim = c(-1.5, 1.5))
+@
+\begin{figure}[t]
+\begin{center}
+<<neuralbi-plot1, echo=FALSE, out.width='0.7\\textwidth'>>=
+<<neuralbi-plot>>
+@
+\end{center}
+\caption{\label{fig:neuralbi} Left panel: vector representation of external variable. Right panel: axis representation of external variable.}
+\end{figure}
+
+The longer a covariate vector, the larger the corresponding $R^2$, that is, the more accurate the corresponding axis projections are in relation to the raw data. The orientation of the vectors reflects the correlation patterns among the external variables, assuming the plot gives an accurate representation of the data (of course, we lose information here due to projecting into a low-dimensional space). Other options such as nonlinear MDS biplots are presented in \cite[Chapter 5]{Gower+Lubbe+Roux:2011}, including corresponding \proglang{R} code.
+
+
+% --------------------------------- Discussion ---------------------------------------------
+\newpage
+\section{Conclusion}
+In this follow-up paper to \citet{DeLeeuw+Mair:2009}, who introduced the \pkg{smacof} package, we presented numerous updates that have been implemented over the years. It is safe to say that these developments establish \pkg{smacof} as the most comprehensive implementation of MDS and unfolding techniques in \proglang{R}. Still, there are several tasks on our to-do list. First, we plan to implement a \code{fastMDS()} routine entirely written in \proglang{C} to speed up computations for large data settings. Second, we will work on an implementation of inverse MDS \citep{deLeeuw+Groenen:1997}. Third, we aim to implement approaches that project on a pre-specified polygon mesh. 
+
+
+
+\section*{Acknowledgements}
+We would like to thank Ingwer Borg for his contributions to the \pkg{smacof} package and corresponding critical applied remarks over the last years. In addition we are grateful to Frank Busing for his contributions to the unfolding implementation. 
+
+\bibliography{smacof}
+\end{document}
+
+
+ 
