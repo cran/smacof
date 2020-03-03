@@ -9,7 +9,7 @@ plot.driftvec <- function(x, adjust = 1, main, xlim, ylim, xlab = "Dimension 1",
   coor <- X - conf    ## center
   angle <- atan2(coor[,2], coor[,1])
   length <- sqrt(coor[,1]^2 + coor[,2]^2)   ## length 
-  length1 <- length/adjust                  ## stretch/squeeze
+  length1 <- length*adjust                  ## stretch/squeeze
   
   x1 <- length1 * cos(angle) + conf[,1]     ## move back
   y1 <- length1 * sin(angle) + conf[,2]

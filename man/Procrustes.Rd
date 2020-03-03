@@ -58,6 +58,8 @@ Returns an object of class \code{procr} with:
   \item{confdistY}{Configuration distances Y}
   \item{confdistYhat}{Configuration distances of fitted configuration}
   \item{congcoef}{Congruence coefficient}
+  \item{aliencoef}{Alienation coefficient}
+  \item{pairdist}{Pairwise object distances (sorted)}
 }
 \references{Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.). Springer.
 }

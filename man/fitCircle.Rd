@@ -24,10 +24,6 @@ fitCircle(x, y)
 Pratt, V. (1987). Direct least-squares fitting of algebraic surfaces. Computer Graphics, Vol. 21, pages 145-152.
 }
 
-\author{
-Retrieved on R help: \url{http://r.789695.n4.nabble.com/Fit-circle-with-R-td4635157.html}.
-}
-
 \examples{
 ## Dataset on Schwartz values:
 require(plotrix)

@@ -1,6 +1,6 @@
 ## smacof with external constraints on the configuration (de Leeuw & Heiser, 1980; Borg & Groenen, p. 236)
 
-smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, type = c("ratio", "interval", "ordinal", "mspline"), 
+smacofConstraint <- function(delta, constraint = "unrestricted", external, ndim = 2, type = c("ratio", "interval", "ordinal", "mspline"), 
                              weightmat = NULL, init = NULL, ties = "primary", verbose = FALSE, 
                              modulus = 1, itmax = 1000, eps = 1e-6,  
                              spline.intKnots = 4, spline.degree = 2, 
@@ -10,7 +10,7 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, t
                              constraint.spline.degree = 2)
 {
   # diss ... dissimilarity matrix
-  # constraint ... either "linear", "unique", "diagonal", or a user-specified function
+  # constraint ... either "unrestricted", "unique", "diagonal", or a user-specified function
   # external ... external data for X-decomposition (Z in paper), or list with "simplex", or "circumplex"
   # weightmat ... weight structure. if not specified, weights is 1-structure
   # ndim ... number of dimensions
@@ -31,7 +31,8 @@ smacofConstraint <- function(delta, constraint = "linear", external, ndim = 2, t
   ties <- match.arg(ties, c("primary", "secondary", "tertiary"), several.ok = FALSE) 
   constraint.type <- match.arg(constraint.type, c("ratio", "interval", "ordinal", "spline", "mspline"), several.ok = FALSE) 
   constraint.ties <- match.arg(constraint.ties, c("primary", "secondary", "tertiary"), several.ok = FALSE) 
-  constraint <- match.arg(constraint, c("linear", "unique", "diagonal"))
+  constraint <- match.arg(constraint, c("linear", "unique", "diagonal", "unrestricted"))
+  if (constraint == "unrestricted") constraint <- "linear"              ## for backward compatibility
   if ((constraint == "diagonal") && (ncol(external) != ndim)) stop("For C diagonal the number of dimensions needs to match the number of covariates!")
   
   

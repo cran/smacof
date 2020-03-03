@@ -11,8 +11,14 @@ plot.smacofPerm <- function(x, alpha = 0.05, main, xlab, ylab, ...)
     Ecdf(x$stressvec, main = main, xlab = xlab, ylab = ylab, subtitles = FALSE, ...)
     abline(v = x$stress.obs, col = "gray", lty = 1)
     text(x$stress.obs, y = 1, labels = paste("Stress: ",round(x$stress.obs, 3), sep = ""), col = "gray", pos = 4, cex = 0.7)
-    abline(h = x$pval, col = "gray", lty = 1)  
-    text(max(x$stressvec)-0.01*max(x$stressvec), y = x$pval, labels = paste("p-value: ",round(x$pval, 3), sep = ""), col = "gray", pos = 3, cex = 0.7)
+    abline(h = x$pval, col = "gray", lty = 1) 
+    if (x$pval == 0) { 
+      pp <- "<0.001" 
+      text(max(x$stressvec)-0.01*max(x$stressvec), y = x$pval, labels = paste("p-value: ", pp, sep = ""), col = "gray", pos = 3, cex = 0.7)
+    } else {
+      pp <- x$pval
+      text(max(x$stressvec)-0.01*max(x$stressvec), y = x$pval, labels = paste("p-value: ", round(pp, 3), sep = ""), col = "gray", pos = 3, cex = 0.7)
+    }
     abline(h = alpha, col = "gray", lty = 2) 
 }
 

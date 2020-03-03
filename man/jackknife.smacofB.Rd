@@ -1,6 +1,6 @@
-\name{jackknife}
-\alias{jackknife}
-\alias{jackknife.smacofB}
+\name{jackmds}
+\alias{jackmds}
+\alias{jackmds.smacofB}
 \alias{plot.smacofJK}
 \alias{print.smacofJK}
 
@@ -9,10 +9,11 @@
 \description{These methods perform a SMACOF Jackknife and plot the corresponding solution.
 }
 \usage{
-\method{jackknife}{smacofB}(object, eps = 1e-6, itmax = 100, verbose = FALSE)
+\method{jackmds}{smacofB}(object, eps = 1e-6, itmax = 100, verbose = FALSE)
 
 \method{plot}{smacofJK}(x, plot.dim = c(1,2), hclpar = list(c = 50, l = 70), 
-col.p, col.l, plot.lines = TRUE, main, xlab, ylab, xlim, ylim, asp = 1, ...)
+col.p, col.l, plot.lines = TRUE, legend = FALSE, inset = c(-0.2, 0), cex.legend = 0.7,
+main, xlab, ylab, xlim, ylim, asp = 1, ...)
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -27,7 +28,10 @@ col.p, col.l, plot.lines = TRUE, main, xlab, ylab, xlim, ylim, asp = 1, ...)
   \item{hclpar}{Chroma and luminance to be used for HCL colors (further details see \code{\link{rainbow_hcl}})}
   \item{col.p}{Point color. If omitted, hcl colors will be used; if specified, the corresponding (single) color will be used for plotting.}
   \item{col.l}{Line color. If omitted, hcl colors will be used; if specified, the corresponding (single) color will be used for plotting.}
-  \item{plot.lines}{If \code{TRUE}, the Jackknife configurations are plotted are connected with their centroid}
+  \item{plot.lines}{If \code{TRUE}, the Jackknife configurations are plotted are connected with their centroid.}
+  \item{legend}{If \code{TRUE}, the centroid labels are added as legend.}
+  \item{inset}{Inset distance from the margins as a fraction of the plot region when legend is placed by keyword.}
+  \item{cex.legend}{Character expansion factor for legend.}
   \item{main}{Plot title.}
   \item{xlab}{Label of x-axis.}
   \item{ylab}{Label of y-axis.}
@@ -66,7 +70,7 @@ col.p, col.l, plot.lines = TRUE, main, xlab, ylab, xlim, ylim, asp = 1, ...)
 data <- na.omit(PVQ40[,1:5])
 diss <- dist(t(data))   ## Euclidean distances 
 fit <- mds(diss) 
-res.jk <- jackknife(fit)
+res.jk <- jackmds(fit)
 
 plot(res.jk, col.p = "black", col.l = "gray")
 plot(res.jk, hclpar = list(c = 80, l = 40))

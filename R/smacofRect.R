@@ -1,5 +1,5 @@
 smacofRect <- function(delta, ndim = 2, type = c("ratio", "interval", "ordinal", "mspline"),
-                       conditionality = c("matrix", "row"), lambda = 0.5, omega = 0.1, 
+                       conditionality = "unconditional", lambda = 0.5, omega = 1, 
                        circle = c("none", "row", "column"), weightmat = NULL, init = NULL, 
                        fixed = c("none", "row", "column"), fixed.coord = NULL,
                        ties = c("primary", "secondary"), verbose = FALSE, relax = TRUE, itmax = 10000,  
@@ -11,7 +11,8 @@ smacofRect <- function(delta, ndim = 2, type = c("ratio", "interval", "ordinal",
   circle <- match.arg(circle, c("none", "row", "column"), several.ok = FALSE)
   type <- match.arg(type, c("ratio", "interval", "ordinal", "mspline"), several.ok = FALSE)
   ties <- match.arg(ties, c("primary","secondary"), several.ok = FALSE)
-  conditionality <- match.arg(conditionality, c("matrix", "row"), several.ok = FALSE)
+  conditionality <- match.arg(conditionality, c("unconditional", "matrix", "row"), several.ok = FALSE)
+  if (conditionality == "unconditional") conditionality <- "matrix"         ## for backward compatibility
   fixed <- match.arg(fixed, c("none", "row", "column"), several.ok = FALSE)
   diss <- delta
   rnames <- rownames(delta)

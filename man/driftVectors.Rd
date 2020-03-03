@@ -37,7 +37,7 @@ driftVectors(data, type = c("ratio", "interval", "ordinal","mspline"),
   \item{spline.intKnots}{Number of interior knots of the spline for \code{"mspline"} MDS type}
     
   \item{x}{Object of class \code{"driftvec"}}
-  \item{adjust}{Scaling factor for drift vectors (value larger than 1 reduces the length)}
+  \item{adjust}{Scaling factor for drift vectors (value larger than 1 increases the length)}
   \item{main}{Plot title}
   \item{xlab}{Label of x-axis}
   \item{ylab}{Label of y-axis}
@@ -83,7 +83,7 @@ P <- matrix(c(0,  4,  6, 13,
 D <- sim2diss(P, method = 40) 
 res <- driftVectors(D, type = "interval")
 plot(res)
-plot(res, 4)    ## shorten drift vectors 
+plot(res, adjust = 0.1)    ## shorten drift vectors 
 
 ## Morse code data
 fit.drift <- driftVectors(morse2, type = "ordinal")

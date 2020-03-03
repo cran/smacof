@@ -1,8 +1,8 @@
-jackknife.smacofB <- function(object, eps = 1e-6, itmax = 100, verbose = FALSE) 
+jackmds.smacofB <- function(object, eps = 1e-6, itmax = 100, verbose = FALSE) 
 {
   ## object... object of class smacofB (from smacofSym, smacofConstraint)
     if (class(object)[1] != "smacofB") stop("Jackknife is currenlty implemented for objects of class smacofB from smacofSym() only! \n")
-    if (object$model == "SMACOF constraint") stop("Jackknife is currenlty implemented for smacofSym() objects only! \n")
+    if (object$model == "SMACOF constraint") stop("Jackknife is currently implemented for smacofSym() objects only! \n")
     
     delta <- as.matrix(object$delta)
     n <- nrow(delta)

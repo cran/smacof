@@ -57,7 +57,7 @@ asp = 1, type = "p", pch = 20, ...)
 }
 
 
-\seealso{\code{\link{jackknife}}}
+\seealso{\code{\link{jackmds}}}
 
 \examples{
 

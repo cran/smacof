@@ -2,6 +2,24 @@
 \title{News for Package \pkg{smacof}}
 \encoding{UTF-8}
 
+
+\section{Changes in Version 2.1-0}{
+  \itemize{
+    \item Alienation coefficient added to Procrustes().
+    \item Procrustes() returns pairwise distances.
+    \item jackknife() renamed to jackmds().
+    \item Legend option for jakcknife added to plot.smacofJK().
+    \item In smacofConstraint() "linear" constraint changed to "unrestricted".
+    \item In unfolding() "matrix" changed to "unconditional". 
+    \item omega default in unfolding() set to 1. 
+    \item Guttman datasets added (Guttman1965, Guttman1991). 
+    \item Second rectangle dataset added (area-shape). 
+    \item svm_mdsplot() added for facet plotting based on SVM fit.
+    \item Argument "scale" in biplotmds() added. 
+    }
+}
+
+
 \section{Changes in Version 2.0-0}{
   \itemize{
     \item Color shading added to plot.icexplore().

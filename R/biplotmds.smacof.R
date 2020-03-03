@@ -9,7 +9,7 @@ biplotmds.smacof <- function(object, extvar, scale = TRUE) {
   if (nrow(extvar) != nrow(X)) step("Number of rows in extvar needs to match number of objects in configuration!")
   
   rownames(extvar) <- rownames(object$conf)
-  ext <- scale(extvar, scale = TRUE)
+  ext <- scale(extvar, scale = scale)
   
   regfit <- lm(ext ~ -1 + X)
   regfit$coefficients <- as.matrix(regfit$coefficients)

@@ -29,7 +29,7 @@ driftVectors <- function(data, type = c("ratio", "interval", "ordinal","mspline"
   Dmat <- apply(Cmat, 2, function(cc) tapply(cc, indmat[,1], mean))
   Dlength <- apply(Dmat, 1, function(dd) sqrt(sum(dd^2)))                     ## vector length
   names(Dlength) <- rownames(x)
-  Dlength <- Dlength*n                                          ## due to normalization
+  Dlength <- Dlength/mean(M)*sqrt(n)                                       ## scaling vector length
   u <- c(0,1)
   alpha <- apply(Dmat, 1, function(di) acos((t(di) %*% u)/sqrt(t(di) %*% di)))  ## angle (radians)
   driftcoor <- cbind(x[,1] + cos(alpha) * Dlength, x[,2] - sin(alpha) * Dlength) ## drift coordinates
