@@ -38,7 +38,7 @@ main, xlab, ylab, xlim, ylim, asp = 1, ...)
   \item{xlim}{Scale x-axis.}
   \item{ylim}{Scale y-axis.}
   \item{asp}{Aspect ratio.}
-  \item{\dots}{Further plot arguments passed: see \code{\link[graphics]{plot}} for detailed information.}
+  \item{\dots}{Further plot arguments passed: see \code{\link[graphics:plot.default]{plot}} for detailed information.}
 }
 
 \details{In order to examine the stability solution of an MDS, a Jackknife on the configurations can be performed (see de Leeuw & Meulman, 1986) and plotted. The plot shows the jackknife configurations which are connected to their centroid. In addition, the original smacof configuration (transformed through Procrustes) is plotted. The Jackknife function itself returns also a stability measure (as ratio of between and total variance), a measure for cross validity, and the dispersion around the original smacof solution. 

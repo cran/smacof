@@ -1,5 +1,6 @@
 svm_mdsplot <- function(mds_object, svm_object, class, legend1 = TRUE, legend2 = TRUE, 
-                        inset = c(-0.2, 0.5), plot.dim = c(1,2), main, xlab, ylab, xlim, ylim, ...) 
+                        inset = c(-0.2, 0.5), plot.dim = c(1,2), by = 0.01, 
+                        main, xlab, ylab, xlim, ylim, ...) 
 {
   X <- mds_object$conf[,plot.dim]
   X1 <- mds_object$conf
@@ -14,7 +15,7 @@ svm_mdsplot <- function(mds_object, svm_object, class, legend1 = TRUE, legend2 =
   
   nc <- svm_object$nclasses
   minmax <- range(c(X))*2.2      
-  seqs <- seq(minmax[1], minmax[2], 0.01)
+  seqs <- seq(minmax[1], minmax[2], by = by)
   dnames <- attr(svm_object$terms, "term.labels")[plot.dim]
   
   xgrid <- expand.grid(list(seqs, seqs))
@@ -36,7 +37,7 @@ svm_mdsplot <- function(mds_object, svm_object, class, legend1 = TRUE, legend2 =
         xlim = xlim, ylim = ylim)
   points(X, cex = 0.7, pch = (1:nc)[as.numeric(class)])      
   text(X, labels = rownames(X), pos = 3, cex = 0.7)
-  if (legend1) legend("topright", inset = c(inset[1], 0), legend = svm_object$levels, pch = 15, title = "Facets", col = rainbow_hcl(nc), cex = 0.7)
+  if (legend1) legend("topright", inset = c(inset[1], 0), legend = svm_object$levels, pch = 15, title = "Regions", col = rainbow_hcl(nc), cex = 0.7)
   if (legend2) legend("topright", inset = c(inset[1], inset[2]), legend = svm_object$levels, title = "Classes", pch = 1:nc, cex = 0.7)
   par(op)
 }

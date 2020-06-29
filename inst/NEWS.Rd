@@ -2,6 +2,12 @@
 \title{News for Package \pkg{smacof}}
 \encoding{UTF-8}
 
+\section{Changes in Version 2.1-1}{
+  \itemize{
+    \item svm_mdsplot() updated.
+    \item Nutshell vignettes added.
+    }
+}  
 
 \section{Changes in Version 2.1-0}{
   \itemize{

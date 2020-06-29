@@ -40,7 +40,7 @@
   \item{ylab}{Label of y-axis.}
   \item{xlim}{Scale x-axis.}
   \item{ylim}{Scale y-axis.}
-  \item{type}{What type of plot should be drawn (see also \code{\link[graphics]{plot}}).}
+  \item{type}{What type of plot should be drawn (see also \code{\link[graphics:plot.default]{plot}}).}
   \item{pch}{Plot symbol.}
   \item{cex}{Symbol size.}
   \item{asp}{Aspect ratio.}
@@ -59,7 +59,7 @@
   \item{label.conf.columns}{List with arguments for plotting the labels of the columns configurations in an unfolding configuration plot (logical value whether to plot labels or not, label position, label color).}
   \item{col.hist}{Color of the borders of the histogram.}
   \item{plot.array}{Array arrangements of plots for individual difference models (see details).}
-  \item{\dots}{Further plot arguments passed: see \code{\link[graphics]{plot}} for detailed information.}
+  \item{\dots}{Further plot arguments passed: see \code{\link[graphics:plot.default]{plot}} for detailed information.}
 }
 
 \details{\code{mds()} and \code{smacofSym()} create an object of class \code{"smacof"}, \code{unfolding()}, \code{prefscal()}, and \code{smacofRect()} produce \code{"smacofR"}, and \code{smacofIndDiff()} generates \code{"smacofID"}.

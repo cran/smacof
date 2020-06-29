@@ -1,8 +1,8 @@
 Package: smacof
 Type: Package
 Title: Multidimensional Scaling
-Version: 2.1-0
-Date: 2020-03-02
+Version: 2.1-1
+Date: 2020-06-29
 Authors@R: c(person("Patrick", "Mair", role = c("aut", "cre"), email = "mair@fas.harvard.edu"), person("Jan", "De Leeuw", role = "aut"), person("Patrick J. F.", "Groenen", role = "aut"), person("Ingwer", "Borg", role = "ctb"))
 Description: Implements the following approaches for multidimensional scaling (MDS) based on stress minimization using majorization (smacof): ratio/interval/ordinal/spline MDS on symmetric dissimilarity matrices, MDS with external constraints on the configuration, individual differences scaling (idioscal, indscal), MDS with spherical restrictions, and ratio/interval/ordinal/spline unfolding (circular restrictions, row-conditional). Various tools and extensions like jackknife MDS, bootstrap MDS, permutation tests, MDS biplots, gravity models, unidimensional scaling, drift vectors (asymmetric MDS), classical scaling, and Procrustes are implemented as well.  
 Imports: graphics, stats, polynom, Hmisc, nnls, grDevices, MASS,
@@ -10,17 +10,17 @@ Imports: graphics, stats, polynom, Hmisc, nnls, grDevices, MASS,
         doParallel
 Depends: R (>= 3.5.0), plotrix, colorspace, e1071
 License: GPL-3
-Suggests: knitr, prefmod, MPsychoR, calibrate
+Suggests: knitr, prefmod, MPsychoR, calibrate, ggplot2, rmarkdown
 VignetteBuilder: knitr
 LazyData: yes
 LazyLoad: yes
 ByteCompile: yes
 NeedsCompilation: yes
-Packaged: 2020-03-02 20:14:50 UTC; root
+Packaged: 2020-06-29 15:38:27 UTC; root
 Author: Patrick Mair [aut, cre],
   Jan De Leeuw [aut],
   Patrick J. F. Groenen [aut],
   Ingwer Borg [ctb]
 Maintainer: Patrick Mair <mair@fas.harvard.edu>
 Repository: CRAN
-Date/Publication: 2020-03-03 16:34:03 UTC
+Date/Publication: 2020-06-29 19:38:56 UTC

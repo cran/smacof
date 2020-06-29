@@ -39,7 +39,7 @@
   \item{label.conf}{List with arguments for plotting the labels of the configurations in a configuration plot (logical value whether to plot labels or not, label position, label color).}
   \item{vec.conf}{List with arguments for arrows and arrow labels of the external variables.}
   \item{identify}{If \code{TRUE}, the \code{identify()} function is called internally that allows to add configuration labels by mouse click.}
-  \item{\dots}{Further plot arguments passed: see \code{\link[graphics]{plot}} for detailed information.}
+  \item{\dots}{Further plot arguments passed: see \code{\link[graphics:plot.default]{plot}} for detailed information.}
 }
 
 \details{If a model for individual differences is provided, the external variables are regressed on the group stimulus space configurations. In the biplot only the relative length of the vectors and their direction matters. Using the scale argument the user can control for the relative length of the vectors. If \code{vecscale = NULL}, the \code{vecscale()} function from the \pkg{candisc} package is used which tries to automatically calculate the scale factor so that the vectors approximately fill the same space as the configuration. 
