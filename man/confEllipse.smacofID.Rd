@@ -48,7 +48,7 @@ Returns an object belonging to classes \code{"confell"}.
   \item{s}{Optimized stress (raw value)}
 }
 
-\references{De Leeuw, J. (2019). Individual Differences Multidimensional Scaling. \url{http://deleeuwpdx.net/pubfolders/stability}
+\references{De Leeuw, J. (2019). Individual Differences Multidimensional Scaling.
 }
 
 

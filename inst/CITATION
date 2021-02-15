@@ -9,12 +9,12 @@ citEntry(entry = "Article",
   volume       = "31",
   number       = "3",
   pages        = "1--30",
-  url          = "http://www.jstatsoft.org/v31/i03/",
+  url          = "https://www.jstatsoft.org/v31/i03/",
 
   textVersion  =
   paste("Jan de Leeuw, Patrick Mair (2009).",
         "Multidimensional Scaling Using Majorization: SMACOF in R.",
         "Journal of Statistical Software, 31(3), 1-30.",
-        "URL http://www.jstatsoft.org/v31/i03/.")
+        "URL https://www.jstatsoft.org/v31/i03/.")
 )
 

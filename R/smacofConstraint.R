@@ -71,11 +71,11 @@ smacofConstraint <- function(delta, constraint = "unrestricted", external, ndim 
       constraint.trans <- constraint.type
       if (constraint.trans == "ratio"){
         constraint.trans <- "none"
-      } else if (constraint.trans=="ordinal" & ties=="primary"){
+      } else if (constraint.trans=="ordinal" & constraint.ties=="primary"){
         constraint.trans <- "ordinalp"
-      } else if(constraint.trans=="ordinal" & ties=="secondary"){
+      } else if(constraint.trans=="ordinal" & constraint.ties=="secondary"){
         constraint.trans <- "ordinals"
-      } else if(constraint.trans=="ordinal" & ties=="tertiary"){
+      } else if(constraint.trans=="ordinal" & constraint.ties=="tertiary"){
         constraint.trans <- "ordinalt"
       } else if(constraint.trans=="spline"){
         constraint.trans <- "spline"

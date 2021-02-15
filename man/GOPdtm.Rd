@@ -12,7 +12,7 @@ GOP website. They were asked to complete the sentence "I am a Republican because
 selected the 37 most frequent words and created a document-term matrix.
 }
 
-\references{air, P., Rusch, T. & Hornik, K. (2014). The Grand Old Party - A party of values? SpringerPlus, 3(697), \url{http://www.springerplus.com/content/3/1/697} 
+\references{air, P., Rusch, T. & Hornik, K. (2014). The Grand Old Party - A party of values? SpringerPlus, 3(697), \url{https://springerplus.springeropen.com/articles/10.1186/2193-1801-3-697} 
 }
 
 \examples{

@@ -79,7 +79,7 @@ If no starting configuration is provided, a random starting solution is used. In
   \item{nobj}{Number of objects}
 }
 \references{
-De Leeuw, J. & Mair, P. (2009). Multidimensional scaling using majorization: The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{http://www.jstatsoft.org/v31/i03/} 
+De Leeuw, J. & Mair, P. (2009). Multidimensional scaling using majorization: The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{https://www.jstatsoft.org/v31/i03/} 
 
 Mair, P., Groenen, P. J. F., & De Leeuw, J. (2020). More on multidimensional scaling and unfolding in
 R: smacof version 2. Journal of Statistical Software, Forthcoming.

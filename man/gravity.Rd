@@ -27,7 +27,7 @@ a weight matrix is created that sets cells with no co-occurences to 0. The corre
   \item{co.occ}{Matrix with co-occurences}
 }
 \references{Mair, P., Rusch, T. & Hornik, K. (2014). The Grand Old Party - A party of values?
-SpringerPlus, 3(697), \url{http://www.springerplus.com/content/3/1/697} 
+SpringerPlus, 3(697), \url{https://springerplus.springeropen.com/articles/10.1186/2193-1801-3-697} 
 }
 \author{Patrick Mair}
 

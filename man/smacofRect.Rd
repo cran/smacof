@@ -83,7 +83,7 @@ Creates an object of class \code{smacofR}.
   \item{nobj}{Number of objects (columns)}
 }
 \references{de Leeuw, J. & Mair, P. (2009). Multidimensional scaling using majorization: 
-The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{http://www.jstatsoft.org/v31/i03/} 
+The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{https://www.jstatsoft.org/v31/i03/} 
 
 Busing, F. M. T. A., Groenen, P. J. F., & Heiser, W. J. (2005). Avoiding degeneracy in multidimensional unfolding by penalizing on the coefficient of variation. Psychometrika, 70, 71-98.
 }

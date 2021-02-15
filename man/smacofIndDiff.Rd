@@ -75,7 +75,7 @@ Addtional weight restrictions can be imposed with \code{"identity"} which restri
 
 \references{
 De Leeuw, J., & Mair, P. (2009). Multidimensional scaling using majorization: 
-The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{http://www.jstatsoft.org/v31/i03/} 
+The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{https://www.jstatsoft.org/v31/i03/} 
 }
 \author{Jan de Leeuw and Patrick Mair}
 

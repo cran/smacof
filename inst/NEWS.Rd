@@ -2,6 +2,12 @@
 \title{News for Package \pkg{smacof}}
 \encoding{UTF-8}
 
+\section{Changes in Version 2.1-2}{
+  \itemize{
+    \item Bug in smacofConstraint() for constraint.ties fixed. 
+    }
+} 
+
 \section{Changes in Version 2.1-1}{
   \itemize{
     \item svm_mdsplot() updated.

@@ -57,7 +57,7 @@ This function allows for fitting three basic types of MDS: ratio MDS (default), 
   \item{type}{Type of MDS model}
 }
 \references{De Leeuw, J. & Mair, P. (2009). Multidimensional scaling using majorization: 
-The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{http://www.jstatsoft.org/v31/i03/} 
+The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{https://www.jstatsoft.org/v31/i03/} 
 
 Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.). Springer.
 

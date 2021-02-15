@@ -44,7 +44,7 @@ In the plot function the number reflects the index of corresponding MDS fit, the
 
 \references{
 Borg, I. and Mair, P. (2017). The choice of initial configurations in multidimensional scaling: local
-minima, fit, and interpretability. Austrian Journal of Statistics, 46, 19-32. \url{http://dx.doi.org/10.17713/ajs.v46i2.561}
+minima, fit, and interpretability. Austrian Journal of Statistics, 46, 19-32. \doi{10.17713/ajs.v46i2.561}
 }
 
 
