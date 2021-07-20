@@ -1188,7 +1188,7 @@ plot(fitproc, legend = list(labels = c("artificial", "natural")))
 
 Another option to apply Procrustes is to use a theoretical configuration as target. For instance, \cite{Borg+Leutner:1983} constructed rectangles on the basis of a grid design (as contained in \code{rect\_constr}) which we use as target configuration. Participants had to rate similarity among rectangles within this grid. Based on these ratings a dissimilarity matrix was constructed, here subject to a 2D ordinal MDS solution. Within the context of theoretical solutions it is sometimes interesting to determine the stress value based on the dissimilarity matrix and an initial configuration (with 0 iterations). The \code{stress0} function does the job. 
 <<stress0>>=
-stress0(rectangles, init = rect_constr)  
+stress0(rectangles, init = rect_constr)$stress  
 @
 
 Now we fit an ordinal MDS model, using the theoretical rectangle alignment as starting value. The resulting MDS configuration is used as testee configuration $\mathbf Y$, subject to Procrustes. 

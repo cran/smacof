@@ -1,4 +1,4 @@
-514a804b09faf7e055476e93026e7ffd *DESCRIPTION
+1ebcb4272eeb8304852e87fe393152bc *DESCRIPTION
 54a42462a1451f21c20b8ccd830dfe49 *NAMESPACE
 18389b9dd126337d81c099fe3e01ccc5 *R/Procrustes.R
 7a8c9431d364652b9f3659365100fd24 *R/appendList.R
@@ -80,7 +80,7 @@ a8c5ca4340eb0a506a6572abff86c4a1 *R/smacofSym.R
 903fc0dc6a9d6970f3da252dfef60b6f *R/sphereProj.R
 231ac6470272f8b817bbe9d1ff1dcdfb *R/splineSetUp.R
 4374210e0e39d63f7189e7f73fbf13ab *R/spp.R
-62eb7d88a93f41fe259dbf13fc9371ec *R/stress0.R
+74efd88f948a86fe6d5dd1e24266a304 *R/stress0.R
 33e6435ac3b82cd73f31e621f42520da *R/strucprep.R
 152761e5defa2baa089a02fa93e33483 *R/sumList.R
 4d8a38f6ef0965683fd2c8d02f499296 *R/summary.smacofB.R
@@ -98,8 +98,8 @@ b17db3de4d360971c7efdf5a5d50cbc0 *R/unfolding.R
 c119da19b73d3c9734c7b5097d821386 *R/vecAsDist.R
 a36998982a9bc551c1e147791357fc55 *R/vmat.R
 807edaa3e81082ac478a8cabbe3e7660 *R/vmu.R
-03ba5f59e6245ca04491f5a0f4d470d6 *build/partial.rdb
-cfe9a95f164ca8f9b6b28cde4a6f6202 *build/vignette.rds
+c893924a6b843419fcf9a080c549c50f *build/partial.rdb
+a1166d7bd95a2319b99bd1b7563958dd *build/vignette.rds
 c9fa2c49f8b67cd87a1a2665af759e71 *data/CanadaNews.rda
 4fa81a819fdeff36f2e23261a6085b81 *data/Duration.rda
 21cea083d2d3c0af9c318e72298972b4 *data/DurationRaw.rda
@@ -141,12 +141,12 @@ e63231d7e3a7495d68d8ef9930057b42 *data/rectangles.rda
 c3cb298098a153123604d8705b5ca4b7 *data/trading.rda
 c7cc9e41719bdfae358db103cbc8d143 *data/winedat.rda
 eac9235285190bf53acc56155c680383 *data/wish.rda
-8941ac43fc014539c1151b3108056f4f *inst/CITATION
-ebfeab37afae846a618f0a27d9d63363 *inst/NEWS.Rd
+1e07dd3837ebb7dc51d27a36a32c0f22 *inst/CITATION
+d606e1e16a393fcbb410d9cd0bf66cf1 *inst/NEWS.Rd
 ba694118e592bfafbc8a9894c173a24d *inst/NEWSRd2txt.R
-c89a79730319f0e228b22e4758b5ab46 *inst/doc/smacof.R
-737c61158b77f45b05f210a6e67e8a67 *inst/doc/smacof.Rnw
-77d356feb79c555b7b32e51cf8b34331 *inst/doc/smacof.pdf
+e8f79982db47fecd03cfa4b76e107502 *inst/doc/smacof.R
+1e26e4f1e3130a331741ae4f43c6d2e3 *inst/doc/smacof.Rnw
+2cb36736c8431823c863ff1b18867fd1 *inst/doc/smacof.pdf
 3ccb2900fe4f79340ad94cb92a858635 *man/CanadaNews.Rd
 221c94e2df36b0bac0be5bb2affb824b *man/Duration.Rd
 c97f9dc56929cd22773b4fd47ae3c6d5 *man/EW_ger.Rd
@@ -196,7 +196,7 @@ a18fec609698b5257d7ab8a6676b1add *man/smacofIndDiff.Rd
 c464de860eef18c7c242aa6991b4c163 *man/smacofSphere.Rd
 2dd7ff9f5895925e32dc2498bf925c60 *man/smacofSym.Rd
 cd5f3ea18da8b3fecaae076dc22c486a *man/stardist.Rd
-662187a48cfd1cd8d878718baffcce8e *man/stress0.Rd
+b79cff2ec671b325dd504bf846bedbaa *man/stress0.Rd
 d5a4b22bc4aae23bbdda6f2f5955e5de *man/summary.smacofB.Rd
 7297ee0240408278e94da97e9c84e5c6 *man/svm_mdsplot.Rd
 8f571b36cfd5202db68000234dd65c92 *man/symdecomp.Rd
@@ -211,5 +211,5 @@ af0f9069b421bfefd5be228ab74b2db8 *src/init.c
 b85ce419613d93e204bb8976e66da60f *src/nextperm.c
 47316ea399ce5e55490d30d6d8e78385 *src/weightedMean.c
 e9aa41a4f68ad9abbe8cf3e397e82833 *src/wmonreg.c
-737c61158b77f45b05f210a6e67e8a67 *vignettes/smacof.Rnw
+1e26e4f1e3130a331741ae4f43c6d2e3 *vignettes/smacof.Rnw
 504ac0cb7b838fa7d819232b7b00d225 *vignettes/smacof.bib

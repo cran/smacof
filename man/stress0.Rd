@@ -20,10 +20,25 @@ stress0(delta, init, type = c("interval", "ratio", "ordinal", "mspline"),
   \item{spline.degree}{Degree of the spline for \code{"mspline"} MDS type}
   \item{spline.intKnots}{Number of interior knots of the spline for \code{"mspline"} MDS type}
 }
-\details{Computes stress-1 for a particular starting configuration the user needs to provide. It can also be helpful if the user wants to move some points in a particular configuration such that it fits some theoretical expectations.
+\details{Computes stress-1 for a particular starting configuration the user needs to provide. It can also be helpful if the user wants to force a particular theoretical configuration (as specified in \code{inits}) on the data.
 }
 
-\value{Stress-1 value
+\value{
+  \item{delta}{Observed dissimilarities, not normalized}
+  \item{dhat}{Disparities (transformed proximities, approximated distances, d-hats)}
+  \item{confdist}{Configuration distances}
+  \item{conf}{Matrix of fitted configurations}
+  \item{stress}{Stress-1 value}
+  \item{spp}{Stress per point (stress contribution in percentages)}
+  \item{resmat}{Matrix with squared residuals}
+  \item{rss}{Residual sum-of-squares}
+  \item{weightmat}{Weight matrix}
+  \item{ndim}{Number of dimensions}
+  \item{init}{Starting configuration}
+  \item{model}{Name of smacof model}
+  \item{niter}{Number of iterations}
+  \item{nobj}{Number of objects}
+  \item{type}{Type of MDS model}
 }
 
 \seealso{\code{\link{mds}}

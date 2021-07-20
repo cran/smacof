@@ -492,7 +492,7 @@ fitproc
 plot(fitproc, legend = list(labels = c("artificial", "natural")))
 
 ## ----stress0----------------------------------------------------------
-stress0(rectangles, init = rect_constr)  
+stress0(rectangles, init = rect_constr)$stress  
 
 ## ----proc2-plot, eval=FALSE, echo=TRUE--------------------------------
 #  fitrect <- mds(rectangles, type = "ordinal", init = rect_constr)

@@ -2,6 +2,13 @@
 \title{News for Package \pkg{smacof}}
 \encoding{UTF-8}
 
+\section{Changes in Version 2.1-3}{
+  \itemize{
+    \item stress0() is now an object of class "smacof".
+    }
+} 
+
+
 \section{Changes in Version 2.1-2}{
   \itemize{
     \item Bug in smacofConstraint() for constraint.ties fixed. 

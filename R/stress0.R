@@ -68,5 +68,19 @@ stress0 <- function(delta, init, type = c("interval", "ratio", "ordinal","msplin
   dhat <- dhat2$res
   snon <- sum(wgths*(dhat-d)^2)/nn   
   stress <- sqrt(snon)
-  return(stress)
+  
+  ## additional outputs
+  colnames(x) <- paste("D",1:(dim(x)[2]),sep="")
+  rownames(x) <- labels(diss)
+  dhat <- structure(dhat, Size = n, call = quote(as.dist.default(m=b)), class = "dist", Diag = FALSE, Upper = FALSE) 
+  attr(dhat, "Labels") <- labels(diss)
+  dhat[is.na(diss)] <- NA     
+  spoint <- spp(dhat, dist(x), wgths)         ## stress-per-point
+  rss <- sum(spoint$resmat[lower.tri(spoint$resmat)]) 
+  
+  result <- list(delta = diss, dhat = dhat, confdist = dist(x), iord = dhat2$iord.prim, conf = x, stress = stress, 
+                 spp = spoint$spp, ndim = p, weightmat = wgths, resmat = spoint$resmat, rss = rss, init = xstart, model = "Symmetric SMACOF", niter = 0, nobj = n, 
+                 type = type, call = match.call()) 
+  class(result) <- c("smacofB","smacof")
+  result
 }
