@@ -23,8 +23,13 @@ randomstress(n, ndim, nrep = 100, type = c("ratio", "interval", "ordinal", "mspl
 Returns a vector with stress values.
 }
 
-\references{Spence I., Ogilvie, J.C. (1973). A table of expected stress values for random rankings in
+\references{
+Spence I., Ogilvie, J.C. (1973). A table of expected stress values for random rankings in
 nonmetric multidimensional scaling. Multivariate Behavioral Research, 8, 511-517.
+
+Mair, P., Groenen, P. J. F., De Leeuw, J. (2022). More on multidimensional scaling in R: smacof version 2. 
+Journal of Statistical Software, 102(10), 1-47. \doi{10.18637/jss.v102.i10}
+
 }
 
 \examples{

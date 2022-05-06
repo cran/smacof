@@ -48,7 +48,8 @@ Returns an object belonging to classes \code{"confell"}.
   \item{s}{Optimized stress (raw value)}
 }
 
-\references{De Leeuw, J. (2019). Individual Differences Multidimensional Scaling.
+\references{
+Mair, P., Groenen, P. J. F., De Leeuw, J. (2022). More on multidimensional scaling in R: smacof version 2, Journal of Statistical Software, 102(10), 1-47. \doi{10.18637/jss.v102.i10}
 }
 
 

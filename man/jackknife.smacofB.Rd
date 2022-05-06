@@ -58,8 +58,12 @@ main, xlab, ylab, xlim, ylim, asp = 1, ...)
   \item{nobj}{Number of objects}
 }
 
-\references{De Leeuw, J., & Meulman, J. (1986). A special jackknife for multidimensional scaling. Journal of Classification, 3, 97-112.  
+\references{
+De Leeuw, J., & Meulman, J. (1986). A special jackknife for multidimensional scaling. Journal of Classification, 3, 97-112.
+
+Mair, P., Groenen, P. J. F., De Leeuw, J. (2022). More on multidimensional scaling in R: smacof version 2, Journal of Statistical Software, 102(10), 1-47. \doi{10.18637/jss.v102.i10}
 }
+
 \author{Jan de Leeuw and Patrick Mair}
 
 \seealso{\code{\link{bootmds}}}

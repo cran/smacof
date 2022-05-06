@@ -8,13 +8,13 @@ Multidimensional scaling on a symmetric dissimilarity matrix using SMACOF.
 }
 \usage{
 smacofSym(delta, ndim = 2, type = c("ratio", "interval", "ordinal", "mspline"), 
-          weightmat = NULL, init = "torgerson", ties = "primary", verbose = FALSE, 
-          relax = FALSE, modulus = 1, itmax = 1000, eps = 1e-06, 
+          weightmat = NULL, init = "torgerson", ties = "primary", principal = FALSE, 
+          verbose = FALSE, relax = FALSE, modulus = 1, itmax = 1000, eps = 1e-06, 
           spline.degree = 2, spline.intKnots = 2)
 
 mds(delta, ndim = 2, type = c("ratio", "interval", "ordinal", "mspline"), 
-    weightmat = NULL, init = "torgerson", ties = "primary", verbose = FALSE, 
-    relax = FALSE, modulus = 1, itmax = 1000, eps = 1e-06, 
+    weightmat = NULL, init = "torgerson", ties = "primary", principal = FALSE, 
+    verbose = FALSE, relax = FALSE, modulus = 1, itmax = 1000, eps = 1e-06, 
     spline.degree = 2, spline.intKnots = 2)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -25,6 +25,7 @@ mds(delta, ndim = 2, type = c("ratio", "interval", "ordinal", "mspline"),
   \item{init}{Either \code{"torgerson"} (classical scaling starting solution), \code{"random"} (random configuration), or a user-defined matrix}
   \item{type}{MDS type: \code{"interval"}, \code{"ratio"}, \code{"ordinal"} (nonmetric MDS), or \code{"mspline"}}
   \item{ties}{Tie specification (ordinal MDS only): \code{"primary"}, \code{"secondary"}, or \code{"tertiary"}}
+  \item{principal}{If \code{TRUE}, principal axis transformation is applied to the final configuration}
   \item{verbose}{If \code{TRUE}, intermediate stress is printed out}
   \item{relax}{If \code{TRUE}, block relaxation is used for majorization}
   \item{modulus}{Number of smacof iterations per monotone regression call}
@@ -33,19 +34,23 @@ mds(delta, ndim = 2, type = c("ratio", "interval", "ordinal", "mspline"),
   \item{spline.degree}{Degree of the spline for \code{"mspline"} MDS type}
   \item{spline.intKnots}{Number of interior knots of the spline for \code{"mspline"} MDS type}
 }
-\details{This is the simplest MDS-SMACOF version of the package. It solves the stress target function for symmetric dissimiliarities by means of the majorization approach (SMACOF) and reports the Stress-1 value (normalized). The main output are the coordinates in the low-dimensional space (configurations; \code{conf}). 
+\details{
+The function \code{mds()} is a wrapper function and can be used instead of \code{smacofSym()}. It reports the Stress-1 value (normalized). The main output are the coordinates in the low-dimensional space (configuration; \code{conf}; see also \code{\link{plot.smacof}}). 
 
-The function \code{mds()} is a wrapper function and can be used instead of \code{smacofSym()}
+Four types of MDS can be fitted: ratio MDS (no dissimilarity transformation), interval MDS (linear transformation), ordinal MDS (ordinal transformation with various options for handling ties), and spline MDS (monotone spline transformation). Shepard plots in \code{\link{plot.smacof}} give insight into this transformation.
 
-This function allows for fitting three basic types of MDS: ratio MDS (default), interval MDS (polynomial transformation), and ordinal MDS (aka nonmetric MDS). It also returns the point stress, i.e. the larger the contribution of a point to the total stress, the worse the fit (see also \code{\link{plot.smacof}}. 
+Setting \code{principal = TRUE} is useful for interpretatbility of the dimensions, or to check hypotheses about the dimensions.
+
+In case of missing input dissimilarities, the \code{weightmat} is computed internally so that missings are blanked out during optimization. 
 }
+
 \value{
   \item{delta}{Observed dissimilarities, not normalized}
   \item{dhat}{Disparities (transformed proximities, approximated distances, d-hats)}
   \item{confdist}{Configuration distances}
   \item{conf}{Matrix of fitted configurations}
   \item{stress}{Stress-1 value}
-  \item{spp}{Stress per point (stress contribution in percentages)}
+  \item{spp}{Stress per point (stress contribution of each point on a percentage scale)}
   \item{resmat}{Matrix with squared residuals}
   \item{rss}{Residual sum-of-squares}
   \item{weightmat}{Weight matrix}
@@ -56,14 +61,18 @@ This function allows for fitting three basic types of MDS: ratio MDS (default), 
   \item{nobj}{Number of objects}
   \item{type}{Type of MDS model}
 }
-\references{De Leeuw, J. & Mair, P. (2009). Multidimensional scaling using majorization: 
-The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{https://www.jstatsoft.org/v31/i03/} 
+\references{
+De Leeuw, J. & Mair, P. (2009). Multidimensional scaling using majorization: 
+The R package smacof. Journal of Statistical Software, 31(3), 1-30, \doi{10.18637/jss.v031.i03} 
+
+Mair, P, Groenen, P. J. F., De Leeuw, J. (2022). More on multidimensional scaling in R: smacof version 2. Journal of Statistical Software, 102(10), 1-47. \doi{10.18637/jss.v102.i10}
 
 Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.). Springer.
 
-Borg, I., Groenen, P. J. F., & Mair, P. (2013). Applied Multidimensional Scaling. Springer. 
+Borg, I., Groenen, P. J. F., & Mair, P. (2018). Applied Multidimensional Scaling and Unfolding (2nd ed.). Springer. 
 }
-\author{Jan de Leeuw and Patrick Mair}
+
+\author{Jan de Leeuw, Patrick Mair, and Patrick Groenen}
 
 \seealso{\code{\link{smacofConstraint}}, \code{\link{smacofRect}}, \code{\link{smacofIndDiff}}, \code{\link{smacofSphere}}, \code{\link{plot.smacof}}}
 \examples{

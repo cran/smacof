@@ -49,6 +49,12 @@ similarity is provided, it is converted internally into a dissimilarity using \c
   \item{nobj}{Number of objects}
 }
 
+\references{
+Mair, P., Borg, I., and Rusch, T. (2016). Goodness-of-fit assessment in multidimensional scaling
+and unfolding. Multivariate Behavioral Research, 51, 772-789. \doi{10.1080/00273171.2016.1235966}
+
+Mair, P, Groenen, P. J. F., De Leeuw, J. (2022). More on multidimensional scaling in R: smacof version 2, Journal of Statistical Software, 102(10), 1-47. \doi{10.18637/jss.v102.i10}
+}
 
 \author{Patrick Mair and Ingwer Borg}
 

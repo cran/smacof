@@ -1,0 +1,98 @@
+---
+title: "MDS in a Nutshell"
+author: "Patrick Mair"
+output: rmarkdown::html_vignette
+bibliography: smacof.bib
+vignette: >
+  %\VignetteIndexEntry{MDS in a Nutshell}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+The smacof package is the most flexible package for multidimensional scaling (MDS) computation in R. This vignette gives a very basic introduction to MDS using smacof. More technical details and advanced examples can be found in the main package vignette (`vignette("smacof")`). An accessible introductory MDS book written for applied researchers is @Borg+Groenen+Mair:2012. 
+
+
+## Data Structure
+MDS is a method to represent associations among objects (variables, individuals, etc.) and requires a proximity matrix as input. We distinguish between two types of input data: directly observed proximities and derived proximities.
+In the first scenario the proximities are directly observed/collected in an experiment (e.g., participants rate pairwise similarities between stimuli). A classical example in the MDS literature is the Ekman dataset that comes with the package: 
+
+```{r ekman}
+library(smacof)
+ekman
+```
+
+The elements of this matrix are similarities (confusion proportions) of colors with wavelengths from 434 nm to 674 nm. Important: smacof requires dissimilarities as inputs! Therefore, we need to convert these similarities into dissimilarities. The `sim2diss()` function supports the user with this conversion. Here we can simply subtract the proportions from 1 (`method = "confusion"`). 
+
+```{r ekmanD, eval = FALSE}
+ekmanD <- sim2diss(ekman, method = "confusion", to.dist = TRUE)
+```
+
+In modern MDS applications, the more common input data scenario are derived proximities. The starting point is a standard data frame structure. As an example we use a dataset on PTSD symptoms from the `MPsychoR` package. 
+
+```{r wenchuan, message = FALSE}
+library(MPsychoR)
+data(Wenchuan)
+head(Wenchuan)
+```
+
+In total we have ``r ncol(Wenchuan)`` PTSD symptoms collected on ``r nrow(Wenchuan)`` individuals. We need to convert this matrix into dissimilarities. If we want to scale the symptoms, a popular strategy is to compute the correlation matrix (similarities) and subsequently convert it into a dissimilarity matrix. 
+
+```{r wendelta}
+Rmat <- cor(Wenchuan, use = "pairwise.complete.obs")
+Delta <- sim2diss(Rmat, method = "corr", to.dist = TRUE)
+round(Delta, 2)
+```
+
+At this point we are ready to fit an MDS. 
+
+## MDS Fit 
+What MDS is trying to achieve is to represent these dissimilarities as distances in a low-dimensional space. Most often researchers use two or three dimensions in order to be able plot the resulting configuration. The simplest call to perform a 2D MDS is the following. 
+
+```{r wenmds}
+mds_wen1 <- mds(Delta)
+mds_wen1
+```
+
+The print output shows a measure called "stress" which tells us how well the solution fits the data. It becomes 0 in case of a perfect fit. A value of ``r round(mds_wen1$stress, 3)`` is not great for this simple MDS problem. Note that in the MDS literature there exist stress rules of thumb. We strongly advice to use several diagnostics in combination [see @Mair+Borg+Rusch:2016] in order to assess the goodness-of-fit, instead of relying on these rules of thumb. 
+
+This said, we need to improve this solution. We could increase the number of dimensions but it will be difficult to plot the solution. Rather, we can choose a more flexible transformation function. Modern MDS implementations provide the option to transform the input dissimilarities. This is a big advantage over classical scaling implementations as in `cmdscale()`. The default used in `mds()` is a ratio transformation which essentially says that input dissimilarities are not touched. We could relax this restriction by allowing something more flexible such as an ordinal transformation which results in a step function. Shepard plots give insights into these transformations. 
+
+```{r wenmds2, fig.width = 5, fig.height = 5}
+mds_wen2 <- mds(Delta, type = "ordinal")
+plot(mds_wen1, plot.type = "Shepard", main = "Shepard Diagram (Ratio Transformation)")
+plot(mds_wen2, plot.type = "Shepard", main = "Shepard Diagram (Ordinal Transformation)")
+```
+
+How should we decide on a transformation function? One option is to decide on a data driven basis. Try out different transformation functions (`"interval"` is another popular one), look at the Shepard plots, and pick one that leads to an acceptably low stress value while keeping the transformation as simple as possible (an ordinal transformation always gives the lowest stress as it is the most flexible transformation). Another option is to decide on the basis of ad hoc scale levels or substantive considerations. For instance, in this example we could argue that the original data are measured on a Likert scale and we therefore process the dissimilarities using an ordinal transformation. More thorough discussions on such "optimal scaling" procedures can be found in @Mair:2018b.  
+
+Let us look at the output of the ordinal MDS fit: 
+
+```{r wenord}
+mds_wen2
+```
+
+We see the drastic reduction in the stress value compared to the ratio fit. Assume we are happy with this solution we are now ready to produce the most important output in MDS: the configuration plot. 
+
+```{r confplot, fig.width = 6, fig.height = 6}
+plot(mds_wen2, main = "PTSD Symptoms Configuration")
+```
+
+A nice feature of MDS is that this configuration plot is super intuitive to interpret as the location of the points matters substantively (as opposed to correlation networks) and the distances between any two points are Euclidean. The closer two symptoms in the configuration, the stronger their association.  
+The interpretation of the dimensions is not that crucial as, for instance, in PCA. Sometimes researchers find an interpretation, whereas sometimes, as in our example, there is no straightforward interpretation. Note that this configuration can be rotated arbitrarily if this helps for interpretation. Further details on interpreting configuration plots can be found in @Borg+Groenen+Mair:2012, @Mair:2018b, and the main package vignette. 
+
+As a final note, for users more attracted to `ggplot` style, here is some basic code: 
+
+```{r ggconf, message = FALSE, fig.width = 6, fig.height = 6}
+library(ggplot2)
+conf_wen <- as.data.frame(mds_wen2$conf)
+p <- ggplot(conf_wen, aes(x = D1, y = D2, label = rownames(conf_wen))) 
+p + geom_point(size = 0.9) + coord_fixed() + geom_text(size = 3.5, vjust = -0.8) + 
+  ggtitle("PTSD Symptoms Configuration")
+```
+
+It is important to fix the aspect ratio to 1 in order to interpret the distances in a Euclidean way.
+To avoid overlapping labels, the `ggrepel` package provides some nice options. 

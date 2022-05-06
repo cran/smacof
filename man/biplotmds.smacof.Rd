@@ -52,7 +52,9 @@ Returns an object belonging to classes \code{"mlm"} and \code{"mdsbi"}. See \cod
 }
 
 \references{
-Greenacre, M. (2010). Biplots in Practice. Fundacion BBVA, Bilbao, Spain
+Greenacre, M. (2010). Biplots in Practice. Fundacion BBVA, Bilbao, Spain.
+
+Mair, P., Groenen, P. J. F., De Leeuw, J. (2022). More on multidimensional scaling in R: smacof version 2, Journal of Statistical Software, 102(10), 1-47. \doi{10.18637/jss.v102.i10}
 }
 
 \seealso{\code{\link{plot.smacof}}}

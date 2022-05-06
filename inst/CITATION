@@ -8,15 +8,18 @@ citEntry(entry = "Article",
   volume       = "31",
   number       = "3",
   pages        = "1--30",
-  url          = "https://www.jstatsoft.org/v31/i03/",
-  textVersion  = paste("Jan de Leeuw, Patrick Mair (2009).", "Multidimensional Scaling Using Majorization: SMACOF in R.", "Journal of Statistical Software, 31(3), 1-30.", "URL https://www.jstatsoft.org/v31/i03/.")
+  url          = "https://doi.org/10.18637/jss.v031.i03",
+  textVersion  = paste("Jan de Leeuw, Patrick Mair (2009).", "Multidimensional Scaling Using Majorization: SMACOF in R.", "Journal of Statistical Software, 31(3), 1-30.", "URL https://doi.org/10.18637/jss.v031.i03")
 )
 
 citEntry(entry = "Article",
   title        = "More on multidimensional scaling in {R}: smacof version 2",
   author       = personList(as.person("Patrick Mair"), as.person("Patrick J. F. Groenen"), person("Jan", "de Leeuw")),
   journal      = "Journal of Statistical Software",
-  year         = "2021",
-  note         = "Forthcoming",
-  textVersion  = paste("Patrick Mair, Patrick J. F. Groenen, Jan de Leeuw (2021).", "More on multidimensional scaling in {R}: smacof version 2.", "Journal of Statistical Software.", "Forthcoming")
+  year         = "2022",
+  volume       = "102",
+  number       = "10",
+  pages        = "1--47",
+  url          = "https://doi.org/10.18637/jss.v102.i10",
+  textVersion  = paste("Patrick Mair, Patrick J. F. Groenen, Jan de Leeuw (2022).", "More on multidimensional scaling in {R}: smacof version 2.", "Journal of Statistical Software, 102(10), 1-47", "URL https://doi.org/10.18637/jss.v102.i10")
 )

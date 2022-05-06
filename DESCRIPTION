@@ -1,8 +1,8 @@
 Package: smacof
 Type: Package
 Title: Multidimensional Scaling
-Version: 2.1-3
-Date: 2021-07-17
+Version: 2.1-5
+Date: 2022-05-05
 Authors@R: c(person("Patrick", "Mair", role = c("aut", "cre"), email = "mair@fas.harvard.edu"), person("Jan", "De Leeuw", role = "aut"), person("Patrick J. F.", "Groenen", role = "aut"), person("Ingwer", "Borg", role = "ctb"))
 Description: Implements the following approaches for multidimensional scaling (MDS) based on stress minimization using majorization (smacof): ratio/interval/ordinal/spline MDS on symmetric dissimilarity matrices, MDS with external constraints on the configuration, individual differences scaling (idioscal, indscal), MDS with spherical restrictions, and ratio/interval/ordinal/spline unfolding (circular restrictions, row-conditional). Various tools and extensions like jackknife MDS, bootstrap MDS, permutation tests, MDS biplots, gravity models, unidimensional scaling, drift vectors (asymmetric MDS), classical scaling, and Procrustes are implemented as well.  
 Imports: graphics, stats, polynom, Hmisc, nnls, grDevices, MASS,
@@ -16,11 +16,11 @@ LazyData: yes
 LazyLoad: yes
 ByteCompile: yes
 NeedsCompilation: yes
-Packaged: 2021-07-17 17:42:03 UTC; patrick
+Packaged: 2022-05-05 21:32:23 UTC; patrick
 Author: Patrick Mair [aut, cre],
   Jan De Leeuw [aut],
   Patrick J. F. Groenen [aut],
   Ingwer Borg [ctb]
 Maintainer: Patrick Mair <mair@fas.harvard.edu>
 Repository: CRAN
-Date/Publication: 2021-07-20 08:58:43 UTC
+Date/Publication: 2022-05-06 07:04:47 UTC

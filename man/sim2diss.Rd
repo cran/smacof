@@ -18,6 +18,12 @@ sim2diss(s, method = "corr", to.dist = FALSE)
 \value{Returns dissimiarities either as matrix or as dist object.
 }
 
+\references{
+Mair, P., Groenen, P. J. F., De Leeuw, J. (2022). More on multidimensional scaling in R: smacof version 2. 
+Journal of Statistical Software, 102(10), 1-47. \doi{10.18637/jss.v102.i10}
+
+}
+
 \examples{
 
 ## Convert crimes data (correlations)

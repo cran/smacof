@@ -1,5 +1,5 @@
 smacofSym <- function(delta, ndim = 2, type = c("ratio", "interval", "ordinal","mspline"), 
-                        weightmat = NULL, init = "torgerson", ties = "primary",	verbose = FALSE, 
+                        weightmat = NULL, init = "torgerson", ties = "primary",	principal = FALSE, verbose = FALSE, 
                         relax = FALSE, modulus = 1, itmax = 1000, eps = 1e-6, 
                         spline.degree = 2, spline.intKnots = 2)  {
   # delta ... dissimilarity matrix 
@@ -121,6 +121,12 @@ smacofSym <- function(delta, ndim = 2, type = c("ratio", "interval", "ordinal","
   rss <- sum(spoint$resmat[lower.tri(spoint$resmat)])  ## residual sum-of-squares
   
   if (itel == itmax) warning("Iteration limit reached! You may want to increase the itmax argument!") 
+  
+  ## principal axis transformation
+  if (principal) {
+    y_svd <- svd(y)
+    y <- y %*% y_svd$v     ## rotation
+  }
   
   #return configurations, configuration distances, normalized observed distances 
   result <- list(delta = diss, dhat = dhat, confdist = dist(y), iord = dhat2$iord.prim, conf = y, stress = stress, 

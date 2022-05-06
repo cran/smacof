@@ -59,9 +59,16 @@ Returns an object of class \code{procr} with:
   \item{confdistYhat}{Configuration distances of fitted configuration}
   \item{congcoef}{Congruence coefficient}
   \item{aliencoef}{Alienation coefficient}
+  \item{r}{Correlation coefficient between X and Y-hat (shrinkage ratio)}
   \item{pairdist}{Pairwise object distances (sorted)}
 }
-\references{Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.). Springer.
+\references{
+Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling and Unfolding (2nd ed.). Springer.
+
+Mair, P., Groenen, P. J. F., De Leeuw, J. (2022). More on multidimensional scaling in R: smacof version 2, Journal of Statistical Software, 102(10), 1-47. \doi{10.18637/jss.v102.i10}
+
+Borg, I. and Mair, P. (2022). A note on Procrustean fittings of noisy configurations. Austrian Journal of Statistics, 51, 1-9. \doi{10.17713/ajs.v51i4.1423}
+
 }
 
 \examples{

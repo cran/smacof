@@ -18,7 +18,8 @@ torgerson(delta, p)
 \value{Returns an \eqn{n \times p} matrix of configurations
 }
 
-\references{Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.). Springer.
+\references{
+Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.). Springer.
 }
 
 \examples{

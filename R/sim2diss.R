@@ -14,7 +14,7 @@ sim2diss <- function(s, method = "corr", to.dist = FALSE)
                                                 several.ok = FALSE)
   
   if (method == "corr") {
-    if (any(s < -1) || any(s > 1)) stop( "Correlations expected for correlation transform." )
+    if (any(s < -1, na.rm = TRUE) || any(s > 1, na.rm = TRUE)) stop( "Correlations expected for correlation transformation." )
     dissmat <- sqrt(1-s)
   } 
   if (method == "reverse") dissmat <- max(s, na.rm = TRUE) + min(s, na.rm = TRUE) - s
@@ -26,8 +26,8 @@ sim2diss <- function(s, method = "corr", to.dist = FALSE)
     dissmat <- matrix(rank(-s), dim(s))
     colnames(dissmat) <- colnames(s)
   }  
-  if (method == "exp") dissmat <- -log((EPS+s)/(EPS+max(s)))
-  if (method == "Gaussian") dissmat <- sqrt(-log((EPS+s)/(EPS+max(s))))
+  if (method == "exp") dissmat <- -log((EPS+s)/(EPS+max(s, na.rm = TRUE)))
+  if (method == "Gaussian") dissmat <- sqrt(-log((EPS+s)/(EPS+max(s, na.rm = TRUE))))
   if (method == "cooccurrence") { 
     rsum <- rowSums(s, na.rm = TRUE)
     csum <- colSums(s, na.rm = TRUE)
@@ -44,17 +44,17 @@ sim2diss <- function(s, method = "corr", to.dist = FALSE)
     dissmat <- sqrt(s)
   }
   if (method == "confusion") {
-    if (any(s < 0) || any(s > 1)) stop( "Proportions expected for confusion transform!" )
+    if (any(s < 0, na.rm = TRUE) || any(s > 1, na.rm = TRUE)) stop( "Proportions expected for confusion transformation!" )
     dissmat <- 1-s
   }
   if (method == "transition") {
-    if (any(s < 0)) stop( "Frequencies expected for transition transform." )
+    if (any(s < 0, na.rm = TRUE)) stop( "Frequencies expected for transition transformation." )
     s[s == 0] <- NA
     dissmat <- 1/sqrt(s)
   }
   if (method == "membership") dissmat <- 1-s
   if (method == "probability") {
-    if (any(s < 0) || any(s > 1)) stop( "Probabilities expected for probability transform." )
+    if (any(s < 0, na.rm = TRUE) || any(s > 1, na.rm = TRUE)) stop( "Probabilities expected for probability transformation." )
     s[s == 0] <- NA
     dissmat <- 1/sqrt(asin(s))
   }

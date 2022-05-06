@@ -2,6 +2,23 @@
 \title{News for Package \pkg{smacof}}
 \encoding{UTF-8}
 
+\section{Changes in Version 2.1-5}{
+  \itemize{
+    \item JSS reference updated.
+    \item Principal axis transformation argument added to mds().
+    \item Correlation between X and Y-hat added to Procrustes().
+    \item sim2diss() fixed for missing similarities.
+    }
+} 
+
+
+\section{Changes in Version 2.1-4}{
+  \itemize{
+    \item bugfix in unfolding() for user-specified starting solution.
+    }
+} 
+
+
 \section{Changes in Version 2.1-3}{
   \itemize{
     \item stress0() is now an object of class "smacof".

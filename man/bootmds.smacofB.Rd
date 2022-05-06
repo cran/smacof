@@ -53,7 +53,10 @@ asp = 1, type = "p", pch = 20, ...)
   \item{stab}{Stability coefficient}
 }
 
-\references{Jacoby, W. G., & Armstrong, D. A. (2014). Bootstrap confidence regions for multidimensional scaling solutions. American Journal of Political Science, 58, 264-278. 
+\references{
+Jacoby, W. G., & Armstrong, D. A. (2014). Bootstrap confidence regions for multidimensional scaling solutions. American Journal of Political Science, 58, 264-278. 
+
+Mair, P., Groenen, P. J. F., De Leeuw, J. (2022). More on multidimensional scaling in R: smacof version 2, Journal of Statistical Software, 102(10), 1-47. \doi{10.18637/jss.v102.i10}
 }
 
 

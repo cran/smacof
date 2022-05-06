@@ -54,8 +54,11 @@ smacofSphere(delta, ndim = 2, type = c("ratio", "interval", "ordinal","mspline")
 For large scale problems it is suggested to use the dual algorithm. Using the penalty parameter (dual algorithm), the user allow for slight point deviations from the circle (the higher the penalty, the stricter the algorithm is in terms of placing points in the sphere, see examples section below).
 }
 
-\references{De Leeuw, J. & Mair, P. (2009). Multidimensional scaling using majorization: 
-The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{https://www.jstatsoft.org/v31/i03/}}
+\references{
+De Leeuw, J. & Mair, P. (2009). Multidimensional scaling using majorization: 
+The R package smacof. Journal of Statistical Software, 31(3), 1-30, \doi{10.18637/jss.v031.i03}
+}
+
 \author{Jan de Leeuw and Patrick Mair}
 
 \seealso{\code{\link{smacofRect}}, \code{\link{smacofIndDiff}}, \code{\link{smacofSym}},\code{\link{smacofConstraint}}}

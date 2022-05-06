@@ -4,6 +4,7 @@ print.procr <- function(x,...)
     print(x$call)
     cat("\nCongruence coefficient:", round(x$congcoef, 3))
     cat("\nAlienation coefficient:", round(x$aliencoef, 3))
+    cat("\nCorrelation coefficient:", round(x$r, 3))
     
     
     cat("\n\nRotation matrix:\n")

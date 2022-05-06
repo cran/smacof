@@ -82,8 +82,12 @@ Creates an object of class \code{smacofR}.
   \item{conditionality}{Conditionality of the transformation}
   \item{nobj}{Number of objects (columns)}
 }
-\references{de Leeuw, J. & Mair, P. (2009). Multidimensional scaling using majorization: 
-The R package smacof. Journal of Statistical Software, 31(3), 1-30, \url{https://www.jstatsoft.org/v31/i03/} 
+\references{
+De Leeuw, J. & Mair, P. (2009). Multidimensional scaling using majorization: 
+The R package smacof. Journal of Statistical Software, 31(3), 1-30, \doi{10.18637/jss.v031.i03} 
+
+Mair, P., Groenen, P. J. F., De Leeuw, J. (2022). More on multidimensional scaling in R: smacof version 2. 
+Journal of Statistical Software, 102(10), 1-47. \doi{10.18637/jss.v102.i10}
 
 Busing, F. M. T. A., Groenen, P. J. F., & Heiser, W. J. (2005). Avoiding degeneracy in multidimensional unfolding by penalizing on the coefficient of variation. Psychometrika, 70, 71-98.
 }

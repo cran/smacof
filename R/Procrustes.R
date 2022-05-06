@@ -22,12 +22,13 @@ Procrustes <- function(X, Y){
   dYhat <- dist(Yhut)
   cong <- sum(dX*dY)/(sqrt(sum(dX^2))*sqrt(sum(dY^2)))
   alien <- sqrt(1-cong^2)
+  r <- cor(as.vector(as.matrix(X)), as.vector(Yhut))
   
   pairdist <- sort(sqrt(rowSums((X-Yhut)^2)))   ## pairwise distances
   
   res <- list(X = X, Y = Y, Yhat = Yhut, translation = trans, dilation = streck, rotation = T, 
               confdistX = dX, confdistY = dY, confdistYhat = dYhat, congcoef = cong, 
-              aliencoef = alien, pairdist = pairdist, call = match.call())
+              aliencoef = alien, r = r, pairdist = pairdist, call = match.call())
   class(res) <- "procr"
   return(res)
 }

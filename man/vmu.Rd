@@ -35,6 +35,8 @@ Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling (2nd ed.).
 Borg, I., Groenen, P. J. F., & Mair, P. (2018). Applied Multidimensional Scaling and Unfolding (2nd ed.). Springer.
 
 Tucker, L. R. (1960). Intra-individual and inter-individual multidimensionality. In H. Gulliksen & S. Messick (Eds.), Psychological scaling: Theory and applications (pp. 155-167). Wiley.
+
+Mair, P, Groenen, P. J. F., De Leeuw, J. (2022). More on multidimensional scaling in R: smacof version 2. Journal of Statistical Software, 102(10), 1-47. \doi{10.18637/jss.v102.i10}
 }
 
 \author{Ingwer Borg and Patrick Mair}
