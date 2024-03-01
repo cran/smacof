@@ -196,6 +196,10 @@ smacofConstraint <- function(delta, constraint = "unrestricted", external, ndim 
     } else if (constraint == "diagonal") {
       C <- diag(ncol.ext)  # Make an initial C = I
     }
+    
+    ## FIXME
+    C <- as.matrix(C)
+    
     # Initialize the optimally scaled external variables
     x.unc <- xstart
     x.con <- matrix(0, n, p)

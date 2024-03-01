@@ -30,6 +30,11 @@ svm_mdsplot(mds_object, svm_object, class, legend1 = TRUE, legend2 = TRUE,
 \details{Using the SVM implementation of \code{e1071} one can determine facets in an MDS configuration based on an SVM fit. This function plots the resulting facets on top of the 2D MDS configuration. Note that this function is work in progress. 
 }
 
+\references{
+Mair, P., Cetron, J. S., and Borg, I. (2022). Using support vector machines for facet partitioning in
+multidimensional scaling. Multivariate Behavioral Research. Forthcoming; \doi{10.1080/00273171.2022.2035207}
+}
+
 \seealso{\code{\link[e1071]{svm}}, \code{\link[e1071:tune.wrapper]{tune.svm}}}
 
 \examples{

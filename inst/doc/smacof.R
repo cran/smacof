@@ -76,13 +76,13 @@ permLaw
 
 ## ----wenmds-----------------------------------------------------------
 data("Wenchuan", package = "MPsychoR")
-Wdelta <- dist(t(Wenchuan))                                        
-fitWen <- mds(Wdelta, type = "interval")        
+Wdelta <- dist(t(Wenchuan))
+fitWen <- mds(Wdelta, type = "interval")
 round(fitWen$stress, 3)
 
 ## ----wenperm, cache=TRUE----------------------------------------------
 set.seed(123)
-permWen <- permtest(fitWen, data = Wenchuan, method.dat = "euclidean", 
+permWen <- permtest(fitWen, data = Wenchuan, method.dat = "euclidean",
   nrep = 1000, verbose = FALSE)
 permWen
 
@@ -91,7 +91,7 @@ permWen
 #  plot(permWen, xlim = c(0.19, 0.30))
 #  perm5 <- quantile(permWen$stressvec, probs = 0.05)
 #  hist(permWen$stressvec, xlim = c(0.10, 0.40), xlab = "Stress Values",
-#       main = "Wenchuan Permutation Histogram")
+#      main = "Wenchuan Permutation Histogram")
 #  abline(v = perm5, lty = 2, col = "gray", lwd = 2)
 #  abline(v = fitWen$stress, col = "gray")
 #  par(op)
@@ -99,11 +99,11 @@ permWen
 ## ----wenperm-plot1, echo=FALSE, fig.width=12, fig.height=6------------
 op <- par(mfrow = c(1,2))
 plot(permWen, xlim = c(0.19, 0.30))
-perm5 <- quantile(permWen$stressvec, probs = 0.05)    
-hist(permWen$stressvec, xlim = c(0.10, 0.40), xlab = "Stress Values", 
-     main = "Wenchuan Permutation Histogram")
-abline(v = perm5, lty = 2, col = "gray", lwd = 2)             
-abline(v = fitWen$stress, col = "gray")       
+perm5 <- quantile(permWen$stressvec, probs = 0.05)
+hist(permWen$stressvec, xlim = c(0.10, 0.40), xlab = "Stress Values",
+    main = "Wenchuan Permutation Histogram")
+abline(v = perm5, lty = 2, col = "gray", lwd = 2)
+abline(v = fitWen$stress, col = "gray")
 par(op)
 
 ## ----jackmds----------------------------------------------------------

@@ -2,6 +2,14 @@
 \title{News for Package \pkg{smacof}}
 \encoding{UTF-8}
 
+\section{Changes in Version 2.1-6}{
+  \itemize{
+    \item Double top level assignment for mds() removed.
+    \item Bug in smacofConstraint() for ndim = 1 fixed.
+    }
+}
+
+
 \section{Changes in Version 2.1-5}{
   \itemize{
     \item JSS reference updated.

@@ -318,13 +318,13 @@ permLaw <- permtest(fitLaw, nrep = 500, verbose = FALSE)
 permLaw
 @
 
-We cannot reject the $H_0$ of ``stress/configuration are obtained from a random permutation of dissimilarities''. 
+We cannot reject the $H_0$ of ``stress/configuration are obtained from a random permutation of dissimilarities''.
 For the derived dissimilarity situation we use a dataset from \citet{McNally:2015} which is included in the \pkg{MPsychoR} package \citep{Mair:2018}. It includes 17 posttraumatic stress disorder (PTSD) symptoms reported by survivors of the Wenchuan earthquake in 2008, scaled on a 5-point rating scale. We use the Euclidean distance as (derived) dissimilarity measure and compute an interval MDS. This leads to the following stress value:
 
 <<wenmds>>=
 data("Wenchuan", package = "MPsychoR")
-Wdelta <- dist(t(Wenchuan))                                        
-fitWen <- mds(Wdelta, type = "interval")        
+Wdelta <- dist(t(Wenchuan))
+fitWen <- mds(Wdelta, type = "interval")
 round(fitWen$stress, 3)
 @
 
@@ -332,21 +332,21 @@ In the subsequent \code{permtest} call we provide the raw input data through the
 
 <<wenperm, cache=TRUE>>=
 set.seed(123)
-permWen <- permtest(fitWen, data = Wenchuan, method.dat = "euclidean", 
+permWen <- permtest(fitWen, data = Wenchuan, method.dat = "euclidean",
   nrep = 1000, verbose = FALSE)
 permWen
 @
 
-This time we reject $H_0$. Figure~\ref{fig:wenperm}, obtained by calling \code{plot(permWen)}, visualizes the results in two ways: the left panel shows the \emph{empirical cumulative distribution function} (ECDF) of the permutation stress values, whereas the right panel shows the permutation stress histogram including the critical value (lower 5\% quantile) and the observed stress value. 
+This time we reject $H_0$. Figure~\ref{fig:wenperm}, obtained by calling \code{plot(permWen)}, visualizes the results in two ways: the left panel shows the \emph{empirical cumulative distribution function} (ECDF) of the permutation stress values, whereas the right panel shows the permutation stress histogram including the critical value (lower 5\% quantile) and the observed stress value.
 
 <<wenperm-plot, eval=FALSE, echo = FALSE>>=
 op <- par(mfrow = c(1,2))
 plot(permWen, xlim = c(0.19, 0.30))
-perm5 <- quantile(permWen$stressvec, probs = 0.05)    
-hist(permWen$stressvec, xlim = c(0.10, 0.40), xlab = "Stress Values", 
-     main = "Wenchuan Permutation Histogram")
-abline(v = perm5, lty = 2, col = "gray", lwd = 2)             
-abline(v = fitWen$stress, col = "gray")       
+perm5 <- quantile(permWen$stressvec, probs = 0.05)
+hist(permWen$stressvec, xlim = c(0.10, 0.40), xlab = "Stress Values",
+    main = "Wenchuan Permutation Histogram")
+abline(v = perm5, lty = 2, col = "gray", lwd = 2)
+abline(v = fitWen$stress, col = "gray")
 par(op)
 @
 \begin{figure}[t]
@@ -358,7 +358,7 @@ par(op)
 \caption{\label{fig:wenperm} Left panel: ECDF of the permuted stress values (dashed gray line at $\alpha = 0.05$, solid gray line at the $p$-value). Right panel: permutation stress histogram (red dashed line at critical value, solid black line at observed stress value).}
 \end{figure}
 
-Note that such permutation strategies can be applied to unfolding models (see Section~\ref{sec:unfolding}) as well \citep[see][for details]{Mair+Borg+Rusch:2016}. 
+Note that such permutation strategies can be applied to unfolding models (see Section~\ref{sec:unfolding}) as well \citep[see][for details]{Mair+Borg+Rusch:2016}.
 
 
 \subsection{Stability of a solution I: jackknife}
