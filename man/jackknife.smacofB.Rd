@@ -25,7 +25,7 @@ main, xlab, ylab, xlim, ylim, asp = 1, ...)
  
   \item{x}{Object of class \code{"smacofJK"}}
   \item{plot.dim}{Vector with dimensions to be plotted.}
-  \item{hclpar}{Chroma and luminance to be used for HCL colors (further details see \code{\link{rainbow_hcl}})}
+  \item{hclpar}{Chroma and luminance to be used for HCL colors (further details see \code{\link[colorspace]{rainbow_hcl}})}
   \item{col.p}{Point color. If omitted, hcl colors will be used; if specified, the corresponding (single) color will be used for plotting.}
   \item{col.l}{Line color. If omitted, hcl colors will be used; if specified, the corresponding (single) color will be used for plotting.}
   \item{plot.lines}{If \code{TRUE}, the Jackknife configurations are plotted are connected with their centroid.}

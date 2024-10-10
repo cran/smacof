@@ -2,6 +2,12 @@
 \title{News for Package \pkg{smacof}}
 \encoding{UTF-8}
 
+\section{Changes in Version 2.1-7}{
+  \itemize{
+    \item candisc dependency removed, plot.msbi() modified accordingly.
+    }
+}
+
 \section{Changes in Version 2.1-6}{
   \itemize{
     \item Double top level assignment for mds() removed.

@@ -1,5 +1,5 @@
-a5f86227426a34b7e5cc20d81f4f97ff *DESCRIPTION
-54a42462a1451f21c20b8ccd830dfe49 *NAMESPACE
+f10f566c8b35c5fe5782fe87d488e3a0 *DESCRIPTION
+04a61a20a57c865e5adad68642f7ad34 *NAMESPACE
 5848dd1a29c1b58a4cba0210d9e8b18e *R/Procrustes.R
 7a8c9431d364652b9f3659365100fd24 *R/appendList.R
 3a429bced73e712e59a10b4821a641b7 *R/biplotmds.R
@@ -40,7 +40,7 @@ fe82b8d49f0b4f750466cb6e197bc68d *R/normDiss.R
 08f0f761858e85cf19c64f430eecd7f5 *R/plot.confell.R
 af52bd564bd525afc48346f05158a65c *R/plot.driftvec.R
 8fe245a44f63be73de95f5df56157470 *R/plot.icexplore.R
-7e615acfb62a1bf1b82d4daeb878808e *R/plot.mdsbi.R
+8a41557dd4c311097ca4f06271a2779b *R/plot.mdsbi.R
 3ed96f5640e985c83c5f85f5a1257797 *R/plot.procr.R
 74ccf570a372231bba9d62d57ce8cc6d *R/plot.smacof.R
 b163134b1b66ed2b252a6894bfe5ae2b *R/plot.smacofID.r
@@ -97,8 +97,8 @@ b17db3de4d360971c7efdf5a5d50cbc0 *R/unfolding.R
 c119da19b73d3c9734c7b5097d821386 *R/vecAsDist.R
 a36998982a9bc551c1e147791357fc55 *R/vmat.R
 807edaa3e81082ac478a8cabbe3e7660 *R/vmu.R
-8faf250d78a120ba4c7ea2186efddd24 *build/partial.rdb
-831d6022e6b554f994bfe42e139d26d2 *build/vignette.rds
+aa5e5a2cbfaea3d9b6cdbe378ac48cee *build/partial.rdb
+e15a1a7284f26f2f441750be5678200b *build/vignette.rds
 c9fa2c49f8b67cd87a1a2665af759e71 *data/CanadaNews.rda
 4fa81a819fdeff36f2e23261a6085b81 *data/Duration.rda
 21cea083d2d3c0af9c318e72298972b4 *data/DurationRaw.rda
@@ -141,14 +141,14 @@ c3cb298098a153123604d8705b5ca4b7 *data/trading.rda
 c7cc9e41719bdfae358db103cbc8d143 *data/winedat.rda
 eac9235285190bf53acc56155c680383 *data/wish.rda
 c7d1c6007bfd54040dc2f65310b71753 *inst/CITATION
-7d07efacfc8cbb3695fd7a088ccdac2f *inst/NEWS.Rd
+cc38baa45e0ca3cf1eded380369c83e1 *inst/NEWS.Rd
 ba694118e592bfafbc8a9894c173a24d *inst/NEWSRd2txt.R
 4c12aee5bf1c72081733890bbb436383 *inst/doc/mdsnutshell.R
 42b6428d7104ce0bbe8de9750a50a6cd *inst/doc/mdsnutshell.Rmd
 aca76dee862117b677b3934cdfd07ac9 *inst/doc/mdsnutshell.html
 75e18500161dda486319b548ba11d4bb *inst/doc/smacof.R
 34af3332f8bef29923fb5a49f1d5c844 *inst/doc/smacof.Rnw
-9fa0ea588e5735c1e5af235d91ecfd9e *inst/doc/smacof.pdf
+4acf829cf6fbd29689082642bd573b8e *inst/doc/smacof.pdf
 44292dcc07e38149c65a97ef7561445e *inst/doc/unfoldingnutshell.R
 8cd47cedc9791ffd0db3cc87c4335da7 *inst/doc/unfoldingnutshell.Rmd
 c323ee1b8f9aa863ec7d12e60ae316a0 *inst/doc/unfoldingnutshell.html
@@ -183,7 +183,7 @@ bcaa2fdedc95bb5d56f622e4f5298c92 *man/helm.Rd
 f05dcfb125898a99597405ff34823c71 *man/icExplore.Rd
 4b324f3e793dc1a378f367713b4f24e6 *man/indvalues.Rd
 92437ee0db205f38720577537a49d1f8 *man/intelligence.Rd
-18dc82ce1780ab110f88562c5421da55 *man/jackknife.smacofB.Rd
+1752a4777bc7fda7283c9aa599e68664 *man/jackknife.smacofB.Rd
 078cbea9e661ac93a64613bafc0ea489 *man/kinshipdelta.Rd
 ee1496d6defb1409464f5ecc301338d1 *man/morse.Rd
 7a5c9f1dce7d3367fe65ab66bb5561c0 *man/morsescales.Rd
